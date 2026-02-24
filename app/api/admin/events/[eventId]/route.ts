@@ -85,8 +85,8 @@ export async function PUT(
     const updated = await updateEvent(eventId, {
       ...(eventName !== undefined && { eventName }),
       ...(eventBanner !== undefined && { eventBanner }),
-      ...(eventStartDate !== undefined && { eventStartDate }),
-      ...(eventEndDate !== undefined && { eventEndDate }),
+      ...(eventStartDate !== undefined && { eventStartDate: new Date(eventStartDate) }),
+      ...(eventEndDate !== undefined && { eventEndDate: new Date(eventEndDate) }),
       ...(venue !== undefined && { venue }),
       ...(speaker !== undefined && { speaker }),
       ...(phone !== undefined && { phone }),

@@ -30,7 +30,7 @@ function parseCSV(text: string): string[] {
 function parseExcel(buffer: ArrayBuffer): string[] {
   const wb = XLSX.read(buffer, { type: "array" });
   const sheet = wb.Sheets[wb.SheetNames[0]];
-  const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { header: 1 }) as unknown[][];
+  const data = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
   if (!data.length) return [];
   const headerRow = (data[0] as unknown[]).map((h) => String(h).trim().toLowerCase());
   const emailIdx = headerRow.findIndex((h) => h === "email");

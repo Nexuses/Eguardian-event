@@ -84,8 +84,8 @@ export async function POST(request: Request) {
     const event = await createEvent({
       eventName,
       eventBanner,
-      eventStartDate,
-      eventEndDate,
+      eventStartDate: new Date(eventStartDate),
+      eventEndDate: new Date(eventEndDate),
       venue,
       speaker,
       phone,
