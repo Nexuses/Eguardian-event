@@ -74,14 +74,30 @@ export function ScanSection() {
   }, []);
 
   const startCamera = useCallback(async () => {
-    if (!videoRef.current || !barcodeSupported) return;
+    if (!barcodeSupported) return;
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setMessage("Camera not available. Use HTTPS or localhost.");
+      setStatus("error");
+      return;
+    }
+    const video = videoRef.current;
+    if (!video) return;
+
     try {
+      setMessage("");
+      setStatus("idle");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      }).catch(async () => {
+        return navigator.mediaDevices.getUserMedia({ video: true });
       });
       streamRef.current = stream;
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
+      video.srcObject = stream;
+      await video.play();
       setCameraActive(true);
 
       const BarcodeDetector = (window as unknown as { BarcodeDetector: new () => { detect: (src: ImageBitmapSource) => Promise<{ rawValue: string }[]> } }).BarcodeDetector;
@@ -91,11 +107,11 @@ export function ScanSection() {
       if (!ctx) return;
 
       scanIntervalRef.current = setInterval(async () => {
-        const video = videoRef.current;
-        if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
+        const v = videoRef.current;
+        if (!v || v.readyState !== v.HAVE_ENOUGH_DATA) return;
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0);
         try {
           const codes = await detector.detect(canvas);
           const qr = codes.find((c) => c.rawValue);
@@ -116,7 +132,8 @@ export function ScanSection() {
         }
       }, 300);
     } catch (err) {
-      setMessage("Camera access denied or unavailable");
+      const msg = err instanceof Error ? err.message : "Camera access denied or unavailable";
+      setMessage(msg);
       setStatus("error");
     }
   }, [barcodeSupported, handleSubmit]);
@@ -182,24 +199,22 @@ export function ScanSection() {
         )}
         {barcodeSupported && (
           <div className="mt-4">
+            <video
+              ref={videoRef}
+              playsInline
+              muted
+              className={`block w-full max-w-sm mx-auto rounded-lg border-2 border-orange-500 bg-zinc-900 object-cover sm:max-w-none ${cameraActive ? "max-h-[280px] sm:max-h-[320px]" : "hidden"}`}
+            />
             {!cameraActive ? (
               <button
                 type="button"
                 onClick={startCamera}
-                className="rounded-md bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+                className="mt-2 rounded-md bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
               >
                 Start camera
               </button>
             ) : (
-              <div className="space-y-2">
-                <div className="relative w-full overflow-hidden rounded-lg border-2 border-orange-500 bg-zinc-900 max-w-sm mx-auto sm:max-w-none">
-                  <video
-                    ref={videoRef}
-                    playsInline
-                    muted
-                    className="block max-h-[280px] w-full object-cover sm:max-h-[320px]"
-                  />
-                </div>
+              <div className="mt-2 space-y-2">
                 <button
                   type="button"
                   onClick={stopCamera}
