@@ -42,6 +42,11 @@ export async function getRegistrationsCollection() {
   return db.collection<RegistrationDoc>(COLLECTION);
 }
 
+export async function listAllRegistrations(): Promise<RegistrationDoc[]> {
+  const col = await getRegistrationsCollection();
+  return col.find({}).sort({ createdAt: -1 }).toArray();
+}
+
 export async function createRegistration(data: Omit<RegistrationDoc, "_id" | "uniqueCode" | "createdAt">): Promise<RegistrationDoc> {
   const col = await getRegistrationsCollection();
   let uniqueCode = generateUniqueCode();

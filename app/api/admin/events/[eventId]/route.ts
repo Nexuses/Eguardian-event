@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminFromCookie } from "@/lib/auth";
+import { parseEventDateTime } from "@/lib/date-utils";
 import { getEventById, updateEvent } from "@/lib/models/Event";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -85,8 +86,8 @@ export async function PUT(
     const updated = await updateEvent(eventId, {
       ...(eventName !== undefined && { eventName }),
       ...(eventBanner !== undefined && { eventBanner }),
-      ...(eventStartDate !== undefined && { eventStartDate: new Date(eventStartDate) }),
-      ...(eventEndDate !== undefined && { eventEndDate: new Date(eventEndDate) }),
+      ...(eventStartDate !== undefined && { eventStartDate: parseEventDateTime(eventStartDate) }),
+      ...(eventEndDate !== undefined && { eventEndDate: parseEventDateTime(eventEndDate) }),
       ...(venue !== undefined && { venue }),
       ...(speaker !== undefined && { speaker }),
       ...(phone !== undefined && { phone }),

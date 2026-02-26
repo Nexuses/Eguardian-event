@@ -17,20 +17,7 @@ type EventItem = {
   registrationStatus: string;
 };
 
-function toDatetimeLocal(iso: string) {
-  if (!iso) return "";
-  try {
-    const d = new Date(iso);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const h = String(d.getHours()).padStart(2, "0");
-    const min = String(d.getMinutes()).padStart(2, "0");
-    return `${y}-${m}-${day}T${h}:${min}`;
-  } catch {
-    return "";
-  }
-}
+import { toDatetimeLocal } from "@/lib/date-utils";
 
 export default function EditEventPage() {
   const params = useParams();

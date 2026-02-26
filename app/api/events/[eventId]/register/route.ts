@@ -3,7 +3,9 @@ import { getEventByEventId } from "@/lib/models/Event";
 import { isEligible } from "@/lib/models/EligibleEmail";
 import { createRegistration, findRegistrationByEventAndEmail } from "@/lib/models/Registration";
 import { sendPassEmail } from "@/lib/email";
+import { generateIcs } from "@/lib/ics";
 import { generatePassPng } from "@/lib/pass-png";
+import { pngPassToPdf } from "@/lib/pass-to-pdf";
 
 export async function POST(
   request: Request,
@@ -72,9 +74,10 @@ export async function POST(
     const passUrl = `${baseUrl}/events/${eventId}/pass/${reg.uniqueCode}`;
 
     (async () => {
-      let passPngBuffer: Buffer | undefined;
+      let passPdfBuffer: Buffer | undefined;
+      let passIcsBuffer: Buffer | undefined;
       try {
-        passPngBuffer = await generatePassPng({
+        const passPngBuffer = await generatePassPng({
           firstName: reg.firstName,
           surname: reg.surname,
           email: reg.email,
@@ -86,8 +89,27 @@ export async function POST(
           uniqueCode: reg.uniqueCode,
           createdAt: reg.createdAt,
         });
+        passPdfBuffer = await pngPassToPdf(passPngBuffer);
       } catch (err) {
-        console.error("Pass PNG generation failed:", err);
+        console.error("Pass generation failed:", err);
+      }
+      try {
+        const icsContent = generateIcs(
+          {
+            eventName: reg.eventName,
+            eventStartDate: reg.eventStartDate,
+            eventEndDate: reg.eventEndDate,
+            venue: reg.venue,
+            uniqueCode: reg.uniqueCode,
+            passUrl,
+            attendeeName: `${reg.firstName} ${reg.surname}`,
+            attendeeEmail: reg.email,
+          },
+          eventId
+        );
+        passIcsBuffer = Buffer.from(icsContent, "utf-8");
+      } catch (err) {
+        console.error("ICS generation failed:", err);
       }
       await sendPassEmail({
         to: reg.email,
@@ -96,7 +118,8 @@ export async function POST(
         eventName: reg.eventName,
         passUrl,
         uniqueCode: reg.uniqueCode,
-        passPngBuffer,
+        passPdfBuffer,
+        passIcsBuffer,
       });
     })().catch((err) => console.error("Pass email failed:", err));
 

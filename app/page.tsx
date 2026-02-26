@@ -1,18 +1,6 @@
 import Link from "next/link";
 import { listEvents } from "@/lib/models/Event";
-
-function formatDate(d: Date | string) {
-  if (!d) return "—";
-  try {
-    return new Date(d).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return String(d);
-  }
-}
+import { formatEventDate } from "@/lib/date-utils";
 
 export default async function Home() {
   let events: Awaited<ReturnType<typeof listEvents>> = [];
@@ -72,7 +60,7 @@ export default async function Home() {
                   </div>
                   <p className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
                     <span aria-hidden className="text-zinc-400">📅</span>
-                    {formatDate(ev.eventStartDate)}
+                    {formatEventDate(ev.eventStartDate)}
                   </p>
                 </div>
               </Link>

@@ -2,39 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getEventByEventId } from "@/lib/models/Event";
+import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-utils";
 import { CheckEligibleForm } from "./CheckEligibleForm";
-
-function formatDate(d: Date | string) {
-  if (!d) return "—";
-  const date = new Date(d);
-  return date.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function formatTime(d: Date | string) {
-  if (!d) return "—";
-  return new Date(d).toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
-function formatDateTime(d: Date | string) {
-  if (!d) return "—";
-  return new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
 
 function shareUrl(baseUrl: string, path: string, title: string) {
   const url = baseUrl + path;
@@ -98,8 +67,8 @@ export default async function EventPage({
                 {event.eventName}
               </h1>
               <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400 sm:mt-4 sm:gap-x-6">
-                <span>📅 {formatDate(event.eventStartDate)}</span>
-                <span>🕐 {formatTime(event.eventStartDate)} – {formatTime(event.eventEndDate)}</span>
+                <span>📅 {formatEventDate(event.eventStartDate)}</span>
+                <span>🕐 {formatEventTime(event.eventStartDate)} – {formatEventTime(event.eventEndDate)}</span>
                 {event.venue ? <span>📍 {event.venue}</span> : null}
               </div>
             </div>
@@ -186,11 +155,11 @@ export default async function EventPage({
               <dl className="space-y-4 text-sm">
                 <div>
                   <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Start date</dt>
-                  <dd className="text-zinc-900 dark:text-zinc-100">{formatDateTime(event.eventStartDate)}</dd>
+                  <dd className="text-zinc-900 dark:text-zinc-100">{formatEventDateTime(event.eventStartDate)}</dd>
                 </div>
                 <div>
                   <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">End date</dt>
-                  <dd className="text-zinc-900 dark:text-zinc-100">{formatDateTime(event.eventEndDate)}</dd>
+                  <dd className="text-zinc-900 dark:text-zinc-100">{formatEventDateTime(event.eventEndDate)}</dd>
                 </div>
                 {event.venue ? (
                   <div>

@@ -2,19 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getEventByEventId } from "@/lib/models/Event";
 import type { EventDoc } from "@/lib/models/Event";
+import { formatEventDateTime } from "@/lib/date-utils";
 import { RegisterForm } from "./RegisterForm";
-
-function formatDateTime(d: Date | string) {
-  if (!d) return "—";
-  return new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
 
 function toPlainEvent(event: EventDoc) {
   return {
@@ -30,7 +19,7 @@ function toPlainEvent(event: EventDoc) {
   };
 }
 
-const iconClass = "h-5 w-5 shrink-0 text-orange-500 dark:text-orange-400";
+const iconClass = "h-9 w-9 shrink-0 text-orange-500 dark:text-orange-400";
 
 export default async function RegisterPage({
   params,
@@ -92,44 +81,44 @@ export default async function RegisterPage({
               <h1 className="text-xl font-bold leading-tight text-zinc-900 dark:text-zinc-100 sm:text-2xl">
                 {event.eventName}
               </h1>
-              <dl className="mt-6 flex flex-1 flex-col divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
-                <div className="flex flex-1 min-h-[3rem] items-center gap-3">
+              <dl className="mt-6 flex flex-1 flex-col divide-y divide-zinc-200 dark:divide-zinc-800">
+                <div className="flex flex-1 min-h-[4rem] items-center gap-4">
                   <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <div>
-                    <dt className="font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Start date</dt>
-                    <dd className="mt-0.5 text-zinc-900 dark:text-zinc-100">{formatDateTime(event.eventStartDate)}</dd>
+                    <dt className="text-base font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Start date</dt>
+                    <dd className="mt-1.5 text-lg font-medium text-zinc-900 dark:text-zinc-100">{formatEventDateTime(event.eventStartDate)}</dd>
                   </div>
                 </div>
-                <div className="flex flex-1 min-h-[3rem] items-center gap-3">
+                <div className="flex flex-1 min-h-[4rem] items-center gap-4">
                   <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <div>
-                    <dt className="font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">End date</dt>
-                    <dd className="mt-0.5 text-zinc-900 dark:text-zinc-100">{formatDateTime(event.eventEndDate)}</dd>
+                    <dt className="text-base font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">End date</dt>
+                    <dd className="mt-1.5 text-lg font-medium text-zinc-900 dark:text-zinc-100">{formatEventDateTime(event.eventEndDate)}</dd>
                   </div>
                 </div>
                 {event.venue ? (
-                  <div className="flex flex-1 min-h-[3rem] items-center gap-3">
+                  <div className="flex flex-1 min-h-[4rem] items-center gap-4">
                     <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     <div>
-                      <dt className="font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Venue</dt>
-                      <dd className="mt-0.5 text-zinc-900 dark:text-zinc-100">{event.venue}</dd>
+                      <dt className="text-base font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Venue</dt>
+                      <dd className="mt-1.5 text-lg font-medium text-zinc-900 dark:text-zinc-100">{event.venue}</dd>
                     </div>
                   </div>
                 ) : null}
-                <div className="flex flex-1 min-h-[3rem] items-center gap-3">
+                <div className="flex flex-1 min-h-[4rem] items-center gap-4">
                   <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   <div>
-                    <dt className="font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Phone</dt>
-                    <dd className="mt-0.5 text-zinc-900 dark:text-zinc-100">{event.phone || "—"}</dd>
+                    <dt className="text-base font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Phone</dt>
+                    <dd className="mt-1.5 text-lg font-medium text-zinc-900 dark:text-zinc-100">{event.phone || "—"}</dd>
                   </div>
                 </div>
               </dl>

@@ -1,5 +1,6 @@
 import sharp from "sharp";
 import QRCode from "qrcode";
+import { formatEventDateTime } from "./date-utils";
 
 type PassData = {
   firstName: string;
@@ -17,18 +18,6 @@ type PassData = {
 const LOGO_URL =
   "https://eguardian-uae.s3.us-east-2.amazonaws.com/EGUARDIAN-Lanka-Pvt-Ltd-Logo-1-1024x288.jpg";
 
-function formatDateTime(d: Date | string): string {
-  if (!d) return "—";
-  return new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
 function formatRegisteredDate(d: Date | string): string {
   if (!d) return "—";
   return new Date(d).toISOString().replace("T", " ").slice(0, 19);
@@ -43,7 +32,6 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/** Wrap event name into lines that fit in the allowed width (approx chars per line for 16px bold). */
 function wrapEventName(text: string, maxCharsPerLine: number): string[] {
   if (!text.trim()) return [""];
   const words = text.trim().split(/\s+/);
@@ -72,12 +60,14 @@ function wrapEventName(text: string, maxCharsPerLine: number): string[] {
   return lines;
 }
 
-// Match pass page exactly: max-w-2xl = 672px, p-5 = 20px, logo h-14 = 56px, QR 140x140, border-2 orange, p-1
-// Render at 2x resolution for sharp PNG (retina / print)
+// Match web pass page: max-w-2xl = 672px, p-5 = 20px, logo h-14 = 56px, QR 140x140. Render at 2x for sharp PDF.
+export const PASS_WIDTH_MM = 58;
+export const PASS_HEIGHT_MM = 40;
+
 const SCALE = 2;
 const CARD_WIDTH = 672 * SCALE;
-const PADDING = 20 * SCALE;
-const LOGO_HEIGHT = 56 * SCALE;
+const PADDING = 18 * SCALE;
+const LOGO_HEIGHT = 52 * SCALE;
 const QR_SIZE = 140 * SCALE;
 const QR_BORDER = 2 * SCALE;
 const QR_PADDING = 4 * SCALE;
@@ -85,26 +75,20 @@ const QR_BOX_W = QR_SIZE + QR_PADDING * 2 + QR_BORDER * 2;
 const QR_BOX_LEFT = CARD_WIDTH - PADDING - QR_BOX_W;
 const QR_IMAGE_LEFT = QR_BOX_LEFT + QR_PADDING + QR_BORDER;
 const QR_TOP = PADDING;
-// Pass code sits below QR; start event block below code with extra space so event name never overlaps code
-const CODE_BLOCK_BOTTOM = QR_TOP + QR_BOX_W + 8 * SCALE + 12 * SCALE + 14 * SCALE;
-const EVENT_TOP = CODE_BLOCK_BOTTOM + 24 * SCALE;
-const TITLE_BASELINE = EVENT_TOP + 16 * SCALE;
-const EVENT_NAME_MAX_WIDTH = QR_BOX_LEFT - PADDING - 16 * SCALE;
-const TITLE_LINE_HEIGHT = 20 * SCALE;
-// Max chars per line for event name (approx for 16px bold at 2x); ROW baselines and CARD_HEIGHT computed per pass from title line count
-const EVENT_NAME_CHARS_PER_LINE = 48;
-// Font sizes for SVG text (scaled)
-const FONT_WELCOME = 16 * SCALE;
-const FONT_NAME = 20 * SCALE;
-const FONT_SM = 14 * SCALE;
-const FONT_XS = 12 * SCALE;
-const FONT_TITLE = 16 * SCALE;
+
+// Slightly larger fonts to utilise card space and improve readability
+const FONT_WELCOME = 18 * SCALE;
+const FONT_NAME = 24 * SCALE;
+const FONT_SM = 16 * SCALE;
+const FONT_XS = 14 * SCALE;
+const FONT_TITLE = 18 * SCALE;
+const TITLE_LINE_HEIGHT = 22 * SCALE;
+const EVENT_NAME_CHARS_PER_LINE = 42;
 
 export async function generatePassPng(data: PassData): Promise<Buffer> {
   const qrBuffer = await QRCode.toBuffer(data.uniqueCode, { width: QR_SIZE, margin: 2, type: "png" });
   const qrResized = await sharp(qrBuffer).resize(QR_SIZE, QR_SIZE).toBuffer();
 
-  // Fetch logo for compositing
   let logoBuffer: Buffer | null = null;
   try {
     const res = await fetch(LOGO_URL);
@@ -116,24 +100,35 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
     // ignore
   }
 
-  // Wrap event name into multiple lines so full name shows without overlapping pass code
   const eventNameLines = wrapEventName(data.eventName, EVENT_NAME_CHARS_PER_LINE);
   const titleBlockHeight = eventNameLines.length * TITLE_LINE_HEIGHT;
-  const row1Baseline = TITLE_BASELINE + titleBlockHeight + 8 * SCALE;
-  const row2Baseline = row1Baseline + 8 * SCALE + 14 * SCALE;
-  const row3Baseline = row2Baseline + 8 * SCALE + 14 * SCALE;
-  const registeredBaseline = row3Baseline + 16 * SCALE + 12 * SCALE;
-  const cardHeight = registeredBaseline + PADDING;
+  const yWelcome = PADDING + LOGO_HEIGHT + 14 * SCALE + 20;
+  const yName = yWelcome + FONT_WELCOME + 4 * SCALE + 5;
+  const yMobile = yName + FONT_NAME + 6 * SCALE + 15;
+  const yEmail = yMobile + FONT_SM;
+  const yCode = QR_TOP + QR_BOX_W + 8 * SCALE + 8;
+  const TITLE_BASELINE = yEmail + FONT_SM + 18 * SCALE + 20;
+  const EVENT_NAME_MAX_WIDTH = QR_BOX_LEFT - PADDING - 12 * SCALE;
+  const eventNameClipY = TITLE_BASELINE - FONT_TITLE;
+  const eventNameClipH = titleBlockHeight + 6 * SCALE;
+  const rowHeight = 10 * SCALE + FONT_SM;
+  const fixedOutputHeight = Math.round(CARD_WIDTH * (PASS_HEIGHT_MM / PASS_WIDTH_MM));
+  const gapAfterTitle = 12 * SCALE;
+  const gapBeforeRegistered = 20 * SCALE;
+  const row1BaselineMin = TITLE_BASELINE + titleBlockHeight + gapAfterTitle;
+  const contentHeight = row1BaselineMin + rowHeight * 2 + gapBeforeRegistered + FONT_XS + PADDING;
+  const extraSpace = Math.max(0, fixedOutputHeight - contentHeight);
+  const spreadAfterTitle = Math.round(extraSpace * 0.5);
+  const spreadBeforeRegistered = extraSpace - spreadAfterTitle;
+  const row1Baseline = row1BaselineMin + spreadAfterTitle;
+  const row2Baseline = row1Baseline + rowHeight;
+  const row3Baseline = row2Baseline + rowHeight;
+  const registeredBaseline = row3Baseline + gapBeforeRegistered + spreadBeforeRegistered;
+  const row1Y = row1Baseline - FONT_SM * 0.35;
+  const row2Y = row2Baseline - FONT_SM * 0.35;
+  const row3Y = row3Baseline - FONT_SM * 0.35;
 
-  const eventNameClipY = TITLE_BASELINE - 16 * SCALE;
-  const eventNameClipH = titleBlockHeight + 8 * SCALE;
-
-  // Y positions for left column text (scaled)
-  const yWelcome = PADDING + LOGO_HEIGHT + 12 * SCALE + 16 * SCALE;
-  const yName = yWelcome + 4 * SCALE + 20 * SCALE;
-  const yMobile = yName + 8 * SCALE + 14 * SCALE;
-  const yEmail = yMobile + 14 * SCALE;
-  const yCode = QR_TOP + QR_BOX_W + 8 * SCALE + 12 * SCALE;
+  const outputHeight = fixedOutputHeight;
 
   const eventNameSvg = eventNameLines
     .map(
@@ -144,24 +139,23 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
     )
     .join("");
 
-  // SVG matches pass page: no rounded corners, same structure; all dimensions scaled for sharp 2x output
   const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${cardHeight}" viewBox="0 0 ${CARD_WIDTH} ${cardHeight}">
+<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${outputHeight}" viewBox="0 0 ${CARD_WIDTH} ${outputHeight}">
   <defs><clipPath id="eventNameClip"><rect x="${PADDING}" y="${eventNameClipY}" width="${EVENT_NAME_MAX_WIDTH}" height="${eventNameClipH}"/></clipPath></defs>
-  <rect width="100%" height="100%" fill="#ffffff" stroke="#e4e4e7" stroke-width="1"/>
-  <text x="${PADDING}" y="${yWelcome}" font-family="Arial, sans-serif" font-size="${FONT_WELCOME}" fill="#18181b">Welcome,</text>
+  <rect width="100%" height="100%" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="${PADDING}" y="${yWelcome}" font-family="Arial, sans-serif" font-size="${FONT_WELCOME}" font-weight="bold" fill="#18181b">Welcome,</text>
   <text x="${PADDING}" y="${yName}" font-family="Arial, sans-serif" font-size="${FONT_NAME}" font-weight="bold" fill="#18181b">${escapeXml(data.firstName)} ${escapeXml(data.surname)}</text>
   <text x="${PADDING}" y="${yMobile}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b">${escapeXml(data.mobileNumber || "—")}</text>
   <text x="${PADDING}" y="${yEmail}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b">${escapeXml(data.email)}</text>
-  <rect x="${QR_BOX_LEFT}" y="${QR_TOP}" width="${QR_BOX_W}" height="${QR_BOX_W}" rx="${4 * SCALE}" ry="${4 * SCALE}" fill="none" stroke="#ea580c" stroke-width="${QR_BORDER}"/>
+  <rect x="${QR_BOX_LEFT}" y="${QR_TOP}" width="${QR_BOX_W}" height="${QR_BOX_W}" rx="4" ry="4" fill="none" stroke="#ea580c" stroke-width="${QR_BORDER}"/>
   <text x="${QR_BOX_LEFT + QR_BOX_W / 2}" y="${yCode}" font-family="Courier, monospace" font-size="${FONT_XS}" font-weight="bold" fill="#18181b" text-anchor="middle">${escapeXml(data.uniqueCode)}</text>
   <g clip-path="url(#eventNameClip)"><text font-family="Arial, sans-serif" font-size="${FONT_TITLE}" font-weight="bold" fill="#18181b">${eventNameSvg}</text></g>
-  <text x="${PADDING}" y="${row1Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b">Start Date</text>
-  <text x="${CARD_WIDTH - PADDING}" y="${row1Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="end">${escapeXml(formatDateTime(data.eventStartDate))}</text>
-  <text x="${PADDING}" y="${row2Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b">End Date</text>
-  <text x="${CARD_WIDTH - PADDING}" y="${row2Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="end">${escapeXml(formatDateTime(data.eventEndDate))}</text>
-  <text x="${PADDING}" y="${row3Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b">Venue</text>
-  <text x="${CARD_WIDTH - PADDING}" y="${row3Baseline}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="end">${escapeXml(data.venue || "—")}</text>
+  <text x="${PADDING}" y="${row1Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" dominant-baseline="central">Start Date</text>
+  <text x="${CARD_WIDTH / 2}" y="${row1Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="middle" dominant-baseline="central">${escapeXml(formatEventDateTime(data.eventStartDate))}</text>
+  <text x="${PADDING}" y="${row2Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" dominant-baseline="central">End Date</text>
+  <text x="${CARD_WIDTH / 2}" y="${row2Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="middle" dominant-baseline="central">${escapeXml(formatEventDateTime(data.eventEndDate))}</text>
+  <text x="${PADDING}" y="${row3Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" dominant-baseline="central">Venue</text>
+  <text x="${CARD_WIDTH / 2}" y="${row3Y}" font-family="Arial, sans-serif" font-size="${FONT_SM}" fill="#18181b" text-anchor="middle" dominant-baseline="central">${escapeXml(data.venue || "—")}</text>
   <text x="${PADDING}" y="${registeredBaseline}" font-family="Arial, sans-serif" font-size="${FONT_XS}" fill="#18181b">Registered Date – ${escapeXml(formatRegisteredDate(data.createdAt))}</text>
 </svg>
   `.trim();
@@ -177,6 +171,10 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
     composites.push({ input: logoResized, left: PADDING, top: PADDING });
   }
 
-  const composed = await sharp(baseImage).composite(composites).png({ compressionLevel: 6 }).toBuffer();
+  const composed = await sharp(baseImage)
+    .composite(composites)
+    .flatten({ background: "#ffffff" })
+    .png({ compressionLevel: 6 })
+    .toBuffer();
   return composed;
 }

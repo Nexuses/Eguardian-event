@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { formatEventDateTime } from "@/lib/date-utils";
 
 type EventItem = {
   _id: string;
@@ -107,22 +108,6 @@ export default function CreateEventPage() {
       setError("Something went wrong");
     } finally {
       setLoading(false);
-    }
-  }
-
-  function formatDateTime(d: string) {
-    if (!d) return "—";
-    try {
-      return new Date(d).toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-    } catch {
-      return d;
     }
   }
 
@@ -268,13 +253,13 @@ export default function CreateEventPage() {
                     <div>
                       <dt className="sr-only">Start</dt>
                       <dd className="text-zinc-600 dark:text-zinc-400">
-                        {formatDateTime(ev.eventStartDate)}
+                        {formatEventDateTime(ev.eventStartDate)}
                       </dd>
                     </div>
                     <div>
                       <dt className="sr-only">End</dt>
                       <dd className="text-zinc-600 dark:text-zinc-400">
-                        {formatDateTime(ev.eventEndDate)}
+                        {formatEventDateTime(ev.eventEndDate)}
                       </dd>
                     </div>
                     {ev.venue ? (

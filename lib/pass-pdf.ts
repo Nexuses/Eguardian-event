@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
+import { formatEventDateTime } from "./date-utils";
 
 type PassData = {
   firstName: string;
@@ -13,18 +14,6 @@ type PassData = {
   uniqueCode: string;
   createdAt: Date | string;
 };
-
-function formatDateTime(d: Date | string): string {
-  if (!d) return "—";
-  return new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
 
 function formatRegisteredDate(d: Date | string): string {
   if (!d) return "—";
@@ -56,8 +45,8 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
 
     doc.font("Helvetica").fontSize(12).fillColor("#18181b").text(data.eventName, cardX + 20, 260, { width: cardWidth - 40 });
     doc.fontSize(10).fillColor("#18181b");
-    doc.text(`Start Date    ${formatDateTime(data.eventStartDate)}`, cardX + 20, 290);
-    doc.text(`End Date      ${formatDateTime(data.eventEndDate)}`, cardX + 20, 306);
+    doc.text(`Start Date    ${formatEventDateTime(data.eventStartDate)}`, cardX + 20, 290);
+    doc.text(`End Date      ${formatEventDateTime(data.eventEndDate)}`, cardX + 20, 306);
     doc.text(`Venue         ${data.venue || "—"}`, cardX + 20, 322);
     doc.fontSize(8).fillColor("#52525b").text(`Registered Date – ${formatRegisteredDate(data.createdAt)}`, cardX + 20, 378);
     doc.end();

@@ -30,8 +30,10 @@ export type PassEmailData = {
   eventName: string;
   passUrl: string;
   uniqueCode: string;
-  /** Optional PNG buffer to attach as event pass */
-  passPngBuffer?: Buffer;
+  /** Optional PDF buffer to attach as event pass (58mm × 40mm name tag) */
+  passPdfBuffer?: Buffer;
+  /** Optional .ics file buffer for calendar invite */
+  passIcsBuffer?: Buffer;
 };
 
 function getEmailHtml(data: PassEmailData): string {
@@ -72,6 +74,9 @@ function getEmailHtml(data: PassEmailData): string {
               <p style="margin: 0; font-size: 13px; color: #71717a;">
                 Pass code: <code style="background: #f4f4f5; padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace;">${data.uniqueCode}</code>
               </p>
+              <p style="margin: 12px 0 0 0; font-size: 13px; color: #52525b;">
+                Open the attached <strong>event-invite.ics</strong> to add this event to your calendar.
+              </p>
             </td>
           </tr>
           <tr>
@@ -96,7 +101,7 @@ function getEmailHtml(data: PassEmailData): string {
 function getEmailText(data: PassEmailData): string {
   return `Hello ${data.firstName},
 
-Thank you for registering. Your event pass for "${data.eventName}" is ready and attached to this email as a PNG image.
+Thank you for registering. Your event pass for "${data.eventName}" is ready and attached to this email as a PDF (name tag size 58mm × 40mm). An .ics calendar invite is also attached so you can add the event to your calendar.
 
 Pass code: ${data.uniqueCode}
 
@@ -113,10 +118,17 @@ export async function sendPassEmail(data: PassEmailData): Promise<boolean> {
   }
   try {
     const attachments: nodemailer.SendMailOptions["attachments"] = [];
-    if (data.passPngBuffer && data.passPngBuffer.length > 0) {
+    if (data.passPdfBuffer && data.passPdfBuffer.length > 0) {
       attachments.push({
-        filename: `event-pass-${data.uniqueCode}.png`,
-        content: data.passPngBuffer,
+        filename: `event-pass-${data.uniqueCode}.pdf`,
+        content: data.passPdfBuffer,
+      });
+    }
+    if (data.passIcsBuffer && data.passIcsBuffer.length > 0) {
+      attachments.push({
+        filename: "event-invite.ics",
+        content: data.passIcsBuffer,
+        contentType: "text/calendar; method=PUBLISH",
       });
     }
     await transporter.sendMail({

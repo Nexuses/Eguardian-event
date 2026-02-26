@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminFromCookie } from "@/lib/auth";
+import { parseEventDateTime } from "@/lib/date-utils";
 import { createEvent, listEvents } from "@/lib/models/Event";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -84,8 +85,8 @@ export async function POST(request: Request) {
     const event = await createEvent({
       eventName,
       eventBanner,
-      eventStartDate: new Date(eventStartDate),
-      eventEndDate: new Date(eventEndDate),
+      eventStartDate: parseEventDateTime(eventStartDate),
+      eventEndDate: parseEventDateTime(eventEndDate),
       venue,
       speaker,
       phone,
