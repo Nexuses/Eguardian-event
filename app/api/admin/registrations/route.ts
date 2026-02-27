@@ -27,6 +27,10 @@ export async function GET(request: Request) {
       specialComment: r.specialComment,
       participationStatus: r.participationStatus || "registered",
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : r.createdAt,
+      participationTimestamp:
+        r.participationTimestamp instanceof Date
+          ? r.participationTimestamp.toISOString()
+          : r.participationTimestamp,
     }));
     return NextResponse.json(serialized);
   } catch (err) {

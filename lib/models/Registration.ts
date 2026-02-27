@@ -23,6 +23,8 @@ export interface RegistrationDoc {
   specialComment?: string;
   agreedToPrivacy: boolean;
   participationStatus?: ParticipationStatus;
+  /** When the attendee was marked as attended (via scan or admin) */
+  participationTimestamp?: Date;
   createdAt: Date;
 }
 
@@ -77,9 +79,13 @@ export async function updateRegistrationParticipationStatus(
 ): Promise<boolean> {
   const col = await getRegistrationsCollection();
   if (!ObjectId.isValid(id)) return false;
+  const set: Partial<RegistrationDoc> =
+    participationStatus === "attended"
+      ? { participationStatus, participationTimestamp: new Date() }
+      : { participationStatus, participationTimestamp: undefined };
   const result = await col.updateOne(
     { _id: new ObjectId(id) },
-    { $set: { participationStatus } }
+    { $set: set }
   );
   return result.modifiedCount > 0;
 }

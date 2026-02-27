@@ -21,7 +21,11 @@ export async function PATCH(
     }
     const ok = await updateRegistrationParticipationStatus(id, participationStatus as ParticipationStatus);
     if (!ok) return NextResponse.json({ error: "Registration not found" }, { status: 404 });
-    return NextResponse.json({ success: true, participationStatus });
+    return NextResponse.json({
+      success: true,
+      participationStatus,
+      participationTimestamp: participationStatus === "attended" ? new Date().toISOString() : null,
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

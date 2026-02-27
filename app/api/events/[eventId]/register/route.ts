@@ -73,44 +73,44 @@ export async function POST(
       "http://localhost:3000";
     const passUrl = `${baseUrl}/events/${eventId}/pass/${reg.uniqueCode}`;
 
-    (async () => {
-      let passPdfBuffer: Buffer | undefined;
-      let passIcsBuffer: Buffer | undefined;
-      try {
-        const passPngBuffer = await generatePassPng({
-          firstName: reg.firstName,
-          surname: reg.surname,
-          email: reg.email,
-          mobileNumber: reg.mobileNumber,
+    let passPdfBuffer: Buffer | undefined;
+    let passIcsBuffer: Buffer | undefined;
+    try {
+      const passPngBuffer = await generatePassPng({
+        firstName: reg.firstName,
+        surname: reg.surname,
+        email: reg.email,
+        mobileNumber: reg.mobileNumber,
+        eventName: reg.eventName,
+        eventStartDate: reg.eventStartDate,
+        eventEndDate: reg.eventEndDate,
+        venue: reg.venue,
+        uniqueCode: reg.uniqueCode,
+        createdAt: reg.createdAt,
+      });
+      passPdfBuffer = await pngPassToPdf(passPngBuffer);
+    } catch (err) {
+      console.error("Pass generation failed:", err);
+    }
+    try {
+      const icsContent = generateIcs(
+        {
           eventName: reg.eventName,
           eventStartDate: reg.eventStartDate,
           eventEndDate: reg.eventEndDate,
           venue: reg.venue,
           uniqueCode: reg.uniqueCode,
-          createdAt: reg.createdAt,
-        });
-        passPdfBuffer = await pngPassToPdf(passPngBuffer);
-      } catch (err) {
-        console.error("Pass generation failed:", err);
-      }
-      try {
-        const icsContent = generateIcs(
-          {
-            eventName: reg.eventName,
-            eventStartDate: reg.eventStartDate,
-            eventEndDate: reg.eventEndDate,
-            venue: reg.venue,
-            uniqueCode: reg.uniqueCode,
-            passUrl,
-            attendeeName: `${reg.firstName} ${reg.surname}`,
-            attendeeEmail: reg.email,
-          },
-          eventId
-        );
-        passIcsBuffer = Buffer.from(icsContent, "utf-8");
-      } catch (err) {
-        console.error("ICS generation failed:", err);
-      }
+          passUrl,
+          attendeeName: `${reg.firstName} ${reg.surname}`,
+          attendeeEmail: reg.email,
+        },
+        eventId
+      );
+      passIcsBuffer = Buffer.from(icsContent, "utf-8");
+    } catch (err) {
+      console.error("ICS generation failed:", err);
+    }
+    try {
       await sendPassEmail({
         to: reg.email,
         firstName: reg.firstName,
@@ -121,7 +121,9 @@ export async function POST(
         passPdfBuffer,
         passIcsBuffer,
       });
-    })().catch((err) => console.error("Pass email failed:", err));
+    } catch (err) {
+      console.error("Pass email failed:", err);
+    }
 
     return NextResponse.json({
       success: true,

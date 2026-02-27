@@ -18,8 +18,10 @@ export async function POST(request: Request) {
     if (!reg) {
       return NextResponse.json({ error: "Pass not found" }, { status: 404 });
     }
+    let participationTimestamp: string | undefined;
     if (reg._id) {
       await updateRegistrationParticipationStatus(reg._id.toString(), "attended");
+      participationTimestamp = new Date().toISOString();
     }
     return NextResponse.json({
       success: true,
@@ -30,6 +32,7 @@ export async function POST(request: Request) {
         eventName: reg.eventName,
         uniqueCode: reg.uniqueCode,
         participationStatus: "attended",
+        participationTimestamp,
       },
     });
   } catch (err) {
