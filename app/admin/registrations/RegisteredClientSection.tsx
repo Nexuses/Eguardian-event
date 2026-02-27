@@ -23,6 +23,7 @@ type RegistrationItem = {
   specialComment?: string;
   participationStatus: ParticipationStatus;
   createdAt: string;
+  participationTimestamp?: string;
 };
 
 function formatDate(iso: string) {
@@ -80,6 +81,7 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
     "Identity / Passport",
     "Participation Status",
     "Registered",
+    "Participation Time",
     "Code",
     "Special Comment",
   ];
@@ -96,6 +98,7 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
       r.identityCardOrPassport || "",
       r.participationStatus || "registered",
       formatDate(r.createdAt),
+      r.participationTimestamp ? formatDate(r.participationTimestamp) : "",
       r.uniqueCode,
       r.specialComment || "",
     ].map(escapeCsvCell).join(",")
@@ -149,8 +152,17 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
         body: JSON.stringify({ participationStatus }),
       });
       if (res.ok) {
+        const data = (await res.json()) as { participationStatus?: ParticipationStatus; participationTimestamp?: string };
         setRegistrations((prev) =>
-          prev.map((r) => (r._id === id ? { ...r, participationStatus } : r))
+          prev.map((r) =>
+            r._id === id
+              ? {
+                  ...r,
+                  participationStatus: data.participationStatus || participationStatus,
+                  participationTimestamp: data.participationTimestamp ?? r.participationTimestamp,
+                }
+              : r
+          )
         );
       }
     } finally {
@@ -310,6 +322,14 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                                 <div>
                                   <dt className="text-zinc-500 dark:text-zinc-400">Registered</dt>
                                   <dd className="text-zinc-900 dark:text-zinc-100">{formatDate(r.createdAt)}</dd>
+                                </div>
+                                <div>
+                                  <dt className="text-zinc-500 dark:text-zinc-400">Participation time</dt>
+                                  <dd className="text-zinc-900 dark:text-zinc-100">
+                                    {r.participationTimestamp
+                                      ? formatDate(r.participationTimestamp)
+                                      : "—"}
+                                  </dd>
                                 </div>
                                 {r.specialComment ? (
                                   <div className="sm:col-span-2">
