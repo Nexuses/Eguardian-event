@@ -3,6 +3,9 @@ import { ObjectId } from "mongodb";
 
 export type RegistrationStatus = "open" | "closed";
 
+/** Who can register: open_for_all = anyone; invitees_only = only eligible client list */
+export type RegistrationType = "open_for_all" | "invitees_only";
+
 export interface EventDoc {
   _id?: ObjectId;
   eventId: string;
@@ -14,6 +17,8 @@ export interface EventDoc {
   speaker: string;
   phone: string;
   registrationStatus: RegistrationStatus;
+  /** Who can register: open_for_all = anyone, invitees_only = only eligible list */
+  registrationType?: RegistrationType;
   createdAt: Date;
 }
 
@@ -37,6 +42,7 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     speaker: data.speaker.trim(),
     phone: data.phone.trim(),
     registrationStatus: data.registrationStatus,
+    registrationType: data.registrationType ?? "invitees_only",
     createdAt: new Date(),
   };
   const result = await col.insertOne(doc);
@@ -75,6 +81,7 @@ export async function updateEvent(
   if (data.speaker !== undefined) update.speaker = data.speaker.trim();
   if (data.phone !== undefined) update.phone = data.phone.trim();
   if (data.registrationStatus !== undefined) update.registrationStatus = data.registrationStatus;
+  if (data.registrationType !== undefined) update.registrationType = data.registrationType;
   const result = await col.findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: update },

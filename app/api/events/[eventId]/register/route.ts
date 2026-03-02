@@ -38,9 +38,12 @@ export async function POST(
       return NextResponse.json({ error: "You must agree to the Privacy Policy" }, { status: 400 });
     }
 
-    const eligible = await isEligible(eventId, email);
-    if (!eligible) {
-      return NextResponse.json({ error: "This email is not eligible to register for this event" }, { status: 403 });
+    const requireEligible = event.registrationType !== "open_for_all";
+    if (requireEligible) {
+      const eligible = await isEligible(eventId, email);
+      if (!eligible) {
+        return NextResponse.json({ error: "This email is not eligible to register for this event" }, { status: 403 });
+      }
     }
 
     const existing = await findRegistrationByEventAndEmail(eventId, email);

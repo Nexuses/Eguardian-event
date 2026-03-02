@@ -49,6 +49,7 @@ export async function PUT(
     let speaker: string | undefined;
     let phone: string | undefined;
     let registrationStatus: "open" | "closed" | undefined;
+    let registrationType: "open_for_all" | "invitees_only" | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -60,6 +61,7 @@ export async function PUT(
       speaker = formData.get("speaker") as string | null ?? undefined;
       phone = formData.get("phone") as string | null ?? undefined;
       registrationStatus = (formData.get("registrationStatus") as "open" | "closed") || undefined;
+      registrationType = (formData.get("registrationType") as "open_for_all" | "invitees_only") || undefined;
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
         const bytes = await file.arrayBuffer();
@@ -81,6 +83,7 @@ export async function PUT(
       speaker = body.speaker;
       phone = body.phone;
       registrationStatus = body.registrationStatus;
+      registrationType = body.registrationType;
     }
 
     const updated = await updateEvent(eventId, {
@@ -92,6 +95,7 @@ export async function PUT(
       ...(speaker !== undefined && { speaker }),
       ...(phone !== undefined && { phone }),
       ...(registrationStatus !== undefined && { registrationStatus }),
+      ...(registrationType !== undefined && { registrationType }),
     });
 
     if (!updated) {

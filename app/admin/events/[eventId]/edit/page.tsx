@@ -15,6 +15,7 @@ type EventItem = {
   speaker: string;
   phone: string;
   registrationStatus: string;
+  registrationType?: "open_for_all" | "invitees_only";
 };
 
 import { toDatetimeLocal } from "@/lib/date-utils";
@@ -31,6 +32,7 @@ export default function EditEventPage() {
   const [speaker, setSpeaker] = useState("");
   const [phone, setPhone] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState<"open" | "closed">("open");
+  const [registrationType, setRegistrationType] = useState<"open_for_all" | "invitees_only">("invitees_only");
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -56,6 +58,7 @@ export default function EditEventPage() {
         setSpeaker(data.speaker ?? "");
         setPhone(data.phone ?? "");
         setRegistrationStatus(data.registrationStatus === "closed" ? "closed" : "open");
+        setRegistrationType(data.registrationType === "open_for_all" ? "open_for_all" : "invitees_only");
       } catch {
         setError("Failed to load event");
       } finally {
@@ -82,6 +85,7 @@ export default function EditEventPage() {
         formData.set("speaker", speaker);
         formData.set("phone", phone);
         formData.set("registrationStatus", registrationStatus);
+        formData.set("registrationType", registrationType);
         formData.set("bannerFile", bannerFile);
         res = await fetch(`/api/admin/events/${eventId}`, { method: "PUT", body: formData });
       } else {
@@ -97,6 +101,7 @@ export default function EditEventPage() {
             speaker,
             phone,
             registrationStatus,
+            registrationType,
           }),
         });
       }
@@ -226,6 +231,14 @@ export default function EditEventPage() {
               className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
               <option value="open">Open</option>
               <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Who can register</label>
+            <select value={registrationType} onChange={(e) => setRegistrationType(e.target.value as "open_for_all" | "invitees_only")}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+              <option value="open_for_all">Open for all</option>
+              <option value="invitees_only">Only for invitees</option>
             </select>
           </div>
           <div className="flex items-end gap-3">

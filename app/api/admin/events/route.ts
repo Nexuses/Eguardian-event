@@ -38,6 +38,7 @@ export async function POST(request: Request) {
     let speaker: string;
     let phone: string;
     let registrationStatus: "open" | "closed";
+    let registrationType: "open_for_all" | "invitees_only";
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -50,6 +51,8 @@ export async function POST(request: Request) {
       phone = (formData.get("phone") as string) || "";
       registrationStatus =
         (formData.get("registrationStatus") as "open" | "closed") || "open";
+      registrationType =
+        (formData.get("registrationType") as "open_for_all" | "invitees_only") || "invitees_only";
 
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
@@ -73,6 +76,7 @@ export async function POST(request: Request) {
       speaker = body.speaker ?? "";
       phone = body.phone ?? "";
       registrationStatus = body.registrationStatus ?? "open";
+      registrationType = body.registrationType ?? "invitees_only";
     }
 
     if (!eventName.trim()) {
@@ -91,6 +95,7 @@ export async function POST(request: Request) {
       speaker,
       phone,
       registrationStatus: registrationStatus === "closed" ? "closed" : "open",
+      registrationType: registrationType === "open_for_all" ? "open_for_all" : "invitees_only",
     });
 
     return NextResponse.json(event);
