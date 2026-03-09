@@ -35,6 +35,7 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const heightPt = PASS_HEIGHT_MM * PT_PER_MM;
 
   const PADDING = 6;
+  const TOP_PADDING = 3;          // logo at top left with minimal gap
   const LOGO_HEIGHT_PT = 24;
   const FONT_NAME = 10;
   const FONT_DESIGNATION = 8;
@@ -53,7 +54,32 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const black = rgb(0.09, 0.09, 0.11);
   const orange = rgb(0.92, 0.35, 0.04);
 
-  // Border
+  // PDF origin is bottom-left; our layout is top-left
+  const fromTop = (pt: number) => heightPt - pt;
+
+  // 1. Eguardian logo at top left (draw first so it stays behind text)
+  try {
+    const res = await fetch(LOGO_URL);
+    if (res.ok) {
+      const arr = await res.arrayBuffer();
+      const bytes = new Uint8Array(arr);
+      const img = LOGO_URL.toLowerCase().endsWith(".png")
+        ? await doc.embedPng(bytes)
+        : await doc.embedJpg(bytes);
+      const logoW = (img.width / img.height) * LOGO_HEIGHT_PT;
+      const logoTopY = fromTop(TOP_PADDING + LOGO_HEIGHT_PT);
+      page.drawImage(img, {
+        x: PADDING,
+        y: logoTopY - LOGO_HEIGHT_PT,
+        width: Math.min(logoW, widthPt - PADDING * 2 - QR_SIZE_PT - 20),
+        height: LOGO_HEIGHT_PT,
+      });
+    }
+  } catch {
+    // skip logo
+  }
+
+  // 2. Border (after logo so border is on top)
   page.drawRectangle({
     x: 0,
     y: 0,
@@ -63,40 +89,12 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     borderColor: rgb(0, 0, 0),
   });
 
-  // PDF origin is bottom-left; our layout is top-left, so y from top = heightPt - y
-  const fromTop = (pt: number) => heightPt - pt;
-
-  // Logo (fetch and embed)
-  try {
-    const res = await fetch(LOGO_URL);
-    if (res.ok) {
-      const arr = await res.arrayBuffer();
-      const bytes = new Uint8Array(arr);
-      let img;
-      if (LOGO_URL.toLowerCase().endsWith(".png")) {
-        img = await doc.embedPng(bytes);
-      } else {
-        img = await doc.embedJpg(bytes);
-      }
-      const logoW = (img.width / img.height) * LOGO_HEIGHT_PT;
-      const logoYTop = fromTop(PADDING + LOGO_HEIGHT_PT);
-      page.drawImage(img, {
-        x: PADDING,
-        y: logoYTop - LOGO_HEIGHT_PT,
-        width: Math.min(logoW, widthPt - PADDING * 2 - QR_SIZE_PT - 20),
-        height: LOGO_HEIGHT_PT,
-      });
-    }
-  } catch {
-    // skip logo
-  }
-
   // Name (below logo)
   const nameStr = safeText(`${data.firstName} ${data.surname}`);
   const designationStr = safeText(data.designation || "-");
   const codeStr = safeText(data.uniqueCode);
 
-  const yNameBaseline = fromTop(PADDING + LOGO_HEIGHT_PT + LINE_GAP + FONT_NAME);
+  const yNameBaseline = fromTop(TOP_PADDING + LOGO_HEIGHT_PT + LINE_GAP + FONT_NAME);
   page.drawText(nameStr, {
     x: PADDING,
     y: yNameBaseline,
