@@ -4,8 +4,7 @@ import { isEligible } from "@/lib/models/EligibleEmail";
 import { createRegistration, findRegistrationByEventAndEmail } from "@/lib/models/Registration";
 import { sendPassEmail } from "@/lib/email";
 import { generateIcs } from "@/lib/ics";
-import { generatePassPng } from "@/lib/pass-png";
-import { pngPassToPdf } from "@/lib/pass-to-pdf";
+import { generatePassPdf } from "@/lib/pass-pdf-direct";
 
 export async function POST(
   request: Request,
@@ -89,13 +88,12 @@ export async function POST(
     let passPdfBuffer: Buffer | undefined;
     let passIcsBuffer: Buffer | undefined;
     try {
-      const passPngBuffer = await generatePassPng({
+      passPdfBuffer = await generatePassPdf({
         firstName: reg.firstName,
         surname: reg.surname,
         designation: reg.designation,
         uniqueCode: reg.uniqueCode,
       });
-      passPdfBuffer = await pngPassToPdf(passPngBuffer);
     } catch (err) {
       console.error("Pass generation failed:", err);
     }
