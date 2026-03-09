@@ -91,6 +91,7 @@ export async function POST(
       passPdfBuffer = await generatePassPdf({
         firstName: reg.firstName,
         surname: reg.surname,
+        organization: reg.organization,
         designation: reg.designation,
         uniqueCode: reg.uniqueCode,
       });

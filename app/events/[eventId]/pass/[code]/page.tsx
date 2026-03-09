@@ -43,7 +43,7 @@ export default async function PassPage({
           className="mr-auto w-full max-w-lg overflow-hidden rounded-xl border border-zinc-200 bg-white p-8 shadow-lg dark:border-zinc-700 dark:bg-zinc-800 print:!m-0 print:!h-[40mm] print:!w-[58mm] print:!max-w-[58mm] print:!rounded-none print:!border-black print:!p-2 print:!shadow-none"
         >
           <div className="flex flex-row items-stretch gap-6 print:!h-full print:!items-center print:!gap-2 print:!p-0">
-            {/* Top left: logo, then name + designation */}
+            {/* Top left: logo, then name + organization + designation */}
             <div className="flex min-w-0 flex-1 flex-col items-start">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -54,6 +54,11 @@ export default async function PassPage({
               <h1 className="mt-4 text-2xl font-bold text-zinc-900 dark:text-zinc-100 print:!mt-1 print:!text-[13px]">
                 {reg.firstName} {reg.surname}
               </h1>
+              {reg.organization ? (
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 print:!text-[9px]">
+                  {reg.organization}
+                </p>
+              ) : null}
               <p className="mt-1 text-base text-zinc-600 dark:text-zinc-400 print:!text-[11px]">
                 {reg.designation || "—"}
               </p>
