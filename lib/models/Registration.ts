@@ -22,6 +22,12 @@ export interface RegistrationDoc {
   identityCardOrPassport?: string;
   specialComment?: string;
   agreedToPrivacy: boolean;
+  /** Collected when event.collectApparelSize is true */
+  apparelSize?: string;
+  /** Collected when event.collectOvernightStay is true */
+  overnightStay?: boolean;
+  /** Collected when event.collectPassportNic is true */
+  passportNic?: string;
   participationStatus?: ParticipationStatus;
   /** When the attendee was marked as attended (via scan or admin) */
   participationTimestamp?: Date;

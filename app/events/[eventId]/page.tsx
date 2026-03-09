@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getEventByEventId } from "@/lib/models/Event";
+import { getEventByEventId, getEventBannerUrl } from "@/lib/models/Event";
 import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-utils";
 import { CheckEligibleForm } from "./CheckEligibleForm";
+import { RegistrationClosedCard } from "./RegistrationClosedMessage";
 
 function shareUrl(baseUrl: string, path: string, title: string) {
   const url = baseUrl + path;
@@ -49,18 +50,12 @@ export default async function EventPage({
         <div className="lg:col-span-2">
           <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <div className="aspect-[3/2] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-              {event.eventBanner ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={event.eventBanner}
-                  alt={event.eventName}
-                  className="h-full w-full object-cover object-top"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-500">
-                  No banner
-                </div>
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getEventBannerUrl(event)}
+                alt={event.eventName}
+                className="h-full w-full object-cover object-top"
+              />
             </div>
             <div className="border-t border-zinc-200 p-4 dark:border-zinc-800 sm:p-6">
               <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
@@ -134,7 +129,11 @@ export default async function EventPage({
               <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 Register to get your ticket
               </h2>
-              <CheckEligibleForm eventId={event.eventId} />
+              {event.registrationStatus === "closed" ? (
+                <RegistrationClosedCard />
+              ) : (
+                <CheckEligibleForm eventId={event.eventId} />
+              )}
             </div>
 
             <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">

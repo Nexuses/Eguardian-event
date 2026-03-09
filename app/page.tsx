@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listEvents } from "@/lib/models/Event";
+import { listEvents, getEventBannerUrl } from "@/lib/models/Event";
 import { formatEventDate } from "@/lib/date-utils";
 
 export default async function Home() {
@@ -30,18 +30,12 @@ export default async function Home() {
                 className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {ev.eventBanner ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={ev.eventBanner}
-                      alt={ev.eventName}
-                      className="h-full w-full object-cover object-top transition-transform group-hover:scale-[1.02]"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-500">
-                      <span className="text-sm">No banner</span>
-                    </div>
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={getEventBannerUrl(ev)}
+                    alt={ev.eventName}
+                    className="h-full w-full object-cover object-top transition-transform group-hover:scale-[1.02]"
+                  />
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <div className="mb-2 flex items-start justify-between gap-2">

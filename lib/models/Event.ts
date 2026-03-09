@@ -1,5 +1,6 @@
 import { getDb } from "../mongodb";
 import { ObjectId } from "mongodb";
+import { DEFAULT_EVENT_BANNER_URL } from "../constants";
 
 export type RegistrationStatus = "open" | "closed";
 
@@ -19,10 +20,24 @@ export interface EventDoc {
   registrationStatus: RegistrationStatus;
   /** Who can register: open_for_all = anyone, invitees_only = only eligible list */
   registrationType?: RegistrationType;
+  /** If true, registration form shows Apparel - sizes field */
+  collectApparelSize?: boolean;
+  /** If true, registration form shows Overnight Stay field */
+  collectOvernightStay?: boolean;
+  /** If true, registration form shows Passport/NIC field */
+  collectPassportNic?: boolean;
   createdAt: Date;
 }
 
 const COLLECTION = "events";
+
+/** Re-export for convenience */
+export { DEFAULT_EVENT_BANNER_URL };
+
+export function getEventBannerUrl(doc: { eventBanner?: string | null }): string {
+  const url = doc.eventBanner?.trim();
+  return url || DEFAULT_EVENT_BANNER_URL;
+}
 
 export async function getEventsCollection() {
   const db = await getDb();
@@ -43,6 +58,9 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     phone: data.phone.trim(),
     registrationStatus: data.registrationStatus,
     registrationType: data.registrationType ?? "invitees_only",
+    collectApparelSize: data.collectApparelSize ?? false,
+    collectOvernightStay: data.collectOvernightStay ?? false,
+    collectPassportNic: data.collectPassportNic ?? false,
     createdAt: new Date(),
   };
   const result = await col.insertOne(doc);
@@ -82,6 +100,9 @@ export async function updateEvent(
   if (data.phone !== undefined) update.phone = data.phone.trim();
   if (data.registrationStatus !== undefined) update.registrationStatus = data.registrationStatus;
   if (data.registrationType !== undefined) update.registrationType = data.registrationType;
+  if (data.collectApparelSize !== undefined) update.collectApparelSize = data.collectApparelSize;
+  if (data.collectOvernightStay !== undefined) update.collectOvernightStay = data.collectOvernightStay;
+  if (data.collectPassportNic !== undefined) update.collectPassportNic = data.collectPassportNic;
   const result = await col.findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: update },

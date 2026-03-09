@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { formatEventDateTime } from "@/lib/date-utils";
+import { DEFAULT_EVENT_BANNER_URL } from "@/lib/constants";
 
 type EventItem = {
   _id: string;
@@ -15,6 +16,9 @@ type EventItem = {
   phone: string;
   registrationStatus: string;
   registrationType?: "open_for_all" | "invitees_only";
+  collectApparelSize?: boolean;
+  collectOvernightStay?: boolean;
+  collectPassportNic?: boolean;
   createdAt: string;
 };
 
@@ -28,6 +32,9 @@ export default function CreateEventPage() {
   const [phone, setPhone] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState<"open" | "closed">("open");
   const [registrationType, setRegistrationType] = useState<"open_for_all" | "invitees_only">("invitees_only");
+  const [collectApparelSize, setCollectApparelSize] = useState(false);
+  const [collectOvernightStay, setCollectOvernightStay] = useState(false);
+  const [collectPassportNic, setCollectPassportNic] = useState(false);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -72,6 +79,9 @@ export default function CreateEventPage() {
         formData.set("phone", phone);
         formData.set("registrationStatus", registrationStatus);
         formData.set("registrationType", registrationType);
+        formData.set("collectApparelSize", collectApparelSize ? "true" : "false");
+        formData.set("collectOvernightStay", collectOvernightStay ? "true" : "false");
+        formData.set("collectPassportNic", collectPassportNic ? "true" : "false");
         formData.set("bannerFile", bannerFile);
         res = await fetch("/api/admin/events", { method: "POST", body: formData });
       } else {
@@ -88,6 +98,9 @@ export default function CreateEventPage() {
             phone,
             registrationStatus,
             registrationType,
+            collectApparelSize,
+            collectOvernightStay,
+            collectPassportNic,
           }),
         });
       }
@@ -107,6 +120,9 @@ export default function CreateEventPage() {
       setPhone("");
       setRegistrationStatus("open");
       setRegistrationType("invitees_only");
+      setCollectApparelSize(false);
+      setCollectOvernightStay(false);
+      setCollectPassportNic(false);
       setBannerFile(null);
       fetchEvents();
     } catch {
@@ -206,6 +222,38 @@ export default function CreateEventPage() {
               <option value="invitees_only">Only for invitees</option>
             </select>
           </div>
+          <div className="sm:col-span-2 space-y-3">
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration form fields (toggle to show in registration)</p>
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectApparelSize}
+                  onChange={(e) => setCollectApparelSize(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Apparel - sizes</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectOvernightStay}
+                  onChange={(e) => setCollectOvernightStay(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Overnight Stay</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectPassportNic}
+                  onChange={(e) => setCollectPassportNic(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
+              </label>
+            </div>
+          </div>
           <div className="flex items-end">
             <button type="submit" disabled={loading}
               className="rounded-md bg-zinc-900 px-6 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
@@ -231,18 +279,12 @@ export default function CreateEventPage() {
                 className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {ev.eventBanner ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={ev.eventBanner}
-                      alt={ev.eventName}
-                      className="h-full w-full object-cover object-top"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-500">
-                      <span className="text-sm">No banner</span>
-                    </div>
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={ev.eventBanner?.trim() || DEFAULT_EVENT_BANNER_URL}
+                    alt={ev.eventName}
+                    className="h-full w-full object-cover object-top"
+                  />
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <div className="mb-2 flex items-start justify-between gap-2">

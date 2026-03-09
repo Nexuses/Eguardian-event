@@ -13,6 +13,9 @@ type EventSnap = {
   speaker?: string;
   phone?: string;
   registrationStatus?: string;
+  collectApparelSize?: boolean;
+  collectOvernightStay?: boolean;
+  collectPassportNic?: boolean;
 };
 
 export function RegisterForm({
@@ -33,11 +36,16 @@ export function RegisterForm({
   const [mobileNumber, setMobileNumber] = useState("");
   const [addToWhatsapp, setAddToWhatsapp] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [identityCardOrPassport, setIdentityCardOrPassport] = useState("");
+  const [apparelSize, setApparelSize] = useState("");
+  const [overnightStay, setOvernightStay] = useState(false);
+  const [passportNic, setPassportNic] = useState("");
   const [specialComment, setSpecialComment] = useState("");
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
+
+  const apparelSizes = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL", "XXXXXL"];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,7 +68,9 @@ export function RegisterForm({
           mobileNumber,
           addToWhatsapp,
           whatsappNumber: addToWhatsapp ? whatsappNumber : undefined,
-          identityCardOrPassport: identityCardOrPassport || undefined,
+          ...(event.collectApparelSize && { apparelSize: apparelSize || undefined }),
+          ...(event.collectOvernightStay && { overnightStay: overnightStay }),
+          ...(event.collectPassportNic && { passportNic: passportNic || undefined }),
           specialComment: specialComment || undefined,
           agreedToPrivacy: true,
         }),
@@ -208,18 +218,105 @@ export function RegisterForm({
         </div>
       )}
 
-      <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Identity Card Number / Passport Number
-        </label>
-        <input
-          type="text"
-          value={identityCardOrPassport}
-          onChange={(e) => setIdentityCardOrPassport(e.target.value)}
-          className={inputClass}
-          placeholder="Identity or Passport number"
-        />
-      </div>
+      {event.collectApparelSize && (
+        <div>
+          <div className="mb-1 flex items-center gap-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Apparel - sizes
+            </label>
+            <button
+              type="button"
+              onClick={() => setSizeChartOpen(true)}
+              className="text-xs font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline"
+            >
+              Size chart
+            </button>
+          </div>
+          <select
+            value={apparelSize}
+            onChange={(e) => setApparelSize(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Select size</option>
+            {apparelSizes.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+          {sizeChartOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Size chart"
+              onClick={() => setSizeChartOpen(false)}
+            >
+              <div
+                className="relative max-h-[90vh] max-w-4xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setSizeChartOpen(false)}
+                  className="absolute -top-10 right-0 rounded bg-white/90 px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                >
+                  Close
+                </button>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://nexuseslink2024.s3.us-east-2.amazonaws.com/Screenshot_2026-03-09_at_2.49.27_PM.png"
+                  alt="Size chart"
+                  className="max-h-[85vh] w-auto rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-700"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {event.collectOvernightStay && (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Overnight Stay
+          </label>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={overnightStay}
+              onClick={() => setOvernightStay(!overnightStay)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                overnightStay ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
+                  overnightStay ? "translate-x-5" : "translate-x-1"
+                }`}
+              />
+            </button>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              {overnightStay ? "Yes" : "No"}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {event.collectPassportNic && (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Passport/NIC
+          </label>
+          <input
+            type="text"
+            value={passportNic}
+            onChange={(e) => setPassportNic(e.target.value)}
+            className={inputClass}
+            placeholder="Passport or NIC number"
+          />
+        </div>
+      )}
 
       <div>
         <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">

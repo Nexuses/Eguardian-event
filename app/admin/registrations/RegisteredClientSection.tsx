@@ -21,6 +21,9 @@ type RegistrationItem = {
   whatsappNumber?: string;
   identityCardOrPassport?: string;
   specialComment?: string;
+  apparelSize?: string;
+  overnightStay?: boolean;
+  passportNic?: string;
   participationStatus: ParticipationStatus;
   createdAt: string;
   participationTimestamp?: string;
@@ -79,6 +82,9 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
     "Mobile Number",
     "WhatsApp Number",
     "Identity / Passport",
+    "Apparel Size",
+    "Overnight Stay",
+    "Passport/NIC",
     "Participation Status",
     "Registered",
     "Participation Time",
@@ -96,6 +102,9 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
       r.mobileNumber || "",
       r.addToWhatsapp ? (r.whatsappNumber || "") : "",
       r.identityCardOrPassport || "",
+      r.apparelSize || "",
+      r.overnightStay ? "Yes" : "",
+      r.passportNic || "",
       r.participationStatus || "registered",
       formatDate(r.createdAt),
       r.participationTimestamp ? formatDate(r.participationTimestamp) : "",
@@ -319,6 +328,24 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                                   <dt className="text-zinc-500 dark:text-zinc-400">Identity / Passport</dt>
                                   <dd className="text-zinc-900 dark:text-zinc-100">{r.identityCardOrPassport || "—"}</dd>
                                 </div>
+                                {(r.apparelSize != null && r.apparelSize !== "") ? (
+                                  <div>
+                                    <dt className="text-zinc-500 dark:text-zinc-400">Apparel size</dt>
+                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.apparelSize}</dd>
+                                  </div>
+                                ) : null}
+                                {r.overnightStay != null ? (
+                                  <div>
+                                    <dt className="text-zinc-500 dark:text-zinc-400">Overnight Stay</dt>
+                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.overnightStay ? "Yes" : "No"}</dd>
+                                  </div>
+                                ) : null}
+                                {(r.passportNic != null && r.passportNic !== "") ? (
+                                  <div>
+                                    <dt className="text-zinc-500 dark:text-zinc-400">Passport/NIC</dt>
+                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.passportNic}</dd>
+                                  </div>
+                                ) : null}
                                 <div>
                                   <dt className="text-zinc-500 dark:text-zinc-400">Registered</dt>
                                   <dd className="text-zinc-900 dark:text-zinc-100">{formatDate(r.createdAt)}</dd>

@@ -12,7 +12,7 @@ export default async function EligibleClientPage() {
         Eligible Client
       </h1>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-        Manage which emails can register for any event. Only these emails will pass the Check step.
+        Select an event, then manage which emails can register for that event (invitees only). Only these emails will pass the Check step for that event.
       </p>
       <EligibleClientSection />
     </div>

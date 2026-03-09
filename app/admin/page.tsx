@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getAdminFromCookie } from "@/lib/auth";
 import { listEvents } from "@/lib/models/Event";
 import { listAllRegistrations } from "@/lib/models/Registration";
-import { listEligible } from "@/lib/models/EligibleEmail";
+import { listAllEligible } from "@/lib/models/EligibleEmail";
 import { StatCards, BarChartCard, PieChartCard } from "./components/DashboardCharts";
 
 export default async function AdminDashboardPage() {
@@ -11,7 +11,7 @@ export default async function AdminDashboardPage() {
   const [events, registrations, eligibleClients] = await Promise.all([
     listEvents(),
     listAllRegistrations(),
-    listEligible(),
+    listAllEligible(),
   ]);
 
   const now = new Date();

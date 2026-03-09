@@ -1,21 +1,25 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getEventByEventId } from "@/lib/models/Event";
+import { getEventByEventId, getEventBannerUrl } from "@/lib/models/Event";
 import type { EventDoc } from "@/lib/models/Event";
 import { formatEventDateTime } from "@/lib/date-utils";
 import { RegisterForm } from "./RegisterForm";
+import { RegistrationClosedPage } from "../RegistrationClosedMessage";
 
 function toPlainEvent(event: EventDoc) {
   return {
     eventId: event.eventId,
     eventName: event.eventName,
-    eventBanner: event.eventBanner,
+    eventBanner: getEventBannerUrl(event),
     eventStartDate: event.eventStartDate instanceof Date ? event.eventStartDate.toISOString() : String(event.eventStartDate),
     eventEndDate: event.eventEndDate instanceof Date ? event.eventEndDate.toISOString() : String(event.eventEndDate),
     venue: event.venue,
     speaker: event.speaker,
     phone: event.phone,
     registrationStatus: event.registrationStatus,
+    collectApparelSize: !!event.collectApparelSize,
+    collectOvernightStay: !!event.collectOvernightStay,
+    collectPassportNic: !!event.collectPassportNic,
   };
 }
 
@@ -47,16 +51,22 @@ export default async function RegisterPage({
       </div>
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 pb-8 sm:gap-8 sm:pb-12 lg:grid-cols-[60%_40%] lg:items-stretch">
-        {/* Left: Registration form (60%) */}
+        {/* Left: Registration form (60%) or closed message */}
         <div className="order-2 min-h-0 lg:order-1">
           <div className="h-full rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 sm:text-xl">
-              Register for {event.eventName}
-            </h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Fill in your details to complete registration.
-            </p>
-            <RegisterForm eventId={eventId} event={serializedEvent} prefilledEmail={email || ""} />
+            {event.registrationStatus === "closed" ? (
+              <RegistrationClosedPage />
+            ) : (
+              <>
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 sm:text-xl">
+                  Register for {event.eventName}
+                </h2>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  Fill in your details to complete registration.
+                </p>
+                <RegisterForm eventId={eventId} event={serializedEvent} prefilledEmail={email || ""} />
+              </>
+            )}
           </div>
         </div>
 
@@ -64,18 +74,12 @@ export default async function RegisterPage({
         <div className="order-1 min-h-0 lg:order-2">
           <div className="sticky top-4 flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:top-6">
             <div className="aspect-[3/2] w-full flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-              {event.eventBanner ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={event.eventBanner}
-                  alt={event.eventName}
-                  className="h-full w-full object-cover object-top"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-500">
-                  No banner
-                </div>
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getEventBannerUrl(event)}
+                alt={event.eventName}
+                className="h-full w-full object-cover object-top"
+              />
             </div>
             <div className="flex min-h-0 flex-1 flex-col justify-between border-t border-zinc-200 p-4 dark:border-zinc-800 sm:p-6">
               <h1 className="text-xl font-bold leading-tight text-zinc-900 dark:text-zinc-100 sm:text-2xl">

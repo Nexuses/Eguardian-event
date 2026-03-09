@@ -25,6 +25,9 @@ export async function GET(request: Request) {
       whatsappNumber: r.whatsappNumber,
       identityCardOrPassport: r.identityCardOrPassport,
       specialComment: r.specialComment,
+      apparelSize: r.apparelSize,
+      overnightStay: r.overnightStay,
+      passportNic: r.passportNic,
       participationStatus: r.participationStatus || "registered",
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : r.createdAt,
       participationTimestamp:

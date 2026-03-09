@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
 
 type EligibleItem = { _id: string; email: string };
+type EventItem = { _id: string; eventId: string; eventName: string };
 
 function stripQuotes(s: string): string {
   const t = s.trim();
@@ -45,18 +46,34 @@ function parseExcel(buffer: ArrayBuffer): string[] {
 }
 
 export function EligibleClientSection() {
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [emails, setEmails] = useState<EligibleItem[]>([]);
   const [newEmail, setNewEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
+  const [eventsLoading, setEventsLoading] = useState(true);
   const [uploadError, setUploadError] = useState("");
   const [modal, setModal] = useState<{ unique: number; duplicate: number; toAdd: string[] } | null>(null);
   const [bulkAdding, setBulkAdding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    setEventsLoading(true);
+    fetch("/api/admin/events")
+      .then((r) => r.json())
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
+      .catch(() => setEvents([]))
+      .finally(() => setEventsLoading(false));
+  }, []);
+
   function refreshList() {
+    if (!selectedEventId) {
+      setEmails([]);
+      return;
+    }
     setListLoading(true);
-    fetch("/api/admin/eligible")
+    fetch(`/api/admin/eligible?eventId=${encodeURIComponent(selectedEventId)}`)
       .then((r) => r.json())
       .then((data) => setEmails(Array.isArray(data) ? data : []))
       .catch(() => setEmails([]))
@@ -65,16 +82,16 @@ export function EligibleClientSection() {
 
   useEffect(() => {
     refreshList();
-  }, []);
+  }, [selectedEventId]);
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!newEmail.trim()) return;
+    if (!newEmail.trim() || !selectedEventId) return;
     setLoading(true);
     fetch("/api/admin/eligible", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: newEmail.trim() }),
+      body: JSON.stringify({ eventId: selectedEventId, email: newEmail.trim() }),
     })
       .then((r) => r.json())
       .then((data) => {
@@ -87,9 +104,11 @@ export function EligibleClientSection() {
   }
 
   function handleRemove(email: string) {
-    fetch(`/api/admin/eligible?email=${encodeURIComponent(email)}`, {
-      method: "DELETE",
-    }).then(() => setEmails((prev) => prev.filter((e) => e.email !== email)));
+    if (!selectedEventId) return;
+    fetch(
+      `/api/admin/eligible?eventId=${encodeURIComponent(selectedEventId)}&email=${encodeURIComponent(email)}`,
+      { method: "DELETE" }
+    ).then(() => setEmails((prev) => prev.filter((e) => e.email !== email)));
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -97,7 +116,7 @@ export function EligibleClientSection() {
     e.target.value = "";
     setUploadError("");
     setModal(null);
-    if (!file) return;
+    if (!file || !selectedEventId) return;
 
     const existingSet = new Set(emails.map((x) => x.email.toLowerCase().trim()));
     let parsed: string[] = [];
@@ -137,13 +156,13 @@ export function EligibleClientSection() {
   }
 
   async function handleBulkAdd() {
-    if (!modal || modal.toAdd.length === 0) return;
+    if (!modal || modal.toAdd.length === 0 || !selectedEventId) return;
     setBulkAdding(true);
     try {
       const res = await fetch("/api/admin/eligible", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emails: modal.toAdd }),
+        body: JSON.stringify({ eventId: selectedEventId, emails: modal.toAdd }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add");
@@ -156,114 +175,142 @@ export function EligibleClientSection() {
     }
   }
 
+  const selectedEvent = events.find((e) => e.eventId === selectedEventId);
+
   return (
     <div className="mt-6 space-y-6">
-      <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-2">
-        <div className="min-w-[200px] flex-1">
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Add eligible email
-          </label>
-          <input
-            type="email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            placeholder="email@example.com"
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-md bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600 disabled:opacity-50"
-        >
-          {loading ? "Adding…" : "Add"}
-        </button>
-      </form>
-
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Upload CSV or Excel
+        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Select event
         </label>
-        <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
-          File must have a column header named <strong>email</strong> or <strong>Email</strong>. Duplicates (within file or already in the list) are skipped.
-        </p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,.xlsx,.xls"
-          onChange={handleFileChange}
-          className="block w-full max-w-md text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:text-orange-800 dark:file:bg-orange-900/30 dark:file:text-orange-200"
-        />
-        {uploadError && (
-          <p className="mt-2 text-sm text-red-600 dark:text-red-400">{uploadError}</p>
-        )}
-      </div>
-
-      {modal !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true">
-          <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-900">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-              Upload summary
-            </h3>
-            <div className="mt-4 space-y-2 text-sm">
-              <p>
-                <span className="font-medium text-green-600 dark:text-green-400">Unique (to add):</span>{" "}
-                {modal.unique}
-              </p>
-              <p>
-                <span className="font-medium text-amber-600 dark:text-amber-400">Duplicates (skipped):</span>{" "}
-                {modal.duplicate}
-              </p>
-            </div>
-            <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                onClick={handleBulkAdd}
-                disabled={bulkAdding || modal.unique === 0}
-                className="rounded-md bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600 disabled:opacity-50"
-              >
-                {bulkAdding ? "Adding…" : "Add all"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setModal(null)}
-                className="rounded-md border border-zinc-300 px-4 py-2 font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          Eligible emails (all events)
-        </h2>
-        {listLoading ? (
-          <p className="mt-2 text-sm text-zinc-500">Loading…</p>
-        ) : emails.length === 0 ? (
-          <p className="mt-2 text-sm text-zinc-500">No eligible emails yet. Add one above or upload a file.</p>
+        {eventsLoading ? (
+          <p className="text-sm text-zinc-500">Loading events…</p>
         ) : (
-          <ul className="mt-2 space-y-1 rounded-lg border border-zinc-200 dark:border-zinc-800">
-            {emails.map((item) => (
-              <li
-                key={item._id || item.email}
-                className="flex items-center justify-between rounded-md bg-white px-3 py-2 dark:bg-zinc-900"
-              >
-                <span className="text-zinc-900 dark:text-zinc-100">{item.email}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(item.email)}
-                  className="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400"
-                >
-                  Remove
-                </button>
-              </li>
+          <select
+            value={selectedEventId}
+            onChange={(e) => setSelectedEventId(e.target.value)}
+            className="w-full max-w-md rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          >
+            <option value="">Choose an event</option>
+            {events.map((ev) => (
+              <option key={ev.eventId} value={ev.eventId}>
+                {ev.eventName}
+              </option>
             ))}
-          </ul>
+          </select>
         )}
       </div>
+
+      {!selectedEventId ? null : (
+        <>
+          <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-2">
+            <div className="min-w-[200px] flex-1">
+              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Add eligible email
+              </label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-md bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+            >
+              {loading ? "Adding…" : "Add"}
+            </button>
+          </form>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Upload CSV or Excel
+            </label>
+            <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
+              File must have a column header named <strong>email</strong> or <strong>Email</strong>. Duplicates (within file or already in the list) are skipped.
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              onChange={handleFileChange}
+              className="block w-full max-w-md text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:text-orange-800 dark:file:bg-orange-900/30 dark:file:text-orange-200"
+            />
+            {uploadError && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{uploadError}</p>
+            )}
+          </div>
+
+          {modal !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true">
+              <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-900">
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  Upload summary
+                </h3>
+                <div className="mt-4 space-y-2 text-sm">
+                  <p>
+                    <span className="font-medium text-green-600 dark:text-green-400">Unique (to add):</span>{" "}
+                    {modal.unique}
+                  </p>
+                  <p>
+                    <span className="font-medium text-amber-600 dark:text-amber-400">Duplicates (skipped):</span>{" "}
+                    {modal.duplicate}
+                  </p>
+                </div>
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={handleBulkAdd}
+                    disabled={bulkAdding || modal.unique === 0}
+                    className="rounded-md bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                  >
+                    {bulkAdding ? "Adding…" : "Add all"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModal(null)}
+                    className="rounded-md border border-zinc-300 px-4 py-2 font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+              Eligible emails for {selectedEvent?.eventName ?? selectedEventId}
+            </h2>
+            {listLoading ? (
+              <p className="mt-2 text-sm text-zinc-500">Loading…</p>
+            ) : emails.length === 0 ? (
+              <p className="mt-2 text-sm text-zinc-500">No eligible emails for this event yet. Add one above or upload a file.</p>
+            ) : (
+              <ul className="mt-2 space-y-1 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                {emails.map((item) => (
+                  <li
+                    key={item._id || item.email}
+                    className="flex items-center justify-between rounded-md bg-white px-3 py-2 dark:bg-zinc-900"
+                  >
+                    <span className="text-zinc-900 dark:text-zinc-100">{item.email}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(item.email)}
+                      className="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

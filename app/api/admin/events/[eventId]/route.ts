@@ -50,6 +50,9 @@ export async function PUT(
     let phone: string | undefined;
     let registrationStatus: "open" | "closed" | undefined;
     let registrationType: "open_for_all" | "invitees_only" | undefined;
+    let collectApparelSize: boolean | undefined;
+    let collectOvernightStay: boolean | undefined;
+    let collectPassportNic: boolean | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -62,6 +65,12 @@ export async function PUT(
       phone = formData.get("phone") as string | null ?? undefined;
       registrationStatus = (formData.get("registrationStatus") as "open" | "closed") || undefined;
       registrationType = (formData.get("registrationType") as "open_for_all" | "invitees_only") || undefined;
+      const ca = formData.get("collectApparelSize");
+      const co = formData.get("collectOvernightStay");
+      const cp = formData.get("collectPassportNic");
+      collectApparelSize = ca === "true" || ca === "1" ? true : ca === "false" || ca === "0" ? false : undefined;
+      collectOvernightStay = co === "true" || co === "1" ? true : co === "false" || co === "0" ? false : undefined;
+      collectPassportNic = cp === "true" || cp === "1" ? true : cp === "false" || cp === "0" ? false : undefined;
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
         const bytes = await file.arrayBuffer();
@@ -84,6 +93,9 @@ export async function PUT(
       phone = body.phone;
       registrationStatus = body.registrationStatus;
       registrationType = body.registrationType;
+      collectApparelSize = body.collectApparelSize;
+      collectOvernightStay = body.collectOvernightStay;
+      collectPassportNic = body.collectPassportNic;
     }
 
     const updated = await updateEvent(eventId, {
@@ -96,6 +108,9 @@ export async function PUT(
       ...(phone !== undefined && { phone }),
       ...(registrationStatus !== undefined && { registrationStatus }),
       ...(registrationType !== undefined && { registrationType }),
+      ...(collectApparelSize !== undefined && { collectApparelSize }),
+      ...(collectOvernightStay !== undefined && { collectOvernightStay }),
+      ...(collectPassportNic !== undefined && { collectPassportNic }),
     });
 
     if (!updated) {

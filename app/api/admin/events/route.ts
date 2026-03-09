@@ -39,6 +39,9 @@ export async function POST(request: Request) {
     let phone: string;
     let registrationStatus: "open" | "closed";
     let registrationType: "open_for_all" | "invitees_only";
+    let collectApparelSize: boolean;
+    let collectOvernightStay: boolean;
+    let collectPassportNic: boolean;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -53,6 +56,9 @@ export async function POST(request: Request) {
         (formData.get("registrationStatus") as "open" | "closed") || "open";
       registrationType =
         (formData.get("registrationType") as "open_for_all" | "invitees_only") || "invitees_only";
+      collectApparelSize = formData.get("collectApparelSize") === "true" || formData.get("collectApparelSize") === "1";
+      collectOvernightStay = formData.get("collectOvernightStay") === "true" || formData.get("collectOvernightStay") === "1";
+      collectPassportNic = formData.get("collectPassportNic") === "true" || formData.get("collectPassportNic") === "1";
 
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
@@ -77,6 +83,9 @@ export async function POST(request: Request) {
       phone = body.phone ?? "";
       registrationStatus = body.registrationStatus ?? "open";
       registrationType = body.registrationType ?? "invitees_only";
+      collectApparelSize = !!body.collectApparelSize;
+      collectOvernightStay = !!body.collectOvernightStay;
+      collectPassportNic = !!body.collectPassportNic;
     }
 
     if (!eventName.trim()) {
@@ -96,6 +105,9 @@ export async function POST(request: Request) {
       phone,
       registrationStatus: registrationStatus === "closed" ? "closed" : "open",
       registrationType: registrationType === "open_for_all" ? "open_for_all" : "invitees_only",
+      collectApparelSize: !!collectApparelSize,
+      collectOvernightStay: !!collectOvernightStay,
+      collectPassportNic: !!collectPassportNic,
     });
 
     return NextResponse.json(event);

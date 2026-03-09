@@ -16,6 +16,10 @@ export async function POST(
     const event = await getEventByEventId(eventId);
     if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
 
+    if (event.registrationStatus === "closed") {
+      return NextResponse.json({ error: "Registration is closed for this event" }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       firstName,
@@ -28,6 +32,9 @@ export async function POST(
       whatsappNumber,
       identityCardOrPassport,
       specialComment,
+      apparelSize,
+      overnightStay,
+      passportNic,
       agreedToPrivacy,
     } = body;
 
@@ -67,6 +74,9 @@ export async function POST(
       whatsappNumber: whatsappNumber?.trim() || undefined,
       identityCardOrPassport: identityCardOrPassport?.trim() || undefined,
       specialComment: specialComment?.trim() || undefined,
+      apparelSize: apparelSize?.trim() || undefined,
+      overnightStay: event.collectOvernightStay ? !!overnightStay : undefined,
+      passportNic: passportNic?.trim() || undefined,
       agreedToPrivacy: true,
     });
 
@@ -82,14 +92,8 @@ export async function POST(
       const passPngBuffer = await generatePassPng({
         firstName: reg.firstName,
         surname: reg.surname,
-        email: reg.email,
-        mobileNumber: reg.mobileNumber,
-        eventName: reg.eventName,
-        eventStartDate: reg.eventStartDate,
-        eventEndDate: reg.eventEndDate,
-        venue: reg.venue,
+        designation: reg.designation,
         uniqueCode: reg.uniqueCode,
-        createdAt: reg.createdAt,
       });
       passPdfBuffer = await pngPassToPdf(passPngBuffer);
     } catch (err) {

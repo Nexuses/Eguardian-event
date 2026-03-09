@@ -16,6 +16,9 @@ type EventItem = {
   phone: string;
   registrationStatus: string;
   registrationType?: "open_for_all" | "invitees_only";
+  collectApparelSize?: boolean;
+  collectOvernightStay?: boolean;
+  collectPassportNic?: boolean;
 };
 
 import { toDatetimeLocal } from "@/lib/date-utils";
@@ -33,6 +36,9 @@ export default function EditEventPage() {
   const [phone, setPhone] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState<"open" | "closed">("open");
   const [registrationType, setRegistrationType] = useState<"open_for_all" | "invitees_only">("invitees_only");
+  const [collectApparelSize, setCollectApparelSize] = useState(false);
+  const [collectOvernightStay, setCollectOvernightStay] = useState(false);
+  const [collectPassportNic, setCollectPassportNic] = useState(false);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -59,6 +65,9 @@ export default function EditEventPage() {
         setPhone(data.phone ?? "");
         setRegistrationStatus(data.registrationStatus === "closed" ? "closed" : "open");
         setRegistrationType(data.registrationType === "open_for_all" ? "open_for_all" : "invitees_only");
+        setCollectApparelSize(!!data.collectApparelSize);
+        setCollectOvernightStay(!!data.collectOvernightStay);
+        setCollectPassportNic(!!data.collectPassportNic);
       } catch {
         setError("Failed to load event");
       } finally {
@@ -86,6 +95,9 @@ export default function EditEventPage() {
         formData.set("phone", phone);
         formData.set("registrationStatus", registrationStatus);
         formData.set("registrationType", registrationType);
+        formData.set("collectApparelSize", collectApparelSize ? "true" : "false");
+        formData.set("collectOvernightStay", collectOvernightStay ? "true" : "false");
+        formData.set("collectPassportNic", collectPassportNic ? "true" : "false");
         formData.set("bannerFile", bannerFile);
         res = await fetch(`/api/admin/events/${eventId}`, { method: "PUT", body: formData });
       } else {
@@ -102,6 +114,9 @@ export default function EditEventPage() {
             phone,
             registrationStatus,
             registrationType,
+            collectApparelSize,
+            collectOvernightStay,
+            collectPassportNic,
           }),
         });
       }
@@ -240,6 +255,38 @@ export default function EditEventPage() {
               <option value="open_for_all">Open for all</option>
               <option value="invitees_only">Only for invitees</option>
             </select>
+          </div>
+          <div className="sm:col-span-2 space-y-3">
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration form fields (toggle to show in registration)</p>
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectApparelSize}
+                  onChange={(e) => setCollectApparelSize(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Apparel - sizes</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectOvernightStay}
+                  onChange={(e) => setCollectOvernightStay(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Overnight Stay</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectPassportNic}
+                  onChange={(e) => setCollectPassportNic(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
+              </label>
+            </div>
           </div>
           <div className="flex items-end gap-3">
             <button type="submit" disabled={loading}
