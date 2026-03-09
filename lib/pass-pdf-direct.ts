@@ -18,6 +18,8 @@ export type PassData = {
 function safeText(s: string): string {
   if (!s || !s.trim()) return "-";
   return s
+    .replace(/\u2122/g, "")        // remove ™ (not in PDF standard fonts, can distort)
+    .replace(/\u00AE/g, "")        // remove ®
     .replace(/\u2014/g, "-")
     .replace(/\u2013/g, "-")
     .replace(/[\u2018\u2019]/g, "'")
@@ -35,8 +37,10 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const heightPt = PASS_HEIGHT_MM * PT_PER_MM;
 
   const PADDING = 6;
-  const TOP_PADDING = 3;          // logo at top left with minimal gap
-  const LOGO_HEIGHT_PT = 24;
+  const TOP_PADDING = 3;
+  const LOGO_HEIGHT_PT = 22;
+  const GAP_AFTER_LOGO = 8;        // clear space between logo and name so they don't overlap
+  const NAME_DESIGNATION_SHIFT_DOWN_PT = 15; // ~20px: shift name and designation down
   const FONT_NAME = 10;
   const FONT_DESIGNATION = 8;
   const FONT_CODE = 6;
@@ -89,12 +93,12 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     borderColor: rgb(0, 0, 0),
   });
 
-  // Name (below logo)
+  // Name (below logo with clear gap so no overlap)
   const nameStr = safeText(`${data.firstName} ${data.surname}`);
   const designationStr = safeText(data.designation || "-");
   const codeStr = safeText(data.uniqueCode);
 
-  const yNameBaseline = fromTop(TOP_PADDING + LOGO_HEIGHT_PT + LINE_GAP + FONT_NAME);
+  const yNameBaseline = fromTop(TOP_PADDING + LOGO_HEIGHT_PT + GAP_AFTER_LOGO + FONT_NAME + NAME_DESIGNATION_SHIFT_DOWN_PT);
   page.drawText(nameStr, {
     x: PADDING,
     y: yNameBaseline,
