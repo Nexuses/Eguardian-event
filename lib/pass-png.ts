@@ -20,6 +20,17 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/** Use ASCII-safe chars for pass text so it renders on servers without full Unicode fonts (e.g. Vercel). */
+function safePassText(s: string): string {
+  if (!s || !s.trim()) return "-";
+  return s
+    .replace(/\u2014/g, "-")   // em dash
+    .replace(/\u2013/g, "-")   // en dash
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .trim();
+}
+
 // Pass card: exactly 58mm × 40mm. Match print pass layout (p-2, logo h-8, name 13px, designation 11px, QR 80px, code 8px).
 export const PASS_WIDTH_MM = 58;
 export const PASS_HEIGHT_MM = 40;
@@ -69,15 +80,21 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
   const QR_TOP = Math.round((CARD_HEIGHT - qrBlockHeight) / 2);
   const yCode = QR_TOP + QR_BOX_W + CODE_GAP + FONT_CODE;
 
-  const svg = `
+  // Font stack that exists on Linux/serverless (Vercel); Arial/Courier often missing and cause □ glyphs
+  const fontSans = "Liberation Sans, DejaVu Sans, Helvetica, Arial, sans-serif";
+  const fontMono = "Liberation Mono, DejaVu Sans Mono, Courier New, Courier, monospace";
+  const nameText = escapeXml(safePassText(`${data.firstName} ${data.surname}`));
+  const designationText = escapeXml(safePassText(data.designation || "-"));
+  const codeText = escapeXml(safePassText(data.uniqueCode));
+
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}">
   <rect width="100%" height="100%" fill="#ffffff" stroke="#000000" stroke-width="1"/>
-  <text x="${PADDING}" y="${yName}" font-family="Arial, sans-serif" font-size="${FONT_NAME}" font-weight="bold" fill="#18181b">${escapeXml(data.firstName)} ${escapeXml(data.surname)}</text>
-  <text x="${PADDING}" y="${yDesignation}" font-family="Arial, sans-serif" font-size="${FONT_DESIGNATION}" fill="#18181b">${escapeXml(data.designation || "—")}</text>
+  <text x="${PADDING}" y="${yName}" font-family="${fontSans}" font-size="${FONT_NAME}" font-weight="bold" fill="#18181b">${nameText}</text>
+  <text x="${PADDING}" y="${yDesignation}" font-family="${fontSans}" font-size="${FONT_DESIGNATION}" fill="#18181b">${designationText}</text>
   <rect x="${QR_BOX_LEFT}" y="${QR_TOP}" width="${QR_BOX_W}" height="${QR_BOX_W}" rx="4" ry="4" fill="none" stroke="#ea580c" stroke-width="${QR_BORDER}"/>
-  <text x="${QR_BOX_LEFT + QR_BOX_W / 2}" y="${yCode}" font-family="Courier, monospace" font-size="${FONT_CODE}" font-weight="bold" fill="#18181b" text-anchor="middle">${escapeXml(data.uniqueCode)}</text>
-</svg>
-  `.trim();
+  <text x="${QR_BOX_LEFT + QR_BOX_W / 2}" y="${yCode}" font-family="${fontMono}" font-size="${FONT_CODE}" font-weight="bold" fill="#18181b" text-anchor="middle">${codeText}</text>
+</svg>`.trim();
 
   const baseImage = await sharp(Buffer.from(svg)).png().toBuffer();
   const composites: sharp.OverlayOptions[] = [
