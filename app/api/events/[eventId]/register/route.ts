@@ -5,6 +5,7 @@ import { createRegistration, findRegistrationByEventAndEmail } from "@/lib/model
 import { sendPassEmail } from "@/lib/email";
 import { generateIcs } from "@/lib/ics";
 import { generatePassPdf } from "@/lib/pass-pdf-direct";
+import QRCode from "qrcode";
 
 export async function POST(
   request: Request,
@@ -87,6 +88,7 @@ export async function POST(
 
     let passPdfBuffer: Buffer | undefined;
     let passIcsBuffer: Buffer | undefined;
+    let qrBuffer: Buffer | undefined;
     try {
       passPdfBuffer = await generatePassPdf({
         firstName: reg.firstName,
@@ -97,6 +99,15 @@ export async function POST(
       });
     } catch (err) {
       console.error("Pass generation failed:", err);
+    }
+    try {
+      qrBuffer = await QRCode.toBuffer(reg.uniqueCode, {
+        errorCorrectionLevel: "M",
+        width: 280,
+        margin: 1,
+      });
+    } catch (err) {
+      console.error("QR code generation failed:", err);
     }
     try {
       const icsContent = generateIcs(
@@ -121,9 +132,16 @@ export async function POST(
         to: reg.email,
         firstName: reg.firstName,
         surname: reg.surname,
+        mobileNumber: reg.mobileNumber,
+        email: reg.email,
         eventName: reg.eventName,
+        eventStartDate: reg.eventStartDate instanceof Date ? reg.eventStartDate.toISOString() : String(reg.eventStartDate),
+        eventEndDate: reg.eventEndDate instanceof Date ? reg.eventEndDate.toISOString() : String(reg.eventEndDate),
+        venue: reg.venue,
+        createdAt: reg.createdAt instanceof Date ? reg.createdAt.toISOString() : String(reg.createdAt),
         passUrl,
         uniqueCode: reg.uniqueCode,
+        qrBuffer,
         passPdfBuffer,
         passIcsBuffer,
       });

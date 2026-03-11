@@ -43,8 +43,8 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const GAP_AFTER_LOGO = 8;        // clear space between logo and name so they don't overlap
   const NAME_DESIGNATION_SHIFT_DOWN_PT = 15; // ~20px: shift name and designation down
   const FONT_NAME = 10;
-  const FONT_ORG = 7;
   const FONT_DESIGNATION = 8;
+  const FONT_ORG = 8;              // same size as designation
   const FONT_CODE = 6;
   const LINE_GAP = 3;
   const QR_SIZE_PT = 60;
@@ -95,10 +95,11 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     borderColor: rgb(0, 0, 0),
   });
 
-  // Name, organization, designation (below logo with clear gap)
+  // Name, designation, organization (below logo with clear gap)
+  // Order: Name → Designation → Company
   const nameStr = safeText(`${data.firstName} ${data.surname}`);
-  const organizationStr = safeText(data.organization || "-");
   const designationStr = safeText(data.designation || "-");
+  const organizationStr = safeText(data.organization || "-");
   const codeStr = safeText(data.uniqueCode);
 
   const yNameBaseline = fromTop(TOP_PADDING + LOGO_HEIGHT_PT + GAP_AFTER_LOGO + FONT_NAME + NAME_DESIGNATION_SHIFT_DOWN_PT);
@@ -110,20 +111,20 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     color: black,
   });
 
-  const yOrgBaseline = yNameBaseline - LINE_GAP - FONT_ORG;
-  page.drawText(organizationStr, {
-    x: PADDING,
-    y: yOrgBaseline,
-    size: FONT_ORG,
-    font: helvetica,
-    color: black,
-  });
-
-  const yDesignationBaseline = yOrgBaseline - LINE_GAP - FONT_DESIGNATION;
+  const yDesignationBaseline = yNameBaseline - LINE_GAP - FONT_DESIGNATION;
   page.drawText(designationStr, {
     x: PADDING,
     y: yDesignationBaseline,
     size: FONT_DESIGNATION,
+    font: helvetica,
+    color: black,
+  });
+
+  const yOrgBaseline = yDesignationBaseline - LINE_GAP - FONT_ORG;
+  page.drawText(organizationStr, {
+    x: PADDING,
+    y: yOrgBaseline,
+    size: FONT_ORG,
     font: helvetica,
     color: black,
   });

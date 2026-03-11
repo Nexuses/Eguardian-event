@@ -27,6 +27,7 @@ export default async function Home() {
               <Link
                 key={ev._id?.toString() ?? ev.eventId}
                 href={`/events/${ev.eventId}`}
+                target="_blank"
                 className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">

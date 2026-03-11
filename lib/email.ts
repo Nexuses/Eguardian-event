@@ -23,13 +23,43 @@ function getTransporter() {
   });
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] || c);
+}
+
+function formatDateTime(d: string | Date): string {
+  if (!d) return "—";
+  const date = new Date(d);
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatRegisteredDate(d: string | Date): string {
+  if (!d) return "—";
+  return new Date(d).toISOString().replace("T", " ").slice(0, 19);
+}
+
 export type PassEmailData = {
   to: string;
   firstName: string;
   surname: string;
+  mobileNumber: string;
+  email: string;
   eventName: string;
+  eventStartDate: string;
+  eventEndDate: string;
+  venue: string;
+  createdAt: string;
   passUrl: string;
   uniqueCode: string;
+  /** QR code PNG buffer to embed in email */
+  qrBuffer?: Buffer;
   /** Optional PDF buffer to attach as event pass (58mm × 40mm name tag) */
   passPdfBuffer?: Buffer;
   /** Optional .ics file buffer for calendar invite */
@@ -37,8 +67,15 @@ export type PassEmailData = {
 };
 
 function getEmailHtml(data: PassEmailData): string {
-  const safeName = data.firstName.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] || c);
-  const safeEvent = data.eventName.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] || c);
+  const safeName = escapeHtml(`${data.firstName} ${data.surname}`);
+  const safeEvent = escapeHtml(data.eventName);
+  const safeMobile = escapeHtml(data.mobileNumber || "—");
+  const safeEmail = escapeHtml(data.email);
+  const safeVenue = escapeHtml(data.venue || "—");
+  const startDate = formatDateTime(data.eventStartDate);
+  const endDate = formatDateTime(data.eventEndDate);
+  const registeredDate = formatRegisteredDate(data.createdAt);
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -51,42 +88,60 @@ function getEmailHtml(data: PassEmailData): string {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+        <!-- Pass Card -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border: 1px solid #18181b; overflow: hidden;">
           <tr>
-            <td style="padding: 40px 40px 32px 40px; border-bottom: 1px solid #e4e4e7;">
+            <td style="padding: 20px;">
+              <!-- Top row: Logo + QR -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td>
+                  <td valign="top" style="width: 60%;">
                     <img src="https://eguardian-uae.s3.us-east-2.amazonaws.com/EGUARDIAN-Lanka-Pvt-Ltd-Logo-1-1024x288.jpg" alt="Eguardian" width="180" height="51" style="display: block; height: auto; max-height: 51px; width: auto; max-width: 180px;" />
+                    <p style="margin: 16px 0 4px 0; font-size: 18px; font-weight: 700; color: #18181b;">Welcome,</p>
+                    <h1 style="margin: 0 0 12px 0; font-size: 24px; font-weight: 700; color: #18181b;">${safeName}</h1>
+                    <p style="margin: 0 0 2px 0; font-size: 16px; color: #18181b;">${safeMobile}</p>
+                    <p style="margin: 0; font-size: 16px; color: #18181b;">${safeEmail}</p>
+                  </td>
+                  <td valign="middle" align="center" style="width: 40%;">
+                    <div style="border: 2px solid #ea580c; border-radius: 4px; padding: 4px; display: inline-block;">
+                      <img src="cid:qrcode" alt="QR Code" width="140" height="140" style="display: block;" />
+                    </div>
+                    <p style="margin: 8px 0 0 0; font-family: ui-monospace, monospace; font-size: 14px; font-weight: 700; color: #18181b;">${data.uniqueCode}</p>
                   </td>
                 </tr>
               </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 32px 40px;">
-              <h1 style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #18181b; line-height: 1.3;">
-                Hello ${safeName},
-              </h1>
-              <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; color: #52525b;">
-                Thank you for registering. Your event pass for <strong style="color: #18181b;">${safeEvent}</strong> is ready and attached to this email.
-              </p>
-              <p style="margin: 0; font-size: 13px; color: #71717a;">
-                Pass code: <code style="background: #f4f4f5; padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace;">${data.uniqueCode}</code>
-              </p>
-              <p style="margin: 12px 0 0 0; font-size: 13px; color: #52525b;">
-                Open the attached <strong>event-invite.ics</strong> to add this event to your calendar.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 24px 40px 32px 40px; background-color: #fafafa; border-top: 1px solid #e4e4e7;">
-              <p style="margin: 0; font-size: 12px; color: #a1a1aa; line-height: 1.5;">
-                This is an automated message from Eguardian. If you did not register for this event, please ignore this email.
+
+              <!-- Event details -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
+                <tr>
+                  <td>
+                    <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #18181b;">${safeEvent}</h2>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 16px; color: #18181b;">
+                      <tr>
+                        <td style="padding: 6px 0; font-weight: 600; width: 100px;">Start Date</td>
+                        <td style="padding: 6px 0;">${startDate}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-weight: 600; width: 100px;">End Date</td>
+                        <td style="padding: 6px 0;">${endDate}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-weight: 600; width: 100px;">Venue</td>
+                        <td style="padding: 6px 0;">${safeVenue}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Registered date -->
+              <p style="margin: 24px 0 0 0; font-size: 14px; color: #18181b;">
+                Registered Date – ${registeredDate}
               </p>
             </td>
           </tr>
         </table>
+
         <p style="margin: 24px 0 0 0; font-size: 12px; color: #a1a1aa;">
           &copy; Eguardian. All rights reserved.
         </p>
@@ -99,15 +154,32 @@ function getEmailHtml(data: PassEmailData): string {
 }
 
 function getEmailText(data: PassEmailData): string {
-  return `Hello ${data.firstName},
+  const startDate = formatDateTime(data.eventStartDate);
+  const endDate = formatDateTime(data.eventEndDate);
+  const registeredDate = formatRegisteredDate(data.createdAt);
 
-Thank you for registering. Your event pass for "${data.eventName}" is ready and attached to this email as a PDF (name tag size 58mm × 40mm). An .ics calendar invite is also attached so you can add the event to your calendar.
+  return `EGUARDIAN
 
-Pass code: ${data.uniqueCode}
+Welcome,
+${data.firstName} ${data.surname}
 
-—
-Eguardian
-This is an automated message. If you did not register for this event, please ignore this email.`;
+${data.mobileNumber || "—"}
+${data.email}
+
+Pass Code: ${data.uniqueCode}
+
+---
+
+${data.eventName}
+
+Start Date: ${startDate}
+End Date: ${endDate}
+Venue: ${data.venue || "—"}
+
+Registered Date: ${registeredDate}
+
+---
+© Eguardian. All rights reserved.`;
 }
 
 export async function sendPassEmail(data: PassEmailData): Promise<boolean> {
@@ -118,6 +190,16 @@ export async function sendPassEmail(data: PassEmailData): Promise<boolean> {
   }
   try {
     const attachments: nodemailer.SendMailOptions["attachments"] = [];
+    
+    // Embed QR code as inline image with CID
+    if (data.qrBuffer && data.qrBuffer.length > 0) {
+      attachments.push({
+        filename: "qrcode.png",
+        content: data.qrBuffer,
+        cid: "qrcode",
+      });
+    }
+    
     if (data.passPdfBuffer && data.passPdfBuffer.length > 0) {
       attachments.push({
         filename: `event-pass-${data.uniqueCode}.pdf`,

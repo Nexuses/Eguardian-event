@@ -92,7 +92,30 @@ export function RegisterForm({
     "w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100";
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <>
+      {/* Full-screen loading overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-2xl dark:bg-zinc-900">
+            {/* Spinner */}
+            <div className="relative h-16 w-16">
+              <div className="absolute inset-0 rounded-full border-4 border-zinc-200 dark:border-zinc-700"></div>
+              <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-orange-500"></div>
+            </div>
+            {/* Message */}
+            <div className="text-center">
+              <p className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
+                Generating Your Pass
+              </p>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Please wait while we process your registration...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
       {error && (
         <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
           {error}
@@ -352,5 +375,6 @@ export function RegisterForm({
         {loading ? "Registering…" : "Register"}
       </button>
     </form>
+    </>
   );
 }
