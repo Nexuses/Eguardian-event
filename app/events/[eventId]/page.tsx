@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { headers } from "next/headers";
 import { getEventByEventId, getEventBannerUrl } from "@/lib/models/Event";
 import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-utils";
@@ -36,16 +35,7 @@ export default async function EventPage({
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <div className="mx-auto max-w-6xl px-4 py-4 sm:py-6">
-        <Link
-          href="/"
-          className="mb-4 inline-block text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 sm:mb-6"
-        >
-          ← All events
-        </Link>
-      </div>
-
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 pb-8 sm:gap-8 sm:pb-12 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-4 sm:gap-8 sm:py-6 lg:grid-cols-3">
         {/* Left: Banner + share */}
         <div className="lg:col-span-2">
           <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
