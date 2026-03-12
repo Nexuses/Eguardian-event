@@ -11,12 +11,8 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
-        <h1 className="mb-6 text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:mb-8 sm:text-2xl">
-          Upcoming Events
-        </h1>
-
+    <div className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="mx-auto max-w-6xl">
         {events.length === 0 ? (
           <p className="text-zinc-600 dark:text-zinc-400">
             No events at the moment. Check back later.
