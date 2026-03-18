@@ -6,10 +6,10 @@ import { CheckEligibleForm } from "./CheckEligibleForm";
 import { RegistrationClosedCard } from "./RegistrationClosedMessage";
 
 function shareUrl(baseUrl: string, path: string, title: string) {
-  const url = baseUrl + path;
+  const url = (baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl) + path;
   return {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+    twitter: `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
     whatsapp: `https://wa.me/?text=${encodeURIComponent(title + " " + url)}`,
     email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`,
@@ -29,8 +29,10 @@ export default async function EventPage({
   const title = event.eventName;
   const headersList = await headers();
   const host = headersList.get("host") || "";
-  const protocol = headersList.get("x-forwarded-proto") || "http";
-  const baseUrl = host ? `${protocol}://${host}` : "";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const baseUrl =
+    process.env.SITE_URL ||
+    (host ? `${protocol}://${host}` : "http://localhost:3000");
   const links = shareUrl(baseUrl, path, title);
 
   return (
@@ -103,6 +105,8 @@ export default async function EventPage({
               </a>
               <a
                 href={links.email}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-600 transition-colors hover:bg-orange-100 hover:text-orange-500 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-orange-900/30 dark:hover:text-orange-400"
                 aria-label="Share by email"
               >
