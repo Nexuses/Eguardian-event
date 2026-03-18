@@ -5,6 +5,9 @@ import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/dat
 import { CheckEligibleForm } from "./CheckEligibleForm";
 import { RegistrationClosedCard } from "./RegistrationClosedMessage";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function shareUrl(baseUrl: string, path: string, title: string) {
   const url = (baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl) + path;
   return {
