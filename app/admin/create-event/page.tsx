@@ -50,6 +50,10 @@ export default function CreateEventPage() {
   const [collectApparelSize, setCollectApparelSize] = useState(false);
   const [collectOvernightStay, setCollectOvernightStay] = useState(false);
   const [collectPassportNic, setCollectPassportNic] = useState(false);
+  const [collectTransport, setCollectTransport] = useState(false);
+  const [transportLocation1, setTransportLocation1] = useState("");
+  const [transportLocation2, setTransportLocation2] = useState("");
+  const [transportLocation3, setTransportLocation3] = useState("");
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -98,6 +102,10 @@ export default function CreateEventPage() {
         formData.set("collectApparelSize", collectApparelSize ? "true" : "false");
         formData.set("collectOvernightStay", collectOvernightStay ? "true" : "false");
         formData.set("collectPassportNic", collectPassportNic ? "true" : "false");
+        formData.set("collectTransport", collectTransport ? "true" : "false");
+        formData.set("transportLocation1", transportLocation1);
+        formData.set("transportLocation2", transportLocation2);
+        formData.set("transportLocation3", transportLocation3);
         formData.set("bannerFile", bannerFile);
         res = await fetch("/api/admin/events", { method: "POST", body: formData });
       } else {
@@ -118,6 +126,10 @@ export default function CreateEventPage() {
             collectApparelSize,
             collectOvernightStay,
             collectPassportNic,
+            collectTransport,
+            transportLocation1,
+            transportLocation2,
+            transportLocation3,
           }),
         });
       }
@@ -141,6 +153,10 @@ export default function CreateEventPage() {
       setCollectApparelSize(false);
       setCollectOvernightStay(false);
       setCollectPassportNic(false);
+      setCollectTransport(false);
+      setTransportLocation1("");
+      setTransportLocation2("");
+      setTransportLocation3("");
       setBannerFile(null);
       fetchEvents();
     } catch {
@@ -276,7 +292,57 @@ export default function CreateEventPage() {
                 />
                 <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={collectTransport}
+                  onChange={(e) => setCollectTransport(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport</span>
+              </label>
             </div>
+
+            {collectTransport && (
+              <div className="grid grid-cols-1 gap-3">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Transport Location 1
+                  </label>
+                  <input
+                    type="text"
+                    value={transportLocation1}
+                    onChange={(e) => setTransportLocation1(e.target.value)}
+                    className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                    placeholder="e.g. Location A"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Transport Location 2
+                  </label>
+                  <input
+                    type="text"
+                    value={transportLocation2}
+                    onChange={(e) => setTransportLocation2(e.target.value)}
+                    className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                    placeholder="e.g. Location B"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Transport Location 3
+                  </label>
+                  <input
+                    type="text"
+                    value={transportLocation3}
+                    onChange={(e) => setTransportLocation3(e.target.value)}
+                    className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                    placeholder="e.g. Location C"
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex items-end">
             <button type="submit" disabled={loading}

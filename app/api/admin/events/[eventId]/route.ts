@@ -54,6 +54,10 @@ export async function PUT(
     let collectApparelSize: boolean | undefined;
     let collectOvernightStay: boolean | undefined;
     let collectPassportNic: boolean | undefined;
+    let collectTransport: boolean | undefined;
+    let transportLocation1: string | undefined;
+    let transportLocation2: string | undefined;
+    let transportLocation3: string | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -74,6 +78,11 @@ export async function PUT(
       collectApparelSize = ca === "true" || ca === "1" ? true : ca === "false" || ca === "0" ? false : undefined;
       collectOvernightStay = co === "true" || co === "1" ? true : co === "false" || co === "0" ? false : undefined;
       collectPassportNic = cp === "true" || cp === "1" ? true : cp === "false" || cp === "0" ? false : undefined;
+      const ct = formData.get("collectTransport");
+      collectTransport = ct === "true" || ct === "1" ? true : ct === "false" || ct === "0" ? false : undefined;
+      transportLocation1 = (formData.get("transportLocation1") as string | null) ?? undefined;
+      transportLocation2 = (formData.get("transportLocation2") as string | null) ?? undefined;
+      transportLocation3 = (formData.get("transportLocation3") as string | null) ?? undefined;
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
         eventBanner = await saveBannerFile(file);
@@ -94,6 +103,10 @@ export async function PUT(
       collectApparelSize = body.collectApparelSize;
       collectOvernightStay = body.collectOvernightStay;
       collectPassportNic = body.collectPassportNic;
+      collectTransport = body.collectTransport;
+      transportLocation1 = body.transportLocation1;
+      transportLocation2 = body.transportLocation2;
+      transportLocation3 = body.transportLocation3;
     }
 
     if (registrationStartDate && registrationEndDate) {
@@ -102,6 +115,18 @@ export async function PUT(
       if (start > end) {
         return NextResponse.json(
           { error: "Start Registration Date must be before End Registration Date" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (collectTransport === true) {
+      const l1 = (transportLocation1 ?? "").trim();
+      const l2 = (transportLocation2 ?? "").trim();
+      const l3 = (transportLocation3 ?? "").trim();
+      if (!l1 || !l2 || !l3) {
+        return NextResponse.json(
+          { error: "All 3 transport locations are required when Transport is enabled" },
           { status: 400 }
         );
       }
@@ -126,6 +151,11 @@ export async function PUT(
       ...(collectApparelSize !== undefined && { collectApparelSize }),
       ...(collectOvernightStay !== undefined && { collectOvernightStay }),
       ...(collectPassportNic !== undefined && { collectPassportNic }),
+      ...(collectTransport !== undefined && { collectTransport }),
+      ...(collectTransport === true && {
+        transportLocations: [transportLocation1, transportLocation2, transportLocation3].map((s) => (s ?? "").trim()),
+      }),
+      ...(collectTransport === false && { transportLocations: [] }),
     });
 
     if (!updated) {

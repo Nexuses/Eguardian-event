@@ -43,6 +43,10 @@ export async function POST(request: Request) {
     let collectApparelSize: boolean;
     let collectOvernightStay: boolean;
     let collectPassportNic: boolean;
+    let collectTransport: boolean;
+    let transportLocation1: string;
+    let transportLocation2: string;
+    let transportLocation3: string;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -62,6 +66,10 @@ export async function POST(request: Request) {
       collectApparelSize = formData.get("collectApparelSize") === "true" || formData.get("collectApparelSize") === "1";
       collectOvernightStay = formData.get("collectOvernightStay") === "true" || formData.get("collectOvernightStay") === "1";
       collectPassportNic = formData.get("collectPassportNic") === "true" || formData.get("collectPassportNic") === "1";
+      collectTransport = formData.get("collectTransport") === "true" || formData.get("collectTransport") === "1";
+      transportLocation1 = (formData.get("transportLocation1") as string) || "";
+      transportLocation2 = (formData.get("transportLocation2") as string) || "";
+      transportLocation3 = (formData.get("transportLocation3") as string) || "";
 
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
@@ -83,6 +91,10 @@ export async function POST(request: Request) {
       collectApparelSize = !!body.collectApparelSize;
       collectOvernightStay = !!body.collectOvernightStay;
       collectPassportNic = !!body.collectPassportNic;
+      collectTransport = !!body.collectTransport;
+      transportLocation1 = body.transportLocation1 ?? "";
+      transportLocation2 = body.transportLocation2 ?? "";
+      transportLocation3 = body.transportLocation3 ?? "";
     }
 
     if (!eventName.trim()) {
@@ -97,6 +109,18 @@ export async function POST(request: Request) {
       if (start > end) {
         return NextResponse.json(
           { error: "Start Registration Date must be before End Registration Date" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (collectTransport) {
+      const l1 = (transportLocation1 || "").trim();
+      const l2 = (transportLocation2 || "").trim();
+      const l3 = (transportLocation3 || "").trim();
+      if (!l1 || !l2 || !l3) {
+        return NextResponse.json(
+          { error: "All 3 transport locations are required when Transport is enabled" },
           { status: 400 }
         );
       }
@@ -117,6 +141,10 @@ export async function POST(request: Request) {
       collectApparelSize: !!collectApparelSize,
       collectOvernightStay: !!collectOvernightStay,
       collectPassportNic: !!collectPassportNic,
+      collectTransport: !!collectTransport,
+      transportLocations: collectTransport
+        ? [transportLocation1, transportLocation2, transportLocation3].map((s) => (s || "").trim()).filter(Boolean)
+        : [],
     });
 
     return NextResponse.json(event);

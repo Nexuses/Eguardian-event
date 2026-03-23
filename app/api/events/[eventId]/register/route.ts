@@ -35,6 +35,8 @@ export async function POST(
       apparelSize,
       overnightStay,
       passportNic,
+      transportNeeded,
+      transportLocation,
       agreedToPrivacy,
     } = body;
 
@@ -43,6 +45,13 @@ export async function POST(
     }
     if (!agreedToPrivacy) {
       return NextResponse.json({ error: "You must agree to the Privacy Policy" }, { status: 400 });
+    }
+
+    if (event.collectTransport && transportNeeded) {
+      const loc = typeof transportLocation === "string" ? transportLocation.trim() : "";
+      if (!loc) {
+        return NextResponse.json({ error: "Transport location is required" }, { status: 400 });
+      }
     }
 
     const requireEligible = event.registrationType !== "open_for_all";
@@ -77,6 +86,11 @@ export async function POST(
       apparelSize: apparelSize?.trim() || undefined,
       overnightStay: event.collectOvernightStay ? !!overnightStay : undefined,
       passportNic: passportNic?.trim() || undefined,
+      transportNeeded: event.collectTransport ? !!transportNeeded : undefined,
+      transportLocation:
+        event.collectTransport && transportNeeded && typeof transportLocation === "string"
+          ? transportLocation.trim() || undefined
+          : undefined,
       agreedToPrivacy: true,
     });
 

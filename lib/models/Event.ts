@@ -16,6 +16,10 @@ export interface EventDoc {
   eventEndDate: Date;
   registrationStartDate?: Date;
   registrationEndDate?: Date;
+  /** If true, registration form shows a Transport dropdown with these locations */
+  collectTransport?: boolean;
+  /** Exactly 3 locations (strings) shown in the dropdown when collectTransport is enabled */
+  transportLocations?: string[];
   venue: string;
   speaker: string;
   phone: string;
@@ -83,6 +87,8 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     eventEndDate: new Date(data.eventEndDate),
     registrationStartDate: data.registrationStartDate ? new Date(data.registrationStartDate) : undefined,
     registrationEndDate: data.registrationEndDate ? new Date(data.registrationEndDate) : undefined,
+    collectTransport: data.collectTransport ?? false,
+    transportLocations: data.transportLocations ?? [],
     venue: data.venue.trim(),
     speaker: data.speaker.trim(),
     phone: data.phone.trim(),
@@ -131,6 +137,8 @@ export async function updateEvent(
   if (data.registrationEndDate !== undefined) {
     update.registrationEndDate = data.registrationEndDate ? new Date(data.registrationEndDate) : null;
   }
+  if (data.collectTransport !== undefined) update.collectTransport = data.collectTransport;
+  if (data.transportLocations !== undefined) update.transportLocations = data.transportLocations;
   if (data.venue !== undefined) update.venue = data.venue.trim();
   if (data.speaker !== undefined) update.speaker = data.speaker.trim();
   if (data.phone !== undefined) update.phone = data.phone.trim();

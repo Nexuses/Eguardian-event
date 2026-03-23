@@ -16,6 +16,8 @@ type EventSnap = {
   collectApparelSize?: boolean;
   collectOvernightStay?: boolean;
   collectPassportNic?: boolean;
+  collectTransport?: boolean;
+  transportLocations?: string[];
 };
 
 export function RegisterForm({
@@ -39,6 +41,8 @@ export function RegisterForm({
   const [apparelSize, setApparelSize] = useState("");
   const [overnightStay, setOvernightStay] = useState(false);
   const [passportNic, setPassportNic] = useState("");
+  const [transportNeeded, setTransportNeeded] = useState(false);
+  const [transportLocation, setTransportLocation] = useState("");
   const [specialComment, setSpecialComment] = useState("");
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [error, setError] = useState("");
@@ -71,6 +75,8 @@ export function RegisterForm({
           ...(event.collectApparelSize && { apparelSize: apparelSize || undefined }),
           ...(event.collectOvernightStay && { overnightStay: overnightStay }),
           ...(event.collectPassportNic && { passportNic: passportNic || undefined }),
+          ...(event.collectTransport && { transportNeeded }),
+          ...(event.collectTransport && transportNeeded && { transportLocation: transportLocation || undefined }),
           specialComment: specialComment || undefined,
           agreedToPrivacy: true,
         }),
@@ -338,6 +344,58 @@ export function RegisterForm({
             className={inputClass}
             placeholder="Passport or NIC number"
           />
+        </div>
+      )}
+
+      {event.collectTransport && (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Transport
+          </label>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={transportNeeded}
+              onClick={() => {
+                const next = !transportNeeded;
+                setTransportNeeded(next);
+                if (next) {
+                  setTransportLocation(event.transportLocations?.[0] ?? "");
+                }
+              }}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                transportNeeded ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
+                  transportNeeded ? "translate-x-5" : "translate-x-1"
+                }`}
+              />
+            </button>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              {transportNeeded ? "Yes" : "No"}
+            </span>
+          </div>
+
+          {transportNeeded && (
+            <div className="mt-3">
+              <select
+                value={transportLocation}
+                onChange={(e) => setTransportLocation(e.target.value)}
+                required
+                className={inputClass}
+              >
+                <option value="">Select location</option>
+                {(event.transportLocations ?? []).map((loc, idx) => (
+                  <option key={`${loc}-${idx}`} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       )}
 

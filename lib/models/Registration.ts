@@ -28,6 +28,10 @@ export interface RegistrationDoc {
   overnightStay?: boolean;
   /** Collected when event.collectPassportNic is true */
   passportNic?: string;
+  /** Collected when event.collectTransport is enabled and user opts-in */
+  transportNeeded?: boolean;
+  /** Selected transport location (only when transportNeeded is true) */
+  transportLocation?: string;
   participationStatus?: ParticipationStatus;
   /** When the attendee was marked as attended (via scan or admin) */
   participationTimestamp?: Date;

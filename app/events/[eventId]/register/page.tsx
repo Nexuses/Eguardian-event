@@ -25,6 +25,8 @@ function toPlainEvent(event: EventDoc) {
     collectApparelSize: !!event.collectApparelSize,
     collectOvernightStay: !!event.collectOvernightStay,
     collectPassportNic: !!event.collectPassportNic,
+    collectTransport: !!event.collectTransport,
+    transportLocations: event.transportLocations ?? [],
   };
 }
 

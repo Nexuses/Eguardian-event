@@ -116,41 +116,13 @@ export default async function PassPage({
           id="event-pass"
           className="hidden print:!block print:!m-0 print:!h-[40mm] print:!w-[58mm] print:!max-w-[58mm] print:!overflow-hidden print:!rounded-none print:!border print:!border-black print:!p-2 print:!shadow-none print:!bg-white"
         >
-          <div className="print:!flex print:!h-full print:!flex-row print:!items-center print:!gap-2">
-            {/* Left: logo, name, designation, org */}
-            <div className="print:!flex print:!min-w-0 print:!flex-1 print:!flex-col print:!items-start">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://eguardian-uae.s3.us-east-2.amazonaws.com/EGUARDIAN-Lanka-Pvt-Ltd-Logo-1-1024x288.jpg"
-                alt="Eguardian"
-                className="print:!h-8 print:!w-auto print:!max-w-full print:!object-contain print:!object-left"
-              />
-              <p className="print:!mt-1 print:!text-[13px] print:!font-bold print:!text-black">
-                {reg.firstName} {reg.surname}
-              </p>
-              <p className="print:!text-[11px] print:!text-black">
-                {reg.designation || "—"}
-              </p>
-              {reg.organization ? (
-                <p className="print:!text-[11px] print:!text-black">
-                  {reg.organization}
-                </p>
-              ) : null}
-            </div>
-            {/* Right: QR + code */}
-            <div className="print:!flex print:!shrink-0 print:!flex-col print:!items-center print:!justify-center">
-              <div className="print:!rounded print:!border-2 print:!border-orange-600 print:!p-0.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={qrUrl}
-                  alt={`Pass code ${reg.uniqueCode}`}
-                  className="print:!block print:!h-20 print:!w-20"
-                />
-              </div>
-              <p className="print:!mt-1 print:!font-mono print:!text-[8px] print:!font-semibold print:!text-black">
-                {reg.uniqueCode}
-              </p>
-            </div>
+          <div className="print:!flex print:!h-full print:!flex-col print:!items-center print:!justify-center print:!text-center">
+            <p className="print:!text-[17px] print:!font-bold print:!text-black">
+              {reg.firstName} {reg.surname}
+            </p>
+            <p className="print:!mt-1 print:!text-[14px] print:!text-black">
+              {reg.organization || "—"}
+            </p>
           </div>
         </div>
 
