@@ -24,18 +24,11 @@ export async function saveBannerFile(file: File): Promise<string> {
   const ext = path.extname(file.name) || extFromMime(file.type);
   const filename = `banner-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
 
-  // On Vercel/serverless, runtime writes to `public/` are not reliably served to the browser.
-  // So in production we store as an inline data URL so the banner always renders.
-  const isVercel = !!process.env.VERCEL;
-  const isProd = process.env.NODE_ENV === "production";
-  if (isVercel || isProd) {
-    const mime = file.type || "image/jpeg";
-    return `data:${mime};base64,${buffer.toString("base64")}`;
-  }
-
-  // Local/dev path (works when filesystem is writable and served).
-  const publicDir = path.join(process.cwd(), "public", "events");
-  await mkdir(publicDir, { recursive: true });
-  await writeFile(path.join(publicDir, filename), buffer);
-  return `/events/${filename}`;
+  // Most deployments (Vercel/serverless) cannot reliably persist files written at runtime
+  // to `public/` so the browser may get 404.
+  //
+  // To guarantee the banner always renders, store as a data URL in the DB.
+  // (Local dev still works the same way.)
+  const mime = file.type || "image/jpeg";
+  return `data:${mime};base64,${buffer.toString("base64")}`;
 }
