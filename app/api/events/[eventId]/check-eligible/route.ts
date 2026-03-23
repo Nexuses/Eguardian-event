@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getEventByEventId } from "@/lib/models/Event";
+import { getEventByEventId, getEffectiveRegistrationStatus } from "@/lib/models/Event";
 import { isEligible } from "@/lib/models/EligibleEmail";
 import { findRegistrationByEventAndEmail } from "@/lib/models/Registration";
 
@@ -12,6 +12,9 @@ export async function POST(
     const event = await getEventByEventId(eventId);
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+    if (getEffectiveRegistrationStatus(event) === "closed") {
+      return NextResponse.json({ eligible: false, registrationClosed: true }, { status: 403 });
     }
     const { email } = await request.json();
     if (!email?.trim()) {

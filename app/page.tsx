@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listEvents, getEventBannerUrl } from "@/lib/models/Event";
+import { listEvents, getEventBannerUrl, getEffectiveRegistrationStatus } from "@/lib/models/Event";
 import { formatEventDate } from "@/lib/date-utils";
 
 export const dynamic = "force-dynamic";
@@ -22,43 +22,46 @@ export default async function Home() {
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((ev) => (
-              <Link
-                key={ev._id?.toString() ?? ev.eventId}
-                href={`/events/${ev.eventId}`}
-                target="_blank"
-                className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={getEventBannerUrl(ev)}
-                    alt={ev.eventName}
-                    className="h-full w-full object-cover object-top transition-transform group-hover:scale-[1.02]"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-4">
-                  <div className="mb-2 flex items-start justify-between gap-2">
-                    <h2 className="line-clamp-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                      {ev.eventName}
-                    </h2>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        ev.registrationStatus === "open"
-                          ? "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300"
-                          : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
-                      }`}
-                    >
-                      {ev.registrationStatus === "open" ? "Open" : "Closed"}
-                    </span>
+            {events.map((ev) => {
+              const status = getEffectiveRegistrationStatus(ev);
+              return (
+                <Link
+                  key={ev._id?.toString() ?? ev.eventId}
+                  href={`/events/${ev.eventId}`}
+                  target="_blank"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+                >
+                  <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getEventBannerUrl(ev)}
+                      alt={ev.eventName}
+                      className="h-full w-full object-cover object-top transition-transform group-hover:scale-[1.02]"
+                    />
                   </div>
-                  <p className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-                    <span aria-hidden className="text-zinc-400">📅</span>
-                    {formatEventDate(ev.eventStartDate)}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                  <div className="flex flex-1 flex-col p-4">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <h2 className="line-clamp-2 font-semibold text-zinc-900 dark:text-zinc-100">
+                        {ev.eventName}
+                      </h2>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          status === "open"
+                            ? "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300"
+                            : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
+                        }`}
+                      >
+                        {status === "open" ? "Open" : "Closed"}
+                      </span>
+                    </div>
+                    <p className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                      <span aria-hidden className="text-zinc-400">📅</span>
+                      {formatEventDate(ev.eventStartDate)}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

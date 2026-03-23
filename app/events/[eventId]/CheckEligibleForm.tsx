@@ -22,6 +22,10 @@ export function CheckEligibleForm({ eventId }: { eventId: string }) {
         body: JSON.stringify({ email: email.trim() }),
       });
       const data = await res.json();
+      if (data.registrationClosed) {
+        setError("Registration is closed for this event.");
+        return;
+      }
       if (data.alreadyRegistered) {
         setMessage("You are already registered for this event.");
         return;

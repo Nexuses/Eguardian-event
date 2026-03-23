@@ -14,6 +14,8 @@ export interface EventDoc {
   eventBanner: string; // URL or path like /events/xxx.jpg
   eventStartDate: Date;
   eventEndDate: Date;
+  registrationStartDate?: Date;
+  registrationEndDate?: Date;
   venue: string;
   speaker: string;
   phone: string;
@@ -39,6 +41,32 @@ export function getEventBannerUrl(doc: { eventBanner?: string | null }): string 
   return url || DEFAULT_EVENT_BANNER_URL;
 }
 
+function asValidDate(value?: Date | string | null): Date | null {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export function getEffectiveRegistrationStatus(
+  event: Pick<EventDoc, "registrationStatus" | "registrationStartDate" | "registrationEndDate">,
+  now: Date = new Date()
+): RegistrationStatus {
+  const start = asValidDate(event.registrationStartDate);
+  const end = asValidDate(event.registrationEndDate);
+
+  if (start && end) {
+    return now >= start && now <= end ? "open" : "closed";
+  }
+  if (start) {
+    return now >= start ? "open" : "closed";
+  }
+  if (end) {
+    return now <= end ? "open" : "closed";
+  }
+
+  return event.registrationStatus === "closed" ? "closed" : "open";
+}
+
 export async function getEventsCollection() {
   const db = await getDb();
   return db.collection<EventDoc>(COLLECTION);
@@ -53,6 +81,8 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     eventBanner: data.eventBanner.trim() || "",
     eventStartDate: new Date(data.eventStartDate),
     eventEndDate: new Date(data.eventEndDate),
+    registrationStartDate: data.registrationStartDate ? new Date(data.registrationStartDate) : undefined,
+    registrationEndDate: data.registrationEndDate ? new Date(data.registrationEndDate) : undefined,
     venue: data.venue.trim(),
     speaker: data.speaker.trim(),
     phone: data.phone.trim(),
@@ -95,6 +125,12 @@ export async function updateEvent(
   if (data.eventBanner !== undefined) update.eventBanner = data.eventBanner.trim();
   if (data.eventStartDate !== undefined) update.eventStartDate = new Date(data.eventStartDate);
   if (data.eventEndDate !== undefined) update.eventEndDate = new Date(data.eventEndDate);
+  if (data.registrationStartDate !== undefined) {
+    update.registrationStartDate = data.registrationStartDate ? new Date(data.registrationStartDate) : null;
+  }
+  if (data.registrationEndDate !== undefined) {
+    update.registrationEndDate = data.registrationEndDate ? new Date(data.registrationEndDate) : null;
+  }
   if (data.venue !== undefined) update.venue = data.venue.trim();
   if (data.speaker !== undefined) update.speaker = data.speaker.trim();
   if (data.phone !== undefined) update.phone = data.phone.trim();

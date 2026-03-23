@@ -11,6 +11,8 @@ type EventItem = {
   eventBanner: string;
   eventStartDate: string;
   eventEndDate: string;
+  registrationStartDate?: string;
+  registrationEndDate?: string;
   venue: string;
   speaker: string;
   phone: string;
@@ -22,11 +24,24 @@ type EventItem = {
   createdAt: string;
 };
 
+function effectiveRegistrationStatus(ev: EventItem): "open" | "closed" {
+  const now = new Date();
+  const start = ev.registrationStartDate ? new Date(ev.registrationStartDate) : null;
+  const end = ev.registrationEndDate ? new Date(ev.registrationEndDate) : null;
+  const startValid = start && !Number.isNaN(start.getTime()) ? start : null;
+  const endValid = end && !Number.isNaN(end.getTime()) ? end : null;
+  if (startValid && endValid) return now >= startValid && now <= endValid ? "open" : "closed";
+  if (startValid) return now >= startValid ? "open" : "closed";
+  if (endValid) return now <= endValid ? "open" : "closed";
+  return ev.registrationStatus === "open" ? "open" : "closed";
+}
+
 export default function CreateEventPage() {
   const [eventName, setEventName] = useState("");
-  const [eventBanner, setEventBanner] = useState("");
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
+  const [registrationStartDate, setRegistrationStartDate] = useState("");
+  const [registrationEndDate, setRegistrationEndDate] = useState("");
   const [venue, setVenue] = useState("");
   const [speaker, setSpeaker] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,9 +86,10 @@ export default function CreateEventPage() {
       if (bannerFile) {
         const formData = new FormData();
         formData.set("eventName", eventName);
-        formData.set("eventBanner", eventBanner);
         formData.set("eventStartDate", eventStartDate);
         formData.set("eventEndDate", eventEndDate);
+        formData.set("registrationStartDate", registrationStartDate);
+        formData.set("registrationEndDate", registrationEndDate);
         formData.set("venue", venue);
         formData.set("speaker", speaker);
         formData.set("phone", phone);
@@ -90,9 +106,10 @@ export default function CreateEventPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             eventName,
-            eventBanner,
             eventStartDate,
             eventEndDate,
+            registrationStartDate,
+            registrationEndDate,
             venue,
             speaker,
             phone,
@@ -112,9 +129,10 @@ export default function CreateEventPage() {
       }
       setSuccess(`Event created. Event ID: ${data.eventId}`);
       setEventName("");
-      setEventBanner("");
       setEventStartDate("");
       setEventEndDate("");
+      setRegistrationStartDate("");
+      setRegistrationEndDate("");
       setVenue("");
       setSpeaker("");
       setPhone("");
@@ -180,17 +198,22 @@ export default function CreateEventPage() {
             <input type="datetime-local" value={eventEndDate} onChange={(e) => setEventEndDate(e.target.value)}
               className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
           </div>
-
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Banner URL</label>
-            <input type="url" value={eventBanner} onChange={(e) => setEventBanner(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-              placeholder="https://example.com/banner.jpg" />
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start Registration Date</label>
+            <input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
           </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">End Registration Date</label>
+            <input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Banner upload</label>
             <input type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] ?? null)}
               className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800 dark:file:bg-zinc-700 dark:file:text-zinc-200" />
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
           </div>
 
           <div>
@@ -207,12 +230,13 @@ export default function CreateEventPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration</label>
-            <select value={registrationStatus} onChange={(e) => setRegistrationStatus(e.target.value as "open" | "closed")}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
-            </select>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration Status</label>
+            <input
+              type="text"
+              value="Automatic (based on Start/End Registration Date)"
+              readOnly
+              className="w-full rounded-md border border-zinc-300 bg-zinc-100 px-3 py-2 text-zinc-700 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+            />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Who can register</label>
@@ -273,11 +297,13 @@ export default function CreateEventPage() {
           <p className="mt-4 text-sm text-zinc-500">No events yet. Create one above.</p>
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((ev) => (
-              <article
-                key={ev._id}
-                className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
-              >
+            {events.map((ev) => {
+              const status = effectiveRegistrationStatus(ev);
+              return (
+                <article
+                  key={ev._id}
+                  className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+                >
                 <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -293,12 +319,12 @@ export default function CreateEventPage() {
                     </h3>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                        ev.registrationStatus === "open"
+                        status === "open"
                           ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                           : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
                       }`}
                     >
-                      {ev.registrationStatus === "open" ? "Open" : "Closed"}
+                      {status === "open" ? "Open" : "Closed"}
                     </span>
                   </div>
                   <p className="mb-1 text-xs font-mono text-zinc-500 dark:text-zinc-400">
@@ -343,8 +369,9 @@ export default function CreateEventPage() {
                     Edit
                   </a>
                 </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

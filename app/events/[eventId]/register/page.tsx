@@ -1,12 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getEventByEventId, getEventBannerUrl } from "@/lib/models/Event";
+import {
+  getEventByEventId,
+  getEventBannerUrl,
+  getEffectiveRegistrationStatus,
+} from "@/lib/models/Event";
 import type { EventDoc } from "@/lib/models/Event";
 import { formatEventDateTime } from "@/lib/date-utils";
 import { RegisterForm } from "./RegisterForm";
 import { RegistrationClosedPage } from "../RegistrationClosedMessage";
 
 function toPlainEvent(event: EventDoc) {
+  const registrationStatus = getEffectiveRegistrationStatus(event);
   return {
     eventId: event.eventId,
     eventName: event.eventName,
@@ -16,7 +21,7 @@ function toPlainEvent(event: EventDoc) {
     venue: event.venue,
     speaker: event.speaker,
     phone: event.phone,
-    registrationStatus: event.registrationStatus,
+    registrationStatus,
     collectApparelSize: !!event.collectApparelSize,
     collectOvernightStay: !!event.collectOvernightStay,
     collectPassportNic: !!event.collectPassportNic,
@@ -36,6 +41,7 @@ export default async function RegisterPage({
   const { email } = await searchParams;
   const event = await getEventByEventId(eventId);
   if (!event) notFound();
+  const registrationStatus = getEffectiveRegistrationStatus(event);
 
   const serializedEvent = toPlainEvent(event);
 
@@ -54,7 +60,7 @@ export default async function RegisterPage({
         {/* Left: Registration form (60%) or closed message */}
         <div className="order-2 min-h-0 lg:order-1">
           <div className="h-full rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
-            {event.registrationStatus === "closed" ? (
+            {registrationStatus === "closed" ? (
               <RegistrationClosedPage />
             ) : (
               <>

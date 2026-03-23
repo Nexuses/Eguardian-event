@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminFromCookie } from "@/lib/auth";
 import { parseEventDateTime } from "@/lib/date-utils";
 import { getEventById, updateEvent } from "@/lib/models/Event";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { saveBannerFile } from "@/lib/banner-upload";
 
 export async function GET(
   _request: Request,
@@ -45,6 +44,8 @@ export async function PUT(
     let eventBanner: string | undefined;
     let eventStartDate: string | undefined;
     let eventEndDate: string | undefined;
+    let registrationStartDate: string | undefined;
+    let registrationEndDate: string | undefined;
     let venue: string | undefined;
     let speaker: string | undefined;
     let phone: string | undefined;
@@ -60,6 +61,8 @@ export async function PUT(
       eventBanner = formData.get("eventBanner") as string | null ?? undefined;
       eventStartDate = formData.get("eventStartDate") as string | null ?? undefined;
       eventEndDate = formData.get("eventEndDate") as string | null ?? undefined;
+      registrationStartDate = formData.get("registrationStartDate") as string | null ?? undefined;
+      registrationEndDate = formData.get("registrationEndDate") as string | null ?? undefined;
       venue = formData.get("venue") as string | null ?? undefined;
       speaker = formData.get("speaker") as string | null ?? undefined;
       phone = formData.get("phone") as string | null ?? undefined;
@@ -73,14 +76,7 @@ export async function PUT(
       collectPassportNic = cp === "true" || cp === "1" ? true : cp === "false" || cp === "0" ? false : undefined;
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const ext = path.extname(file.name) || ".jpg";
-        const filename = `banner-${Date.now()}${ext}`;
-        const publicDir = path.join(process.cwd(), "public", "events");
-        await mkdir(publicDir, { recursive: true });
-        await writeFile(path.join(publicDir, filename), buffer);
-        eventBanner = `/events/${filename}`;
+        eventBanner = await saveBannerFile(file);
       }
     } else {
       const body = await request.json();
@@ -88,6 +84,8 @@ export async function PUT(
       eventBanner = body.eventBanner;
       eventStartDate = body.eventStartDate;
       eventEndDate = body.eventEndDate;
+      registrationStartDate = body.registrationStartDate;
+      registrationEndDate = body.registrationEndDate;
       venue = body.venue;
       speaker = body.speaker;
       phone = body.phone;
@@ -98,11 +96,28 @@ export async function PUT(
       collectPassportNic = body.collectPassportNic;
     }
 
+    if (registrationStartDate && registrationEndDate) {
+      const start = parseEventDateTime(registrationStartDate);
+      const end = parseEventDateTime(registrationEndDate);
+      if (start > end) {
+        return NextResponse.json(
+          { error: "Start Registration Date must be before End Registration Date" },
+          { status: 400 }
+        );
+      }
+    }
+
     const updated = await updateEvent(eventId, {
       ...(eventName !== undefined && { eventName }),
       ...(eventBanner !== undefined && { eventBanner }),
       ...(eventStartDate !== undefined && { eventStartDate: parseEventDateTime(eventStartDate) }),
       ...(eventEndDate !== undefined && { eventEndDate: parseEventDateTime(eventEndDate) }),
+      ...(registrationStartDate !== undefined && {
+        registrationStartDate: registrationStartDate ? parseEventDateTime(registrationStartDate) : undefined,
+      }),
+      ...(registrationEndDate !== undefined && {
+        registrationEndDate: registrationEndDate ? parseEventDateTime(registrationEndDate) : undefined,
+      }),
       ...(venue !== undefined && { venue }),
       ...(speaker !== undefined && { speaker }),
       ...(phone !== undefined && { phone }),
@@ -119,9 +134,11 @@ export async function PUT(
     return NextResponse.json(updated);
   } catch (err) {
     console.error("Update event error:", err);
+    const message = err instanceof Error ? err.message : "Something went wrong";
+    const status = /Only image files|too large/i.test(message) ? 400 : 500;
     return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+      { error: message },
+      { status }
     );
   }
 }

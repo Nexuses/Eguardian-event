@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAdminFromCookie } from "@/lib/auth";
-import { listEvents } from "@/lib/models/Event";
+import { getEffectiveRegistrationStatus, listEvents } from "@/lib/models/Event";
 import { listAllRegistrations } from "@/lib/models/Registration";
 import { listAllEligible } from "@/lib/models/EligibleEmail";
 import { StatCards, BarChartCard, PieChartCard } from "./components/DashboardCharts";
@@ -18,8 +18,8 @@ export default async function AdminDashboardPage() {
   const totalEvents = events.length;
   const upcomingEvents = events.filter((e) => e.eventEndDate >= now).length;
   const pastEvents = events.filter((e) => e.eventEndDate < now).length;
-  const openEvents = events.filter((e) => e.registrationStatus === "open").length;
-  const closedEvents = events.filter((e) => e.registrationStatus === "closed").length;
+  const openEvents = events.filter((e) => getEffectiveRegistrationStatus(e) === "open").length;
+  const closedEvents = events.filter((e) => getEffectiveRegistrationStatus(e) === "closed").length;
 
   const totalRegistrations = registrations.length;
   const attendedRegistrations = registrations.filter(

@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { getEventByEventId, getEventBannerUrl } from "@/lib/models/Event";
+import {
+  getEventByEventId,
+  getEventBannerUrl,
+  getEffectiveRegistrationStatus,
+} from "@/lib/models/Event";
 import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-utils";
 import { CheckEligibleForm } from "./CheckEligibleForm";
 import { RegistrationClosedCard } from "./RegistrationClosedMessage";
@@ -27,6 +31,7 @@ export default async function EventPage({
   const { eventId } = await params;
   const event = await getEventByEventId(eventId);
   if (!event) notFound();
+  const registrationStatus = getEffectiveRegistrationStatus(event);
 
   const path = `/events/${event.eventId}`;
   const title = event.eventName;
@@ -126,7 +131,7 @@ export default async function EventPage({
               <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 Register to get your ticket
               </h2>
-              {event.registrationStatus === "closed" ? (
+              {registrationStatus === "closed" ? (
                 <RegistrationClosedCard />
               ) : (
                 <CheckEligibleForm eventId={event.eventId} />
@@ -140,12 +145,12 @@ export default async function EventPage({
                 </h2>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    event.registrationStatus === "open"
+                    registrationStatus === "open"
                       ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
                       : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
                   }`}
                 >
-                  {event.registrationStatus === "open" ? "Registration Open" : "Registration Closed"}
+                  {registrationStatus === "open" ? "Registration Open" : "Registration Closed"}
                 </span>
               </div>
               <dl className="space-y-4 text-sm">

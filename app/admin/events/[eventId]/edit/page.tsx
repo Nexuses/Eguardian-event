@@ -11,6 +11,8 @@ type EventItem = {
   eventBanner: string;
   eventStartDate: string;
   eventEndDate: string;
+  registrationStartDate?: string;
+  registrationEndDate?: string;
   venue: string;
   speaker: string;
   phone: string;
@@ -28,9 +30,10 @@ export default function EditEventPage() {
   const eventId = params.eventId as string;
   const [event, setEvent] = useState<EventItem | null>(null);
   const [eventName, setEventName] = useState("");
-  const [eventBanner, setEventBanner] = useState("");
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
+  const [registrationStartDate, setRegistrationStartDate] = useState("");
+  const [registrationEndDate, setRegistrationEndDate] = useState("");
   const [venue, setVenue] = useState("");
   const [speaker, setSpeaker] = useState("");
   const [phone, setPhone] = useState("");
@@ -57,9 +60,10 @@ export default function EditEventPage() {
         const data = await res.json();
         setEvent(data);
         setEventName(data.eventName ?? "");
-        setEventBanner(data.eventBanner ?? "");
         setEventStartDate(toDatetimeLocal(data.eventStartDate));
         setEventEndDate(toDatetimeLocal(data.eventEndDate));
+        setRegistrationStartDate(toDatetimeLocal(data.registrationStartDate));
+        setRegistrationEndDate(toDatetimeLocal(data.registrationEndDate));
         setVenue(data.venue ?? "");
         setSpeaker(data.speaker ?? "");
         setPhone(data.phone ?? "");
@@ -87,9 +91,10 @@ export default function EditEventPage() {
       if (bannerFile) {
         const formData = new FormData();
         formData.set("eventName", eventName);
-        formData.set("eventBanner", eventBanner);
         formData.set("eventStartDate", eventStartDate);
         formData.set("eventEndDate", eventEndDate);
+        formData.set("registrationStartDate", registrationStartDate);
+        formData.set("registrationEndDate", registrationEndDate);
         formData.set("venue", venue);
         formData.set("speaker", speaker);
         formData.set("phone", phone);
@@ -106,9 +111,10 @@ export default function EditEventPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             eventName,
-            eventBanner,
             eventStartDate,
             eventEndDate,
+            registrationStartDate,
+            registrationEndDate,
             venue,
             speaker,
             phone,
@@ -128,7 +134,6 @@ export default function EditEventPage() {
       }
       setSuccess("Event updated.");
       setEvent(data);
-      setEventBanner(data.eventBanner ?? eventBanner);
     } catch {
       setError("Something went wrong");
     } finally {
@@ -214,17 +219,22 @@ export default function EditEventPage() {
             <input type="datetime-local" value={eventEndDate} onChange={(e) => setEventEndDate(e.target.value)}
               className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
           </div>
-
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Banner URL</label>
-            <input type="url" value={eventBanner} onChange={(e) => setEventBanner(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-              placeholder="https://example.com/banner.jpg" />
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start Registration Date</label>
+            <input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
           </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">End Registration Date</label>
+            <input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Banner upload</label>
             <input type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] ?? null)}
               className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800 dark:file:bg-zinc-700 dark:file:text-zinc-200" />
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
           </div>
 
           <div>
@@ -241,12 +251,13 @@ export default function EditEventPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration</label>
-            <select value={registrationStatus} onChange={(e) => setRegistrationStatus(e.target.value as "open" | "closed")}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
-            </select>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration Status</label>
+            <input
+              type="text"
+              value="Automatic (based on Start/End Registration Date)"
+              readOnly
+              className="w-full rounded-md border border-zinc-300 bg-zinc-100 px-3 py-2 text-zinc-700 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+            />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Who can register</label>

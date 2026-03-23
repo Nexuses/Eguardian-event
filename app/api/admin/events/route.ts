@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminFromCookie } from "@/lib/auth";
 import { parseEventDateTime } from "@/lib/date-utils";
 import { createEvent, listEvents } from "@/lib/models/Event";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { saveBannerFile } from "@/lib/banner-upload";
 
 export async function GET() {
   const admin = await getAdminFromCookie();
@@ -34,6 +33,8 @@ export async function POST(request: Request) {
     let eventBanner: string;
     let eventStartDate: string;
     let eventEndDate: string;
+    let registrationStartDate: string;
+    let registrationEndDate: string;
     let venue: string;
     let speaker: string;
     let phone: string;
@@ -49,6 +50,8 @@ export async function POST(request: Request) {
       eventBanner = (formData.get("eventBanner") as string) || "";
       eventStartDate = (formData.get("eventStartDate") as string) || "";
       eventEndDate = (formData.get("eventEndDate") as string) || "";
+      registrationStartDate = (formData.get("registrationStartDate") as string) || "";
+      registrationEndDate = (formData.get("registrationEndDate") as string) || "";
       venue = (formData.get("venue") as string) || "";
       speaker = (formData.get("speaker") as string) || "";
       phone = (formData.get("phone") as string) || "";
@@ -62,15 +65,7 @@ export async function POST(request: Request) {
 
       const file = formData.get("bannerFile") as File | null;
       if (file && file.size > 0) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const ext = path.extname(file.name) || ".jpg";
-        const filename = `banner-${Date.now()}${ext}`;
-        const publicDir = path.join(process.cwd(), "public", "events");
-        await mkdir(publicDir, { recursive: true });
-        const filepath = path.join(publicDir, filename);
-        await writeFile(filepath, buffer);
-        eventBanner = `/events/${filename}`;
+        eventBanner = await saveBannerFile(file);
       }
     } else {
       const body = await request.json();
@@ -78,6 +73,8 @@ export async function POST(request: Request) {
       eventBanner = body.eventBanner ?? "";
       eventStartDate = body.eventStartDate ?? "";
       eventEndDate = body.eventEndDate ?? "";
+      registrationStartDate = body.registrationStartDate ?? "";
+      registrationEndDate = body.registrationEndDate ?? "";
       venue = body.venue ?? "";
       speaker = body.speaker ?? "";
       phone = body.phone ?? "";
@@ -94,12 +91,24 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    if (registrationStartDate && registrationEndDate) {
+      const start = parseEventDateTime(registrationStartDate);
+      const end = parseEventDateTime(registrationEndDate);
+      if (start > end) {
+        return NextResponse.json(
+          { error: "Start Registration Date must be before End Registration Date" },
+          { status: 400 }
+        );
+      }
+    }
 
     const event = await createEvent({
       eventName,
       eventBanner,
       eventStartDate: parseEventDateTime(eventStartDate),
       eventEndDate: parseEventDateTime(eventEndDate),
+      registrationStartDate: registrationStartDate ? parseEventDateTime(registrationStartDate) : undefined,
+      registrationEndDate: registrationEndDate ? parseEventDateTime(registrationEndDate) : undefined,
       venue,
       speaker,
       phone,
@@ -113,9 +122,11 @@ export async function POST(request: Request) {
     return NextResponse.json(event);
   } catch (err) {
     console.error("Create event error:", err);
+    const message = err instanceof Error ? err.message : "Something went wrong";
+    const status = /Only image files|too large/i.test(message) ? 400 : 500;
     return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+      { error: message },
+      { status }
     );
   }
 }
