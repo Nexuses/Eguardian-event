@@ -58,6 +58,26 @@ export function RegisterForm({
       setError("You must agree to the Privacy Policy to register.");
       return;
     }
+    if (!organization.trim() || !designation.trim() || !mobileNumber.trim()) {
+      setError("Organization, designation and mobile number are required.");
+      return;
+    }
+    if (addToWhatsapp && !whatsappNumber.trim()) {
+      setError("WhatsApp number is required when Add to WhatsApp is on.");
+      return;
+    }
+    if (event.collectApparelSize && !apparelSize) {
+      setError("Please select an apparel size.");
+      return;
+    }
+    if (event.collectPassportNic && !passportNic.trim()) {
+      setError("Passport or NIC is required.");
+      return;
+    }
+    if (event.collectTransport && transportNeeded && !transportLocation.trim()) {
+      setError("Please select a transport location.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`/api/events/${eventId}/register`, {
@@ -173,12 +193,13 @@ export function RegisterForm({
 
       <div>
         <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Organization
+          Organization <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           value={organization}
           onChange={(e) => setOrganization(e.target.value)}
+          required
           className={inputClass}
           placeholder="Organization"
         />
@@ -186,12 +207,13 @@ export function RegisterForm({
 
       <div>
         <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Designation
+          Designation <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           value={designation}
           onChange={(e) => setDesignation(e.target.value)}
+          required
           className={inputClass}
           placeholder="Designation"
         />
@@ -199,12 +221,13 @@ export function RegisterForm({
 
       <div>
         <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Mobile Number
+          Mobile Number <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
           value={mobileNumber}
           onChange={(e) => setMobileNumber(e.target.value)}
+          required
           className={inputClass}
           placeholder="e.g. 0779400675"
         />
@@ -235,12 +258,13 @@ export function RegisterForm({
       {addToWhatsapp && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            WhatsApp Number
+            WhatsApp Number <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
             value={whatsappNumber}
             onChange={(e) => setWhatsappNumber(e.target.value)}
+            required
             className={inputClass}
             placeholder="WhatsApp number"
           />
@@ -251,7 +275,7 @@ export function RegisterForm({
         <div>
           <div className="mb-1 flex items-center gap-2">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Apparel - sizes
+              Apparel - sizes <span className="text-red-500">*</span>
             </label>
             <button
               type="button"
@@ -264,6 +288,7 @@ export function RegisterForm({
           <select
             value={apparelSize}
             onChange={(e) => setApparelSize(e.target.value)}
+            required
             className={inputClass}
           >
             <option value="">Select size</option>
@@ -335,12 +360,13 @@ export function RegisterForm({
       {event.collectPassportNic && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Passport/NIC
+            Passport/NIC <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={passportNic}
             onChange={(e) => setPassportNic(e.target.value)}
+            required
             className={inputClass}
             placeholder="Passport or NIC number"
           />
@@ -381,6 +407,9 @@ export function RegisterForm({
 
           {transportNeeded && (
             <div className="mt-3">
+              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Location <span className="text-red-500">*</span>
+              </label>
               <select
                 value={transportLocation}
                 onChange={(e) => setTransportLocation(e.target.value)}
@@ -421,7 +450,16 @@ export function RegisterForm({
           className="mt-1 h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
         />
         <label htmlFor="privacy" className="text-sm text-zinc-700 dark:text-zinc-300">
-          I agree to the <a href="/privacy" className="underline hover:no-underline">Privacy Policy</a> <span className="text-red-500">*</span>
+          I agree to the{" "}
+          <a
+            href="https://www.eguardian.com/about-us#policies"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:no-underline"
+          >
+            Privacy Policy
+          </a>{" "}
+          <span className="text-red-500">*</span>
         </label>
       </div>
 

@@ -43,8 +43,26 @@ export async function POST(
     if (!firstName?.trim() || !surname?.trim() || !email?.trim()) {
       return NextResponse.json({ error: "First name, surname and email are required" }, { status: 400 });
     }
+    if (!organization?.trim() || !designation?.trim() || !mobileNumber?.trim()) {
+      return NextResponse.json(
+        { error: "Organization, designation and mobile number are required" },
+        { status: 400 }
+      );
+    }
     if (!agreedToPrivacy) {
       return NextResponse.json({ error: "You must agree to the Privacy Policy" }, { status: 400 });
+    }
+    if (addToWhatsapp && !String(whatsappNumber ?? "").trim()) {
+      return NextResponse.json(
+        { error: "WhatsApp number is required when Add to WhatsApp is enabled" },
+        { status: 400 }
+      );
+    }
+    if (event.collectApparelSize && !String(apparelSize ?? "").trim()) {
+      return NextResponse.json({ error: "Apparel size is required" }, { status: 400 });
+    }
+    if (event.collectPassportNic && !String(passportNic ?? "").trim()) {
+      return NextResponse.json({ error: "Passport or NIC is required" }, { status: 400 });
     }
 
     if (event.collectTransport && transportNeeded) {
