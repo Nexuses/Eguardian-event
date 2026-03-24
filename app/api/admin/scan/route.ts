@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       registration: {
+        eventId: reg.eventId,
         firstName: reg.firstName,
         surname: reg.surname,
         email: reg.email,

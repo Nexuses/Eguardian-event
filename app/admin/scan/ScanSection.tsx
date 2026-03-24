@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type ScanResult = {
   success: true;
   registration: {
+    eventId: string;
     firstName: string;
     surname: string;
     email: string;
@@ -241,9 +242,19 @@ export function ScanSection() {
         >
           <p className="font-medium">{message}</p>
           {lastAttendee && (
-            <p className="mt-2 text-sm">
-              {lastAttendee.firstName} {lastAttendee.surname} – {lastAttendee.eventName}
-            </p>
+            <div className="mt-2 flex items-center justify-between gap-3 text-sm">
+              <p>
+                {lastAttendee.firstName} {lastAttendee.surname} – {lastAttendee.eventName}
+              </p>
+              <a
+                href={`/events/${lastAttendee.eventId}/pass/${lastAttendee.uniqueCode}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              >
+                Print Pass
+              </a>
+            </div>
           )}
         </div>
       )}
