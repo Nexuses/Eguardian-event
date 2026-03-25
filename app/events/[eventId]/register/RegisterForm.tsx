@@ -100,7 +100,6 @@ export function RegisterForm({
     if (
       event.collectTransport &&
       transportNeeded &&
-      event.requireTransport &&
       !transportLocation.trim()
     ) {
       setError("Please select a transport location.");
@@ -456,14 +455,14 @@ export function RegisterForm({
             <div className="mt-3">
               <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 Location{" "}
-                {event.requireTransport ? (
+                {transportNeeded ? (
                   <span className="text-red-500">*</span>
                 ) : null}
               </label>
               <select
                 value={transportLocation}
                 onChange={(e) => setTransportLocation(e.target.value)}
-                required={!!event.requireTransport}
+                required={true}
                 className={inputClass}
               >
                 <option value="">Select location</option>

@@ -71,7 +71,7 @@ export async function POST(
       return NextResponse.json({ error: "Transport is required" }, { status: 400 });
     }
 
-    if (event.collectTransport && transportNeeded && event.requireTransport) {
+    if (event.collectTransport && transportNeeded) {
       const loc = typeof transportLocation === "string" ? transportLocation.trim() : "";
       if (!loc) {
         return NextResponse.json({ error: "Transport location is required" }, { status: 400 });
