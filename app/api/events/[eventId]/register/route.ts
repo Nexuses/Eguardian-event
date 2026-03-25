@@ -52,9 +52,9 @@ export async function POST(
     if (!agreedToPrivacy) {
       return NextResponse.json({ error: "You must agree to the Privacy Policy" }, { status: 400 });
     }
-    if (event.requireWhatsAppNumber && addToWhatsapp && !String(whatsappNumber ?? "").trim()) {
+    if (event.requireWhatsAppNumber && !String(whatsappNumber ?? "").trim()) {
       return NextResponse.json(
-        { error: "WhatsApp number is required when Add to WhatsApp is enabled" },
+        { error: "WhatsApp number is required" },
         { status: 400 }
       );
     }
@@ -91,6 +91,9 @@ export async function POST(
       return NextResponse.json({ error: "Already registered" }, { status: 409 });
     }
 
+    const addToWhatsappEffective = event.requireWhatsAppNumber ? true : !!addToWhatsapp;
+    const whatsappNumberEffective = addToWhatsappEffective ? whatsappNumber?.trim() || undefined : undefined;
+
     const reg = await createRegistration({
       eventId,
       eventName: event.eventName,
@@ -103,8 +106,8 @@ export async function POST(
       organization: (organization || "").trim(),
       designation: (designation || "").trim(),
       mobileNumber: (mobileNumber || "").trim(),
-      addToWhatsapp: !!addToWhatsapp,
-      whatsappNumber: whatsappNumber?.trim() || undefined,
+      addToWhatsapp: addToWhatsappEffective,
+      whatsappNumber: whatsappNumberEffective,
       identityCardOrPassport: identityCardOrPassport?.trim() || undefined,
       specialComment: specialComment?.trim() || undefined,
       apparelSize: apparelSize?.trim() || undefined,

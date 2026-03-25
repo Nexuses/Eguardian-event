@@ -202,10 +202,10 @@ export default function EditEventPage() {
       <div>
         <p className="text-red-600 dark:text-red-400">{error || "Event not found"}</p>
         <Link
-          href="/admin/create-event"
+          href="/admin/events"
           className="mt-4 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
         >
-          ← Back to Create Event
+          ← Back to All Events
         </Link>
       </div>
     );
@@ -215,10 +215,10 @@ export default function EditEventPage() {
     <div>
       <div className="mb-6 flex items-center gap-4">
         <Link
-          href="/admin/create-event"
+          href="/admin/events"
           className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
-          ← Back to Create Event
+          ← Back to All Events
         </Link>
       </div>
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">

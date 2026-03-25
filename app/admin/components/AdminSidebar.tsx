@@ -7,6 +7,7 @@ const LOGO_URL =
 
 const navItems = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/events", label: "All Events" },
   { href: "/admin/create-event", label: "Create Event" },
   { href: "/admin/eligible", label: "Eligible Client" },
   { href: "/admin/registrations", label: "Registered Client" },

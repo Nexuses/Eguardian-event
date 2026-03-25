@@ -56,17 +56,14 @@ export function RegisterForm({
 
   const apparelSizes = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL", "XXXXXL"];
 
-  const whatsappForcedOn = !!event.requireWhatsAppNumber;
+  const whatsappRequired = !!event.requireWhatsAppNumber;
+  const whatsappUsingMobile = whatsappRequired && !addToWhatsapp;
 
-  // If admin marks WhatsApp number as required, keep the WhatsApp toggle ON.
-  // Pre-fill whatsapp number with mobile number if whatsapp number is empty.
+  // When WhatsApp is required and user did NOT turn on the toggle, we use Mobile as WhatsApp.
   useEffect(() => {
-    if (!whatsappForcedOn) return;
-    setAddToWhatsapp(true);
-    if (!whatsappNumber.trim() && mobileNumber.trim()) {
-      setWhatsappNumber(mobileNumber);
-    }
-  }, [whatsappForcedOn, mobileNumber, whatsappNumber]);
+    if (!whatsappUsingMobile) return;
+    setWhatsappNumber(mobileNumber);
+  }, [whatsappUsingMobile, mobileNumber]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,8 +76,8 @@ export function RegisterForm({
       setError("Organization, designation and mobile number are required.");
       return;
     }
-    if (event.requireWhatsAppNumber && addToWhatsapp && !whatsappNumber.trim()) {
-      setError("WhatsApp number is required when Add to WhatsApp is on.");
+    if (event.requireWhatsAppNumber && !whatsappNumber.trim()) {
+      setError("WhatsApp number is required.");
       return;
     }
     if (event.collectApparelSize && event.requireApparelSize && !apparelSize.trim()) {
@@ -120,8 +117,8 @@ export function RegisterForm({
           organization,
           designation,
           mobileNumber,
-          addToWhatsapp,
-          whatsappNumber: addToWhatsapp ? whatsappNumber : undefined,
+          addToWhatsapp: whatsappRequired ? true : addToWhatsapp,
+          whatsappNumber: whatsappRequired || addToWhatsapp ? whatsappNumber : undefined,
           ...(event.collectApparelSize && { apparelSize: apparelSize || undefined }),
           ...(event.collectOvernightStay && { overnightStay: overnightStay }),
           ...(event.collectPassportNic && { passportNic: passportNic || undefined }),
@@ -266,18 +263,22 @@ export function RegisterForm({
             type="button"
             role="switch"
             aria-checked={addToWhatsapp}
-          aria-disabled={whatsappForcedOn}
           onClick={() => {
-            if (whatsappForcedOn) return;
-            const next = !addToWhatsapp;
-            setAddToWhatsapp(next);
-            if (next) setWhatsappNumber(mobileNumber);
+              const next = !addToWhatsapp;
+              setAddToWhatsapp(next);
+              // If toggle is OFF and WhatsApp is required, WhatsApp uses mobile.
+              if (whatsappRequired && !next) {
+                setWhatsappNumber(mobileNumber);
+              }
+              // If toggle is ON (user wants different number) keep the current input.
+              // For non-required mode, start with mobile as a default.
+              if (!whatsappRequired && next) {
+                setWhatsappNumber(mobileNumber);
+              }
           }}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
-            whatsappForcedOn
-              ? "cursor-not-allowed bg-orange-500/70 border-transparent opacity-80"
-              : "cursor-pointer"
-          } ${addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"}`}
+              addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
+            }`}
           >
             <span
               className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
@@ -289,19 +290,24 @@ export function RegisterForm({
         </div>
       </div>
 
-      {addToWhatsapp && (
+        {(addToWhatsapp || whatsappRequired) && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
             WhatsApp Number {event.requireWhatsAppNumber ? <span className="text-red-500">*</span> : null}
           </label>
-          <input
-            type="tel"
-            value={whatsappNumber}
-            onChange={(e) => setWhatsappNumber(e.target.value)}
-            required={!!event.requireWhatsAppNumber}
-            className={inputClass}
-            placeholder="WhatsApp number"
-          />
+          <div className="flex items-start gap-2">
+            <input
+              type="tel"
+              inputMode="tel"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              required={!!event.requireWhatsAppNumber}
+                readOnly={whatsappUsingMobile}
+                aria-readonly={whatsappUsingMobile}
+              className={inputClass}
+              placeholder="WhatsApp number"
+            />
+          </div>
         </div>
       )}
 
