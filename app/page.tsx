@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Home() {
-  let events: Awaited<ReturnType<typeof listEvents>> = [];
+  let events: Awaited<ReturnType<typeof listPublishedEvents>> = [];
   try {
     events = await listPublishedEvents();
   } catch {
