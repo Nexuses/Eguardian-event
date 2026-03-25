@@ -57,13 +57,22 @@ export function RegisterForm({
   const apparelSizes = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL", "XXXXXL"];
 
   const whatsappRequired = !!event.requireWhatsAppNumber;
-  const whatsappUsingMobile = whatsappRequired && !addToWhatsapp;
 
-  // When WhatsApp is required and user did NOT turn on the toggle, we use Mobile as WhatsApp.
+  // If admin marks WhatsApp as required, force the toggle ON.
+  // This prevents the user from turning it off (so we don't auto-fill while OFF).
   useEffect(() => {
-    if (!whatsappUsingMobile) return;
+    if (!whatsappRequired) return;
+    setAddToWhatsapp(true);
+  }, [whatsappRequired]);
+
+  // When WhatsApp toggle is ON and WhatsApp number is empty, start with Mobile number.
+  // We only auto-fill in that case to avoid overwriting user's custom WhatsApp input.
+  useEffect(() => {
+    if (!addToWhatsapp) return;
+    if (!mobileNumber.trim()) return;
+    if (whatsappNumber.trim()) return;
     setWhatsappNumber(mobileNumber);
-  }, [whatsappUsingMobile, mobileNumber]);
+  }, [addToWhatsapp, mobileNumber, whatsappNumber]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -264,17 +273,10 @@ export function RegisterForm({
             role="switch"
             aria-checked={addToWhatsapp}
           onClick={() => {
+              if (whatsappRequired) return; // admin-required: keep it ON
               const next = !addToWhatsapp;
               setAddToWhatsapp(next);
-              // If toggle is OFF and WhatsApp is required, WhatsApp uses mobile.
-              if (whatsappRequired && !next) {
-                setWhatsappNumber(mobileNumber);
-              }
-              // If toggle is ON (user wants different number) keep the current input.
-              // For non-required mode, start with mobile as a default.
-              if (!whatsappRequired && next) {
-                setWhatsappNumber(mobileNumber);
-              }
+              // In non-required mode, when turning ON we use the effect above to pre-fill.
           }}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
               addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
@@ -302,8 +304,6 @@ export function RegisterForm({
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
               required={!!event.requireWhatsAppNumber}
-                readOnly={whatsappUsingMobile}
-                aria-readonly={whatsappUsingMobile}
               className={inputClass}
               placeholder="WhatsApp number"
             />
