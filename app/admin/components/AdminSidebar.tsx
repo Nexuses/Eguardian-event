@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const LOGO_URL =
   "https://eguardian-uae.s3.us-east-2.amazonaws.com/EGUARDIAN-Lanka-Pvt-Ltd-Logo-1-1024x288.jpg";
@@ -21,6 +22,13 @@ export function AdminSidebar({
   open?: boolean;
   onClose?: () => void;
 }) {
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/admin") return pathname === "/admin";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
     <>
       <aside
@@ -43,17 +51,27 @@ export function AdminSidebar({
             />
           </Link>
         </div>
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
-          {navItems.map((item) => (
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <div className="space-y-1.5">
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className="block rounded-md px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+              aria-current={active ? "page" : undefined}
+              className={`group flex items-center rounded-xl border border-transparent px-3 py-2.5 text-[15px] font-semibold transition-colors ${
+                active
+                  ? "bg-zinc-100 text-zinc-900 shadow-sm ring-1 ring-zinc-900/40 border-zinc-900/80 dark:bg-zinc-800/70 dark:text-zinc-50 dark:ring-1 dark:ring-zinc-200/50 dark:border-zinc-200/60"
+                  : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+              }`}
             >
-              {item.label}
+              <span>{item.label}</span>
             </Link>
-          ))}
+              );
+            })}
+          </div>
         </nav>
       </aside>
     </>

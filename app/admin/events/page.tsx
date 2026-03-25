@@ -28,6 +28,7 @@ type EventItem = {
   requireOvernightStay?: boolean;
   requirePassportNic?: boolean;
   requireTransport?: boolean;
+  published?: boolean;
   createdAt: string;
 };
 
@@ -84,6 +85,7 @@ export default function AllEventsPage() {
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((ev) => {
             const status = effectiveRegistrationStatus(ev);
+            const isPublished = ev.published ?? true;
             return (
               <article
                 key={ev._id}
@@ -102,15 +104,26 @@ export default function AllEventsPage() {
                     <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
                       {ev.eventName}
                     </h3>
-                    <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                        status === "open"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
-                      }`}
-                    >
-                      {status === "open" ? "Open" : "Closed"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                          status === "open"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                            : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
+                        }`}
+                      >
+                        {status === "open" ? "Open" : "Closed"}
+                      </span>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                          isPublished
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200"
+                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                        }`}
+                      >
+                        {isPublished ? "Published" : "Unpublished"}
+                      </span>
+                    </div>
                   </div>
                   <p className="mb-1 text-xs font-mono text-zinc-500 dark:text-zinc-400">{ev.eventId}</p>
                   <dl className="mt-2 space-y-1.5 text-sm">
