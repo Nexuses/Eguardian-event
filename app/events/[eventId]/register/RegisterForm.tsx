@@ -57,22 +57,14 @@ export function RegisterForm({
   const apparelSizes = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL", "XXXXXL"];
 
   const whatsappRequired = !!event.requireWhatsAppNumber;
+  const whatsappUsingMobile = addToWhatsapp; // toggle means "WhatsApp number = Mobile number"
 
-  // If admin marks WhatsApp as required, force the toggle ON.
-  // This prevents the user from turning it off (so we don't auto-fill while OFF).
+  // When toggle is ON, always sync WhatsApp number with Mobile.
+  // When toggle is OFF, we don't touch whatsappNumber (user can type or leave it empty).
   useEffect(() => {
-    if (!whatsappRequired) return;
-    setAddToWhatsapp(true);
-  }, [whatsappRequired]);
-
-  // When WhatsApp toggle is ON and WhatsApp number is empty, start with Mobile number.
-  // We only auto-fill in that case to avoid overwriting user's custom WhatsApp input.
-  useEffect(() => {
-    if (!addToWhatsapp) return;
-    if (!mobileNumber.trim()) return;
-    if (whatsappNumber.trim()) return;
+    if (!whatsappUsingMobile) return;
     setWhatsappNumber(mobileNumber);
-  }, [addToWhatsapp, mobileNumber, whatsappNumber]);
+  }, [whatsappUsingMobile, mobileNumber]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -126,8 +118,12 @@ export function RegisterForm({
           organization,
           designation,
           mobileNumber,
-          addToWhatsapp: whatsappRequired ? true : addToWhatsapp,
-          whatsappNumber: whatsappRequired || addToWhatsapp ? whatsappNumber : undefined,
+          addToWhatsapp,
+          whatsappNumber: whatsappRequired
+            ? whatsappNumber?.trim() || undefined
+            : addToWhatsapp
+              ? whatsappNumber?.trim() || undefined
+              : undefined,
           ...(event.collectApparelSize && { apparelSize: apparelSize || undefined }),
           ...(event.collectOvernightStay && { overnightStay: overnightStay }),
           ...(event.collectPassportNic && { passportNic: passportNic || undefined }),
@@ -273,10 +269,9 @@ export function RegisterForm({
             role="switch"
             aria-checked={addToWhatsapp}
           onClick={() => {
-              if (whatsappRequired) return; // admin-required: keep it ON
               const next = !addToWhatsapp;
               setAddToWhatsapp(next);
-              // In non-required mode, when turning ON we use the effect above to pre-fill.
+              if (next) setWhatsappNumber(mobileNumber);
           }}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
               addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
@@ -304,6 +299,8 @@ export function RegisterForm({
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
               required={!!event.requireWhatsAppNumber}
+              readOnly={whatsappUsingMobile}
+              aria-readonly={whatsappUsingMobile}
               className={inputClass}
               placeholder="WhatsApp number"
             />
