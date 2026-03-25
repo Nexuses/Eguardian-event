@@ -32,9 +32,11 @@ function safeText(s: string): string {
 export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const widthPt = PASS_WIDTH_MM * PT_PER_MM;
   const heightPt = PASS_HEIGHT_MM * PT_PER_MM;
-  const FONT_NAME = 14;
-  const FONT_ORG = 11;
+  const FONT_FIRST = 17; // row 1 (bigger first name)
+  const FONT_LAST = 13; // row 2
+  const FONT_COMPANY = 11; // row 3
   const LINE_GAP = 4;
+  const LINE_GAP_23_EXTRA = 1; // extra spacing between last name and company
 
   const doc = await PDFDocument.create();
   const page = doc.addPage([widthPt, heightPt]);
@@ -43,36 +45,43 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
 
   const black = rgb(0.09, 0.09, 0.11);
 
-  // 2. Border (after logo so border is on top)
-  page.drawRectangle({
-    x: 0,
-    y: 0,
-    width: widthPt,
-    height: heightPt,
-    borderWidth: 1,
-    borderColor: rgb(0, 0, 0),
-  });
+  // 3-row layout:
+  // Row 1: First name ONLY (bold)
+  // Row 2: Last name ONLY
+  // Row 3: Company ONLY
+  const firstStr = safeText(data.firstName);
+  const lastStr = safeText(data.surname);
+  const companyStr = safeText(data.organization || "-");
 
-  // Centered content only: Name + Company
-  const nameStr = safeText(`${data.firstName} ${data.surname}`);
-  const organizationStr = safeText(data.organization || "-");
-  const nameWidth = helveticaBold.widthOfTextAtSize(nameStr, FONT_NAME);
-  const orgWidth = helvetica.widthOfTextAtSize(organizationStr, FONT_ORG);
-  const blockHeight = FONT_NAME + LINE_GAP + FONT_ORG;
-  const yNameBaseline = (heightPt + blockHeight) / 2 - FONT_NAME;
-  page.drawText(nameStr, {
-    x: Math.max(4, (widthPt - nameWidth) / 2),
-    y: yNameBaseline,
-    size: FONT_NAME,
+  const row1Width = helveticaBold.widthOfTextAtSize(firstStr, FONT_FIRST);
+  const row2Width = helvetica.widthOfTextAtSize(lastStr, FONT_LAST);
+  const row3Width = helvetica.widthOfTextAtSize(companyStr, FONT_COMPANY);
+
+  const blockHeight = FONT_FIRST + LINE_GAP + FONT_LAST + (LINE_GAP + LINE_GAP_23_EXTRA) + FONT_COMPANY;
+  const yRow1Baseline = (heightPt + blockHeight) / 2 - FONT_FIRST;
+  const yRow2Baseline = yRow1Baseline - LINE_GAP - FONT_LAST;
+  const yRow3Baseline = yRow2Baseline - (LINE_GAP + LINE_GAP_23_EXTRA) - FONT_COMPANY;
+
+  page.drawText(firstStr, {
+    x: Math.max(4, (widthPt - row1Width) / 2),
+    y: yRow1Baseline,
+    size: FONT_FIRST,
     font: helveticaBold,
     color: black,
   });
 
-  const yOrgBaseline = yNameBaseline - LINE_GAP - FONT_ORG;
-  page.drawText(organizationStr, {
-    x: Math.max(4, (widthPt - orgWidth) / 2),
-    y: yOrgBaseline,
-    size: FONT_ORG,
+  page.drawText(lastStr, {
+    x: Math.max(4, (widthPt - row2Width) / 2),
+    y: yRow2Baseline,
+    size: FONT_LAST,
+    font: helvetica,
+    color: black,
+  });
+
+  page.drawText(companyStr, {
+    x: Math.max(4, (widthPt - row3Width) / 2),
+    y: yRow3Baseline,
+    size: FONT_COMPANY,
     font: helvetica,
     color: black,
   });

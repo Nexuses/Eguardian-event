@@ -4,6 +4,9 @@ import { parseEventDateTime } from "@/lib/date-utils";
 import { createEvent, listEvents } from "@/lib/models/Event";
 import { saveBannerFile } from "@/lib/banner-upload";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   const admin = await getAdminFromCookie();
   if (!admin) {
@@ -11,7 +14,11 @@ export async function GET() {
   }
   try {
     const events = await listEvents();
-    return NextResponse.json(events);
+    return NextResponse.json(events, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (err) {
     console.error("List events error:", err);
     return NextResponse.json(
@@ -44,6 +51,12 @@ export async function POST(request: Request) {
     let collectOvernightStay: boolean;
     let collectPassportNic: boolean;
     let collectTransport: boolean;
+    let requireWhatsAppNumber: boolean;
+    let requireApparelSize: boolean;
+    let requireOvernightStay: boolean;
+    let requirePassportNic: boolean;
+    let requireTransport: boolean;
+    let published: boolean;
     let transportLocation1: string;
     let transportLocation2: string;
     let transportLocation3: string;
@@ -67,6 +80,12 @@ export async function POST(request: Request) {
       collectOvernightStay = formData.get("collectOvernightStay") === "true" || formData.get("collectOvernightStay") === "1";
       collectPassportNic = formData.get("collectPassportNic") === "true" || formData.get("collectPassportNic") === "1";
       collectTransport = formData.get("collectTransport") === "true" || formData.get("collectTransport") === "1";
+      requireWhatsAppNumber = formData.get("requireWhatsAppNumber") === "true" || formData.get("requireWhatsAppNumber") === "1";
+      requireApparelSize = formData.get("requireApparelSize") === "true" || formData.get("requireApparelSize") === "1";
+      requireOvernightStay = formData.get("requireOvernightStay") === "true" || formData.get("requireOvernightStay") === "1";
+      requirePassportNic = formData.get("requirePassportNic") === "true" || formData.get("requirePassportNic") === "1";
+      requireTransport = formData.get("requireTransport") === "true" || formData.get("requireTransport") === "1";
+      published = formData.get("published") === "true" || formData.get("published") === "1";
       transportLocation1 = (formData.get("transportLocation1") as string) || "";
       transportLocation2 = (formData.get("transportLocation2") as string) || "";
       transportLocation3 = (formData.get("transportLocation3") as string) || "";
@@ -92,6 +111,12 @@ export async function POST(request: Request) {
       collectOvernightStay = !!body.collectOvernightStay;
       collectPassportNic = !!body.collectPassportNic;
       collectTransport = !!body.collectTransport;
+      requireWhatsAppNumber = !!body.requireWhatsAppNumber;
+      requireApparelSize = !!body.requireApparelSize;
+      requireOvernightStay = !!body.requireOvernightStay;
+      requirePassportNic = !!body.requirePassportNic;
+      requireTransport = !!body.requireTransport;
+      published = !!body.published;
       transportLocation1 = body.transportLocation1 ?? "";
       transportLocation2 = body.transportLocation2 ?? "";
       transportLocation3 = body.transportLocation3 ?? "";
@@ -142,6 +167,12 @@ export async function POST(request: Request) {
       collectOvernightStay: !!collectOvernightStay,
       collectPassportNic: !!collectPassportNic,
       collectTransport: !!collectTransport,
+      requireWhatsAppNumber: !!requireWhatsAppNumber,
+      requireApparelSize: !!requireApparelSize,
+      requireOvernightStay: !!requireOvernightStay,
+      requirePassportNic: !!requirePassportNic,
+      requireTransport: !!requireTransport,
+      published: !!published,
       transportLocations: collectTransport
         ? [transportLocation1, transportLocation2, transportLocation3].map((s) => (s || "").trim()).filter(Boolean)
         : [],

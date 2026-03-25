@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { listEvents } from "@/lib/models/Event";
+import { listPublishedEvents } from "@/lib/models/Event";
 
 export async function GET() {
   try {
-    const events = await listEvents();
+    const events = await listPublishedEvents();
     return NextResponse.json(events);
   } catch (err) {
     console.error("List events error:", err);

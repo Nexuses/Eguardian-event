@@ -114,13 +114,20 @@ export default async function PassPage({
         {/* PRINT PASS (58mm×40mm - only visible when printing) */}
         <div
           id="event-pass"
-          className="hidden print:!block print:!m-0 print:!h-[40mm] print:!w-[58mm] print:!max-w-[58mm] print:!overflow-hidden print:!rounded-none print:!border print:!border-black print:!p-2 print:!shadow-none print:!bg-white"
+          className="hidden print:!block print:!m-0 print:!h-[40mm] print:!w-[58mm] print:!max-w-[58mm] print:!overflow-hidden print:!rounded-none print:!p-2 print:!shadow-none print:!bg-white"
         >
           <div className="print:!flex print:!h-full print:!flex-col print:!items-center print:!justify-center print:!text-center">
-            <p className="print:!text-[17px] print:!font-bold print:!text-black">
-              {reg.firstName} {reg.surname}
+            {/* 3-row name layout for print:
+                Row 1: First name only (bold)
+                Row 2: Last name only
+                Row 3: Company name only */}
+            <p className="print:!text-[21px] print:!font-bold print:!text-black">
+              {reg.firstName}
             </p>
-            <p className="print:!mt-1 print:!text-[14px] print:!text-black">
+            <p className="print:!mt-1 print:!text-[16px] print:!font-medium print:!text-black">
+              {reg.surname}
+            </p>
+            <p className="print:!mt-1 print:!text-[14px] print:!font-normal print:!text-black">
               {reg.organization || "—"}
             </p>
           </div>

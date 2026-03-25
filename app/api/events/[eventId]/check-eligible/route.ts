@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getEventByEventId, getEffectiveRegistrationStatus } from "@/lib/models/Event";
+import { getPublishedEventByEventId, getEffectiveRegistrationStatus } from "@/lib/models/Event";
 import { isEligible } from "@/lib/models/EligibleEmail";
 import { findRegistrationByEventAndEmail } from "@/lib/models/Registration";
 
@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { eventId } = await params;
-    const event = await getEventByEventId(eventId);
+    const event = await getPublishedEventByEventId(eventId);
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }

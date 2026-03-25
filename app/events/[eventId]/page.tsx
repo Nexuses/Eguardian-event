@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import {
-  getEventByEventId,
   getEventBannerUrl,
   getEffectiveRegistrationStatus,
 } from "@/lib/models/Event";
+import { getPublishedEventByEventId } from "@/lib/models/Event";
 import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-utils";
 import { CheckEligibleForm } from "./CheckEligibleForm";
 import { RegistrationClosedCard } from "./RegistrationClosedMessage";
@@ -29,7 +29,7 @@ export default async function EventPage({
   params: Promise<{ eventId: string }>;
 }) {
   const { eventId } = await params;
-  const event = await getEventByEventId(eventId);
+  const event = await getPublishedEventByEventId(eventId);
   if (!event) notFound();
   const registrationStatus = getEffectiveRegistrationStatus(event);
 

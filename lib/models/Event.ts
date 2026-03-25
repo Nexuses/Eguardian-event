@@ -14,10 +14,14 @@ export interface EventDoc {
   eventBanner: string; // URL or path like /events/xxx.jpg
   eventStartDate: Date;
   eventEndDate: Date;
+  /** If true, event is visible on the public frontend */
+  published?: boolean;
   registrationStartDate?: Date;
   registrationEndDate?: Date;
   /** If true, registration form shows a Transport dropdown with these locations */
   collectTransport?: boolean;
+  /** If true and Transport is collected, attendee must opt-in to Transport (Yes) */
+  requireTransport?: boolean;
   /** Exactly 3 locations (strings) shown in the dropdown when collectTransport is enabled */
   transportLocations?: string[];
   venue: string;
@@ -28,10 +32,18 @@ export interface EventDoc {
   registrationType?: RegistrationType;
   /** If true, registration form shows Apparel - sizes field */
   collectApparelSize?: boolean;
+  /** If true and Apparel - sizes is collected, attendee must select a size */
+  requireApparelSize?: boolean;
   /** If true, registration form shows Overnight Stay field */
   collectOvernightStay?: boolean;
+  /** If true and Overnight Stay is collected, attendee must opt-in to Overnight Stay (Yes) */
+  requireOvernightStay?: boolean;
   /** If true, registration form shows Passport/NIC field */
   collectPassportNic?: boolean;
+  /** If true and Passport/NIC is collected, attendee must provide Passport/NIC */
+  requirePassportNic?: boolean;
+  /** If true, when attendee enables "Add to WhatsApp", whatsapp number becomes required */
+  requireWhatsAppNumber?: boolean;
   createdAt: Date;
 }
 
@@ -85,9 +97,11 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     eventBanner: data.eventBanner.trim() || "",
     eventStartDate: new Date(data.eventStartDate),
     eventEndDate: new Date(data.eventEndDate),
+    published: data.published ?? false,
     registrationStartDate: data.registrationStartDate ? new Date(data.registrationStartDate) : undefined,
     registrationEndDate: data.registrationEndDate ? new Date(data.registrationEndDate) : undefined,
     collectTransport: data.collectTransport ?? false,
+    requireTransport: data.requireTransport ?? false,
     transportLocations: data.transportLocations ?? [],
     venue: data.venue.trim(),
     speaker: data.speaker.trim(),
@@ -95,8 +109,12 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
     registrationStatus: data.registrationStatus,
     registrationType: data.registrationType ?? "invitees_only",
     collectApparelSize: data.collectApparelSize ?? false,
+    requireApparelSize: data.requireApparelSize ?? false,
     collectOvernightStay: data.collectOvernightStay ?? false,
+    requireOvernightStay: data.requireOvernightStay ?? false,
     collectPassportNic: data.collectPassportNic ?? false,
+    requirePassportNic: data.requirePassportNic ?? false,
+    requireWhatsAppNumber: data.requireWhatsAppNumber ?? false,
     createdAt: new Date(),
   };
   const result = await col.insertOne(doc);
@@ -109,6 +127,15 @@ export async function listEvents(): Promise<EventDoc[]> {
   return cursor.toArray();
 }
 
+export async function listPublishedEvents(): Promise<EventDoc[]> {
+  const col = await getEventsCollection();
+  // Backward compatibility: if `published` is missing, treat it as published.
+  const cursor = col
+    .find({ $or: [{ published: true }, { published: { $exists: false } }] })
+    .sort({ createdAt: -1 });
+  return cursor.toArray();
+}
+
 export async function getEventById(id: string): Promise<EventDoc | null> {
   const col = await getEventsCollection();
   if (!ObjectId.isValid(id)) return null;
@@ -118,6 +145,12 @@ export async function getEventById(id: string): Promise<EventDoc | null> {
 export async function getEventByEventId(eventId: string): Promise<EventDoc | null> {
   const col = await getEventsCollection();
   return col.findOne({ eventId });
+}
+
+export async function getPublishedEventByEventId(eventId: string): Promise<EventDoc | null> {
+  const col = await getEventsCollection();
+  // Backward compatibility: if `published` is missing, treat it as published.
+  return col.findOne({ eventId, $or: [{ published: true }, { published: { $exists: false } }] });
 }
 
 export async function updateEvent(
@@ -138,6 +171,7 @@ export async function updateEvent(
     update.registrationEndDate = data.registrationEndDate ? new Date(data.registrationEndDate) : null;
   }
   if (data.collectTransport !== undefined) update.collectTransport = data.collectTransport;
+  if (data.requireTransport !== undefined) update.requireTransport = data.requireTransport;
   if (data.transportLocations !== undefined) update.transportLocations = data.transportLocations;
   if (data.venue !== undefined) update.venue = data.venue.trim();
   if (data.speaker !== undefined) update.speaker = data.speaker.trim();
@@ -145,8 +179,13 @@ export async function updateEvent(
   if (data.registrationStatus !== undefined) update.registrationStatus = data.registrationStatus;
   if (data.registrationType !== undefined) update.registrationType = data.registrationType;
   if (data.collectApparelSize !== undefined) update.collectApparelSize = data.collectApparelSize;
+  if (data.requireApparelSize !== undefined) update.requireApparelSize = data.requireApparelSize;
   if (data.collectOvernightStay !== undefined) update.collectOvernightStay = data.collectOvernightStay;
+  if (data.requireOvernightStay !== undefined) update.requireOvernightStay = data.requireOvernightStay;
   if (data.collectPassportNic !== undefined) update.collectPassportNic = data.collectPassportNic;
+  if (data.requirePassportNic !== undefined) update.requirePassportNic = data.requirePassportNic;
+  if (data.requireWhatsAppNumber !== undefined) update.requireWhatsAppNumber = data.requireWhatsAppNumber;
+  if (data.published !== undefined) update.published = data.published;
   const result = await col.findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: update },

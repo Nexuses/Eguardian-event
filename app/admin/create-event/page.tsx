@@ -21,6 +21,12 @@ type EventItem = {
   collectApparelSize?: boolean;
   collectOvernightStay?: boolean;
   collectPassportNic?: boolean;
+  collectTransport?: boolean;
+  requireWhatsAppNumber?: boolean;
+  requireApparelSize?: boolean;
+  requireOvernightStay?: boolean;
+  requirePassportNic?: boolean;
+  requireTransport?: boolean;
   createdAt: string;
 };
 
@@ -47,10 +53,16 @@ export default function CreateEventPage() {
   const [phone, setPhone] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState<"open" | "closed">("open");
   const [registrationType, setRegistrationType] = useState<"open_for_all" | "invitees_only">("invitees_only");
+  const [published, setPublished] = useState(true);
   const [collectApparelSize, setCollectApparelSize] = useState(false);
   const [collectOvernightStay, setCollectOvernightStay] = useState(false);
   const [collectPassportNic, setCollectPassportNic] = useState(false);
   const [collectTransport, setCollectTransport] = useState(false);
+  const [requireWhatsAppNumber, setRequireWhatsAppNumber] = useState(false);
+  const [requireApparelSize, setRequireApparelSize] = useState(false);
+  const [requireOvernightStay, setRequireOvernightStay] = useState(false);
+  const [requirePassportNic, setRequirePassportNic] = useState(false);
+  const [requireTransport, setRequireTransport] = useState(false);
   const [transportLocation1, setTransportLocation1] = useState("");
   const [transportLocation2, setTransportLocation2] = useState("");
   const [transportLocation3, setTransportLocation3] = useState("");
@@ -99,10 +111,16 @@ export default function CreateEventPage() {
         formData.set("phone", phone);
         formData.set("registrationStatus", registrationStatus);
         formData.set("registrationType", registrationType);
+        formData.set("published", published ? "true" : "false");
         formData.set("collectApparelSize", collectApparelSize ? "true" : "false");
         formData.set("collectOvernightStay", collectOvernightStay ? "true" : "false");
         formData.set("collectPassportNic", collectPassportNic ? "true" : "false");
         formData.set("collectTransport", collectTransport ? "true" : "false");
+        formData.set("requireWhatsAppNumber", requireWhatsAppNumber ? "true" : "false");
+        formData.set("requireApparelSize", requireApparelSize ? "true" : "false");
+        formData.set("requireOvernightStay", requireOvernightStay ? "true" : "false");
+        formData.set("requirePassportNic", requirePassportNic ? "true" : "false");
+        formData.set("requireTransport", requireTransport ? "true" : "false");
         formData.set("transportLocation1", transportLocation1);
         formData.set("transportLocation2", transportLocation2);
         formData.set("transportLocation3", transportLocation3);
@@ -123,10 +141,16 @@ export default function CreateEventPage() {
             phone,
             registrationStatus,
             registrationType,
+            published,
             collectApparelSize,
             collectOvernightStay,
             collectPassportNic,
             collectTransport,
+            requireWhatsAppNumber,
+            requireApparelSize,
+            requireOvernightStay,
+            requirePassportNic,
+            requireTransport,
             transportLocation1,
             transportLocation2,
             transportLocation3,
@@ -150,10 +174,16 @@ export default function CreateEventPage() {
       setPhone("");
       setRegistrationStatus("open");
       setRegistrationType("invitees_only");
+      setPublished(true);
       setCollectApparelSize(false);
       setCollectOvernightStay(false);
       setCollectPassportNic(false);
       setCollectTransport(false);
+      setRequireWhatsAppNumber(false);
+      setRequireApparelSize(false);
+      setRequireOvernightStay(false);
+      setRequirePassportNic(false);
+      setRequireTransport(false);
       setTransportLocation1("");
       setTransportLocation2("");
       setTransportLocation3("");
@@ -262,45 +292,128 @@ export default function CreateEventPage() {
               <option value="invitees_only">Only for invitees</option>
             </select>
           </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Publish status</label>
+            <select
+              value={published ? "published" : "unpublished"}
+              onChange={(e) => setPublished(e.target.value === "published")}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            >
+              <option value="published">Publish</option>
+              <option value="unpublished">Unpublish</option>
+            </select>
+          </div>
           <div className="sm:col-span-2 space-y-3">
             <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration form fields (toggle to show in registration)</p>
-            <div className="flex flex-wrap gap-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={collectApparelSize}
-                  onChange={(e) => setCollectApparelSize(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
-                />
-                <span className="text-sm text-zinc-900 dark:text-zinc-100">Apparel - sizes</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={collectOvernightStay}
-                  onChange={(e) => setCollectOvernightStay(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
-                />
-                <span className="text-sm text-zinc-900 dark:text-zinc-100">Overnight Stay</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={collectPassportNic}
-                  onChange={(e) => setCollectPassportNic(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
-                />
-                <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={collectTransport}
-                  onChange={(e) => setCollectTransport(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
-                />
-                <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport</span>
-              </label>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={collectApparelSize}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      setCollectApparelSize(next);
+                      if (!next) setRequireApparelSize(false);
+                    }}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Apparel - sizes</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={collectOvernightStay}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      setCollectOvernightStay(next);
+                      if (!next) setRequireOvernightStay(false);
+                    }}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Overnight Stay</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={collectPassportNic}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      setCollectPassportNic(next);
+                      if (!next) setRequirePassportNic(false);
+                    }}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={collectTransport}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      setCollectTransport(next);
+                      if (!next) setRequireTransport(false);
+                    }}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport</span>
+                </label>
+              </div>
+
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireApparelSize}
+                    disabled={!collectApparelSize}
+                    onChange={(e) => setRequireApparelSize(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Size required</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireOvernightStay}
+                    disabled={!collectOvernightStay}
+                    onChange={(e) => setRequireOvernightStay(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Stay required</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requirePassportNic}
+                    disabled={!collectPassportNic}
+                    onChange={(e) => setRequirePassportNic(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport required</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireTransport}
+                    disabled={!collectTransport}
+                    onChange={(e) => setRequireTransport(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport required</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireWhatsAppNumber}
+                    onChange={(e) => setRequireWhatsAppNumber(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                    WhatsApp number required
+                  </span>
+                </label>
+              </div>
             </div>
 
             {collectTransport && (

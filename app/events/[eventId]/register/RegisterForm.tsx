@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type EventSnap = {
@@ -14,9 +14,14 @@ type EventSnap = {
   phone?: string;
   registrationStatus?: string;
   collectApparelSize?: boolean;
+  requireApparelSize?: boolean;
   collectOvernightStay?: boolean;
+  requireOvernightStay?: boolean;
   collectPassportNic?: boolean;
+  requirePassportNic?: boolean;
   collectTransport?: boolean;
+  requireTransport?: boolean;
+  requireWhatsAppNumber?: boolean;
   transportLocations?: string[];
 };
 
@@ -51,6 +56,18 @@ export function RegisterForm({
 
   const apparelSizes = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL", "XXXXXL"];
 
+  const whatsappForcedOn = !!event.requireWhatsAppNumber;
+
+  // If admin marks WhatsApp number as required, keep the WhatsApp toggle ON.
+  // Pre-fill whatsapp number with mobile number if whatsapp number is empty.
+  useEffect(() => {
+    if (!whatsappForcedOn) return;
+    setAddToWhatsapp(true);
+    if (!whatsappNumber.trim() && mobileNumber.trim()) {
+      setWhatsappNumber(mobileNumber);
+    }
+  }, [whatsappForcedOn, mobileNumber, whatsappNumber]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -62,19 +79,32 @@ export function RegisterForm({
       setError("Organization, designation and mobile number are required.");
       return;
     }
-    if (addToWhatsapp && !whatsappNumber.trim()) {
+    if (event.requireWhatsAppNumber && addToWhatsapp && !whatsappNumber.trim()) {
       setError("WhatsApp number is required when Add to WhatsApp is on.");
       return;
     }
-    if (event.collectApparelSize && !apparelSize) {
+    if (event.collectApparelSize && event.requireApparelSize && !apparelSize.trim()) {
       setError("Please select an apparel size.");
       return;
     }
-    if (event.collectPassportNic && !passportNic.trim()) {
+    if (event.collectOvernightStay && event.requireOvernightStay && !overnightStay) {
+      setError("Overnight Stay is required.");
+      return;
+    }
+    if (event.collectPassportNic && event.requirePassportNic && !passportNic.trim()) {
       setError("Passport or NIC is required.");
       return;
     }
-    if (event.collectTransport && transportNeeded && !transportLocation.trim()) {
+    if (event.collectTransport && event.requireTransport && !transportNeeded) {
+      setError("Transport is required.");
+      return;
+    }
+    if (
+      event.collectTransport &&
+      transportNeeded &&
+      event.requireTransport &&
+      !transportLocation.trim()
+    ) {
       setError("Please select a transport location.");
       return;
     }
@@ -236,14 +266,18 @@ export function RegisterForm({
             type="button"
             role="switch"
             aria-checked={addToWhatsapp}
-            onClick={() => {
-              const next = !addToWhatsapp;
-              setAddToWhatsapp(next);
-              if (next) setWhatsappNumber(mobileNumber);
-            }}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
-              addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
-            }`}
+          aria-disabled={whatsappForcedOn}
+          onClick={() => {
+            if (whatsappForcedOn) return;
+            const next = !addToWhatsapp;
+            setAddToWhatsapp(next);
+            if (next) setWhatsappNumber(mobileNumber);
+          }}
+          className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+            whatsappForcedOn
+              ? "cursor-not-allowed bg-orange-500/70 border-transparent opacity-80"
+              : "cursor-pointer"
+          } ${addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"}`}
           >
             <span
               className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
@@ -258,13 +292,13 @@ export function RegisterForm({
       {addToWhatsapp && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            WhatsApp Number <span className="text-red-500">*</span>
+            WhatsApp Number {event.requireWhatsAppNumber ? <span className="text-red-500">*</span> : null}
           </label>
           <input
             type="tel"
             value={whatsappNumber}
             onChange={(e) => setWhatsappNumber(e.target.value)}
-            required
+            required={!!event.requireWhatsAppNumber}
             className={inputClass}
             placeholder="WhatsApp number"
           />
@@ -275,7 +309,8 @@ export function RegisterForm({
         <div>
           <div className="mb-1 flex items-center gap-2">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Apparel - sizes <span className="text-red-500">*</span>
+              Apparel - sizes{" "}
+              {event.requireApparelSize ? <span className="text-red-500">*</span> : null}
             </label>
             <button
               type="button"
@@ -288,7 +323,7 @@ export function RegisterForm({
           <select
             value={apparelSize}
             onChange={(e) => setApparelSize(e.target.value)}
-            required
+            required={!!event.requireApparelSize}
             className={inputClass}
           >
             <option value="">Select size</option>
@@ -332,7 +367,10 @@ export function RegisterForm({
       {event.collectOvernightStay && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Overnight Stay
+            Overnight Stay{" "}
+            {event.requireOvernightStay ? (
+              <span className="text-red-500">*</span>
+            ) : null}
           </label>
           <div className="flex items-center gap-2">
             <button
@@ -360,13 +398,16 @@ export function RegisterForm({
       {event.collectPassportNic && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Passport/NIC <span className="text-red-500">*</span>
+            Passport/NIC{" "}
+            {event.requirePassportNic ? (
+              <span className="text-red-500">*</span>
+            ) : null}
           </label>
           <input
             type="text"
             value={passportNic}
             onChange={(e) => setPassportNic(e.target.value)}
-            required
+            required={!!event.requirePassportNic}
             className={inputClass}
             placeholder="Passport or NIC number"
           />
@@ -376,7 +417,10 @@ export function RegisterForm({
       {event.collectTransport && (
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Transport
+            Transport{" "}
+            {event.requireTransport ? (
+              <span className="text-red-500">*</span>
+            ) : null}
           </label>
           <div className="flex items-center gap-2">
             <button
@@ -408,12 +452,15 @@ export function RegisterForm({
           {transportNeeded && (
             <div className="mt-3">
               <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Location <span className="text-red-500">*</span>
+                Location{" "}
+                {event.requireTransport ? (
+                  <span className="text-red-500">*</span>
+                ) : null}
               </label>
               <select
                 value={transportLocation}
                 onChange={(e) => setTransportLocation(e.target.value)}
-                required
+                required={!!event.requireTransport}
                 className={inputClass}
               >
                 <option value="">Select location</option>
@@ -427,19 +474,6 @@ export function RegisterForm({
           )}
         </div>
       )}
-
-      <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Special Comment
-        </label>
-        <textarea
-          value={specialComment}
-          onChange={(e) => setSpecialComment(e.target.value)}
-          rows={3}
-          className={inputClass}
-          placeholder="Any special requirements or comments"
-        />
-      </div>
 
       <div className="flex items-start gap-3">
         <input

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listEvents, getEventBannerUrl, getEffectiveRegistrationStatus } from "@/lib/models/Event";
+import { listPublishedEvents, getEventBannerUrl, getEffectiveRegistrationStatus } from "@/lib/models/Event";
 import { formatEventDate } from "@/lib/date-utils";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ export const revalidate = 0;
 export default async function Home() {
   let events: Awaited<ReturnType<typeof listEvents>> = [];
   try {
-    events = await listEvents();
+    events = await listPublishedEvents();
   } catch {
     events = [];
   }

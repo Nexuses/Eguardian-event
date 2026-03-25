@@ -4,6 +4,9 @@ import { parseEventDateTime } from "@/lib/date-utils";
 import { getEventById, updateEvent } from "@/lib/models/Event";
 import { saveBannerFile } from "@/lib/banner-upload";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ eventId: string }> }
@@ -18,7 +21,11 @@ export async function GET(
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    return NextResponse.json(event);
+    return NextResponse.json(event, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (err) {
     console.error("Get event error:", err);
     return NextResponse.json(
@@ -55,6 +62,12 @@ export async function PUT(
     let collectOvernightStay: boolean | undefined;
     let collectPassportNic: boolean | undefined;
     let collectTransport: boolean | undefined;
+    let requireWhatsAppNumber: boolean | undefined;
+    let requireApparelSize: boolean | undefined;
+    let requireOvernightStay: boolean | undefined;
+    let requirePassportNic: boolean | undefined;
+    let requireTransport: boolean | undefined;
+    let published: boolean | undefined;
     let transportLocation1: string | undefined;
     let transportLocation2: string | undefined;
     let transportLocation3: string | undefined;
@@ -80,6 +93,18 @@ export async function PUT(
       collectPassportNic = cp === "true" || cp === "1" ? true : cp === "false" || cp === "0" ? false : undefined;
       const ct = formData.get("collectTransport");
       collectTransport = ct === "true" || ct === "1" ? true : ct === "false" || ct === "0" ? false : undefined;
+      const rw = formData.get("requireWhatsAppNumber");
+      requireWhatsAppNumber = rw === "true" || rw === "1" ? true : rw === "false" || rw === "0" ? false : undefined;
+      const ra = formData.get("requireApparelSize");
+      requireApparelSize = ra === "true" || ra === "1" ? true : ra === "false" || ra === "0" ? false : undefined;
+      const ro = formData.get("requireOvernightStay");
+      requireOvernightStay = ro === "true" || ro === "1" ? true : ro === "false" || ro === "0" ? false : undefined;
+      const rp = formData.get("requirePassportNic");
+      requirePassportNic = rp === "true" || rp === "1" ? true : rp === "false" || rp === "0" ? false : undefined;
+      const rt = formData.get("requireTransport");
+      requireTransport = rt === "true" || rt === "1" ? true : rt === "false" || rt === "0" ? false : undefined;
+      const pub = formData.get("published");
+      published = pub === "true" || pub === "1" ? true : pub === "false" || pub === "0" ? false : undefined;
       transportLocation1 = (formData.get("transportLocation1") as string | null) ?? undefined;
       transportLocation2 = (formData.get("transportLocation2") as string | null) ?? undefined;
       transportLocation3 = (formData.get("transportLocation3") as string | null) ?? undefined;
@@ -104,6 +129,12 @@ export async function PUT(
       collectOvernightStay = body.collectOvernightStay;
       collectPassportNic = body.collectPassportNic;
       collectTransport = body.collectTransport;
+      requireWhatsAppNumber = body.requireWhatsAppNumber;
+      requireApparelSize = body.requireApparelSize;
+      requireOvernightStay = body.requireOvernightStay;
+      requirePassportNic = body.requirePassportNic;
+      requireTransport = body.requireTransport;
+      published = body.published === undefined ? undefined : !!body.published;
       transportLocation1 = body.transportLocation1;
       transportLocation2 = body.transportLocation2;
       transportLocation3 = body.transportLocation3;
@@ -152,6 +183,12 @@ export async function PUT(
       ...(collectOvernightStay !== undefined && { collectOvernightStay }),
       ...(collectPassportNic !== undefined && { collectPassportNic }),
       ...(collectTransport !== undefined && { collectTransport }),
+      ...(published !== undefined && { published }),
+      ...(requireWhatsAppNumber !== undefined && { requireWhatsAppNumber }),
+      ...(requireApparelSize !== undefined && { requireApparelSize }),
+      ...(requireOvernightStay !== undefined && { requireOvernightStay }),
+      ...(requirePassportNic !== undefined && { requirePassportNic }),
+      ...(requireTransport !== undefined && { requireTransport }),
       ...(collectTransport === true && {
         transportLocations: [transportLocation1, transportLocation2, transportLocation3].map((s) => (s ?? "").trim()),
       }),

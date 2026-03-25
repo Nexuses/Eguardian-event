@@ -1,14 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  getEventByEventId,
   getEventBannerUrl,
   getEffectiveRegistrationStatus,
 } from "@/lib/models/Event";
+import { getPublishedEventByEventId } from "@/lib/models/Event";
 import type { EventDoc } from "@/lib/models/Event";
 import { formatEventDateTime } from "@/lib/date-utils";
 import { RegisterForm } from "./RegisterForm";
 import { RegistrationClosedPage } from "../RegistrationClosedMessage";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function toPlainEvent(event: EventDoc) {
   const registrationStatus = getEffectiveRegistrationStatus(event);
@@ -26,6 +29,11 @@ function toPlainEvent(event: EventDoc) {
     collectOvernightStay: !!event.collectOvernightStay,
     collectPassportNic: !!event.collectPassportNic,
     collectTransport: !!event.collectTransport,
+    requireWhatsAppNumber: !!event.requireWhatsAppNumber,
+    requireApparelSize: !!event.requireApparelSize,
+    requireOvernightStay: !!event.requireOvernightStay,
+    requirePassportNic: !!event.requirePassportNic,
+    requireTransport: !!event.requireTransport,
     transportLocations: event.transportLocations ?? [],
   };
 }
@@ -41,7 +49,7 @@ export default async function RegisterPage({
 }) {
   const { eventId } = await params;
   const { email } = await searchParams;
-  const event = await getEventByEventId(eventId);
+  const event = await getPublishedEventByEventId(eventId);
   if (!event) notFound();
   const registrationStatus = getEffectiveRegistrationStatus(event);
 

@@ -43,8 +43,9 @@ const CARD_HEIGHT = Math.round(CARD_WIDTH * (PASS_HEIGHT_MM / PASS_WIDTH_MM));
 const PADDING = 25 * SCALE;       // ~8px
 const COL_GAP = 25 * SCALE;       // 8px between left col and QR
 const LOGO_HEIGHT = 98 * SCALE;   // 32px
-const FONT_NAME = 40 * SCALE;     // 13px
-const FONT_DESIGNATION = 34 * SCALE; // 11px
+const FONT_FIRST = 48 * SCALE; // ~15px
+const FONT_LAST = 38 * SCALE; // ~12.7px
+const FONT_COMPANY = 34 * SCALE; // 11px
 const FONT_CODE = 24 * SCALE;     // 8px
 const LINE_GAP = 12 * SCALE;      // 4px (mt-1) between logo/name/designation
 
@@ -72,8 +73,10 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
   }
 
   const yLogoBottom = PADDING + LOGO_HEIGHT;
-  const yName = yLogoBottom + LINE_GAP + FONT_NAME;
-  const yDesignation = yName + LINE_GAP + FONT_DESIGNATION;
+  const yFirstName = yLogoBottom + LINE_GAP + FONT_FIRST;
+  const yLastName = yFirstName + LINE_GAP + FONT_LAST;
+  const LINE_GAP_23_EXTRA = 2 * SCALE; // extra space below last name
+  const yCompany = yLastName + (LINE_GAP + LINE_GAP_23_EXTRA) + FONT_COMPANY;
 
   // Vertically center the barcode (QR box + code) on the card
   const qrBlockHeight = QR_BOX_W + CODE_GAP + FONT_CODE;
@@ -83,15 +86,17 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
   // Font stack that exists on Linux/serverless (Vercel); Arial/Courier often missing and cause □ glyphs
   const fontSans = "Liberation Sans, DejaVu Sans, Helvetica, Arial, sans-serif";
   const fontMono = "Liberation Mono, DejaVu Sans Mono, Courier New, Courier, monospace";
-  const nameText = escapeXml(safePassText(`${data.firstName} ${data.surname}`));
-  const designationText = escapeXml(safePassText(data.designation || "-"));
+  const firstNameText = escapeXml(safePassText(data.firstName));
+  const lastNameText = escapeXml(safePassText(data.surname));
+  const companyText = escapeXml(safePassText(data.designation || "-"));
   const codeText = escapeXml(safePassText(data.uniqueCode));
 
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}">
-  <rect width="100%" height="100%" fill="#ffffff" stroke="#000000" stroke-width="1"/>
-  <text x="${PADDING}" y="${yName}" font-family="${fontSans}" font-size="${FONT_NAME}" font-weight="bold" fill="#18181b">${nameText}</text>
-  <text x="${PADDING}" y="${yDesignation}" font-family="${fontSans}" font-size="${FONT_DESIGNATION}" fill="#18181b">${designationText}</text>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="${PADDING}" y="${yFirstName}" font-family="${fontSans}" font-size="${FONT_FIRST}" font-weight="bold" fill="#18181b">${firstNameText}</text>
+  <text x="${PADDING}" y="${yLastName}" font-family="${fontSans}" font-size="${FONT_LAST}" fill="#18181b">${lastNameText}</text>
+  <text x="${PADDING}" y="${yCompany}" font-family="${fontSans}" font-size="${FONT_COMPANY}" fill="#18181b">${companyText}</text>
   <rect x="${QR_BOX_LEFT}" y="${QR_TOP}" width="${QR_BOX_W}" height="${QR_BOX_W}" rx="4" ry="4" fill="none" stroke="#ea580c" stroke-width="${QR_BORDER}"/>
   <text x="${QR_BOX_LEFT + QR_BOX_W / 2}" y="${yCode}" font-family="${fontMono}" font-size="${FONT_CODE}" font-weight="bold" fill="#18181b" text-anchor="middle">${codeText}</text>
 </svg>`.trim();

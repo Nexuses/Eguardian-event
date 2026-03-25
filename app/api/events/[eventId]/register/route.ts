@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getEventByEventId, getEffectiveRegistrationStatus } from "@/lib/models/Event";
+import { getPublishedEventByEventId, getEffectiveRegistrationStatus } from "@/lib/models/Event";
 import { isEligible } from "@/lib/models/EligibleEmail";
 import { createRegistration, findRegistrationByEventAndEmail } from "@/lib/models/Registration";
 import { sendPassEmail } from "@/lib/email";
@@ -13,7 +13,7 @@ export async function POST(
 ) {
   try {
     const { eventId } = await params;
-    const event = await getEventByEventId(eventId);
+    const event = await getPublishedEventByEventId(eventId);
     if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
 
     if (getEffectiveRegistrationStatus(event) === "closed") {
@@ -52,20 +52,26 @@ export async function POST(
     if (!agreedToPrivacy) {
       return NextResponse.json({ error: "You must agree to the Privacy Policy" }, { status: 400 });
     }
-    if (addToWhatsapp && !String(whatsappNumber ?? "").trim()) {
+    if (event.requireWhatsAppNumber && addToWhatsapp && !String(whatsappNumber ?? "").trim()) {
       return NextResponse.json(
         { error: "WhatsApp number is required when Add to WhatsApp is enabled" },
         { status: 400 }
       );
     }
-    if (event.collectApparelSize && !String(apparelSize ?? "").trim()) {
+    if (event.collectApparelSize && event.requireApparelSize && !String(apparelSize ?? "").trim()) {
       return NextResponse.json({ error: "Apparel size is required" }, { status: 400 });
     }
-    if (event.collectPassportNic && !String(passportNic ?? "").trim()) {
+    if (event.collectOvernightStay && event.requireOvernightStay && !overnightStay) {
+      return NextResponse.json({ error: "Overnight Stay is required" }, { status: 400 });
+    }
+    if (event.collectPassportNic && event.requirePassportNic && !String(passportNic ?? "").trim()) {
       return NextResponse.json({ error: "Passport or NIC is required" }, { status: 400 });
     }
+    if (event.collectTransport && event.requireTransport && !transportNeeded) {
+      return NextResponse.json({ error: "Transport is required" }, { status: 400 });
+    }
 
-    if (event.collectTransport && transportNeeded) {
+    if (event.collectTransport && transportNeeded && event.requireTransport) {
       const loc = typeof transportLocation === "string" ? transportLocation.trim() : "";
       if (!loc) {
         return NextResponse.json({ error: "Transport location is required" }, { status: 400 });

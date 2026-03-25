@@ -20,16 +20,6 @@ export async function pngPassToPdf(pngBuffer: Buffer): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([widthPt, heightPt]);
 
-  // 1px black border at exact page dimensions (58mm × 40mm)
-  page.drawRectangle({
-    x: 0,
-    y: 0,
-    width: widthPt,
-    height: heightPt,
-    borderWidth: 1,
-    borderColor: rgb(0, 0, 0),
-  });
-
   const image = await pdfDoc.embedJpg(jpegBuffer);
   const { width: drawWidth, height: drawHeight } = image.scaleToFit(widthPt, heightPt);
   const x = (widthPt - drawWidth) / 2;
