@@ -28,6 +28,8 @@ export async function GET(request: Request) {
       apparelSize: r.apparelSize,
       overnightStay: r.overnightStay,
       passportNic: r.passportNic,
+      transportNeeded: r.transportNeeded,
+      transportLocation: r.transportLocation,
       participationStatus: r.participationStatus || "registered",
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : r.createdAt,
       participationTimestamp:

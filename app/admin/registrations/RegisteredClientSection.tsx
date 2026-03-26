@@ -24,6 +24,8 @@ type RegistrationItem = {
   apparelSize?: string;
   overnightStay?: boolean;
   passportNic?: string;
+  transportNeeded?: boolean;
+  transportLocation?: string;
   participationStatus: ParticipationStatus;
   createdAt: string;
   participationTimestamp?: string;
@@ -85,6 +87,8 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
     "Apparel Size",
     "Overnight Stay",
     "Passport/NIC",
+    "Transport Needed",
+    "Transport Location",
     "Participation Status",
     "Registered",
     "Participation Time",
@@ -100,11 +104,13 @@ function buildRegistrationsCsv(rows: RegistrationItem[]): string {
       r.organization || "",
       r.designation || "",
       r.mobileNumber || "",
-      r.addToWhatsapp ? (r.whatsappNumber || "") : "",
+      r.whatsappNumber || "",
       r.identityCardOrPassport || "",
       r.apparelSize || "",
       r.overnightStay ? "Yes" : "",
-      r.passportNic || "",
+      r.passportNic || r.identityCardOrPassport || "",
+      r.transportNeeded == null ? "" : r.transportNeeded ? "Yes" : "No",
+      r.transportLocation || "",
       r.participationStatus || "registered",
       formatDate(r.createdAt),
       r.participationTimestamp ? formatDate(r.participationTimestamp) : "",
