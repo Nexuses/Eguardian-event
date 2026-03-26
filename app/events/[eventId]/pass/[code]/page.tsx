@@ -9,6 +9,12 @@ function formatRegisteredDate(d: Date | string) {
   return new Date(d).toISOString().replace("T", " ").slice(0, 19);
 }
 
+function capitalizeFirst(s: string) {
+  const text = String(s || "").trim();
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
 export default async function PassPage({
   params,
 }: {
@@ -19,6 +25,8 @@ export default async function PassPage({
   if (!reg) notFound();
 
   const qrUrl = `/api/qr?code=${encodeURIComponent(reg.uniqueCode)}`;
+  const firstName = capitalizeFirst(reg.firstName);
+  const surname = capitalizeFirst(reg.surname);
 
   const calendarUrl = [
     "https://calendar.google.com/calendar/render",
@@ -61,7 +69,7 @@ export default async function PassPage({
                   Welcome,
                 </p>
                 <h1 className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                  {reg.firstName} {reg.surname}
+                  {firstName} {surname}
                 </h1>
                 <p className="mt-2 text-base text-zinc-900 dark:text-zinc-100">{reg.mobileNumber}</p>
                 <p className="mt-0.5 text-base text-zinc-900 dark:text-zinc-100">{reg.email}</p>
@@ -121,13 +129,13 @@ export default async function PassPage({
                 Row 1: First name only (bold)
                 Row 2: Last name only
                 Row 3: Company name only */}
-            <p className="print:!text-[21px] print:!font-bold print:!text-black">
-              {reg.firstName}
+            <p className="print:!text-[25px] print:!font-bold print:!text-black">
+              {firstName}
             </p>
-            <p className="print:!mt-1 print:!text-[16px] print:!font-medium print:!text-black">
-              {reg.surname}
+            <p className="print:!mt-1 print:!text-[20px] print:!font-bold print:!text-black">
+              {surname}
             </p>
-            <p className="print:!mt-1 print:!text-[14px] print:!font-normal print:!text-black">
+            <p className="print:!mt-1 print:!text-[18px] print:!font-normal print:!text-black">
               {reg.organization || "—"}
             </p>
           </div>

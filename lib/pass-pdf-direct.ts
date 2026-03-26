@@ -24,6 +24,12 @@ function safeText(s: string): string {
     .trim();
 }
 
+function capitalizeFirst(s: string): string {
+  const text = String(s || "").trim();
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
 /**
  * Generate the email pass as PDF directly with pdf-lib.
  * Uses PDF standard fonts (Helvetica, Courier) so text renders in all viewers (Gmail, etc.)
@@ -32,9 +38,9 @@ function safeText(s: string): string {
 export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const widthPt = PASS_WIDTH_MM * PT_PER_MM;
   const heightPt = PASS_HEIGHT_MM * PT_PER_MM;
-  const FONT_FIRST = 17; // row 1 (bigger first name)
-  const FONT_LAST = 13; // row 2
-  const FONT_COMPANY = 11; // row 3
+  const FONT_FIRST = 19; // row 1 (bigger first name)
+  const FONT_LAST = 15; // row 2
+  const FONT_COMPANY = 13; // row 3
   const LINE_GAP = 4;
   const LINE_GAP_23_EXTRA = 1; // extra spacing between last name and company
 
@@ -49,12 +55,12 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   // Row 1: First name ONLY (bold)
   // Row 2: Last name ONLY
   // Row 3: Company ONLY
-  const firstStr = safeText(data.firstName);
-  const lastStr = safeText(data.surname);
+  const firstStr = safeText(capitalizeFirst(data.firstName));
+  const lastStr = safeText(capitalizeFirst(data.surname));
   const companyStr = safeText(data.organization || "-");
 
   const row1Width = helveticaBold.widthOfTextAtSize(firstStr, FONT_FIRST);
-  const row2Width = helvetica.widthOfTextAtSize(lastStr, FONT_LAST);
+  const row2Width = helveticaBold.widthOfTextAtSize(lastStr, FONT_LAST);
   const row3Width = helvetica.widthOfTextAtSize(companyStr, FONT_COMPANY);
 
   const blockHeight = FONT_FIRST + LINE_GAP + FONT_LAST + (LINE_GAP + LINE_GAP_23_EXTRA) + FONT_COMPANY;
@@ -74,7 +80,7 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     x: Math.max(4, (widthPt - row2Width) / 2),
     y: yRow2Baseline,
     size: FONT_LAST,
-    font: helvetica,
+    font: helveticaBold,
     color: black,
   });
 

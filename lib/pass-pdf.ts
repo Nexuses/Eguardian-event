@@ -20,6 +20,12 @@ function formatRegisteredDate(d: Date | string): string {
   return new Date(d).toISOString().replace("T", " ").slice(0, 19);
 }
 
+function capitalizeFirst(s: string): string {
+  const text = String(s || "").trim();
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
 export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const qrBuffer = await QRCode.toBuffer(data.uniqueCode, { width: 140, margin: 2 });
   return new Promise((resolve, reject) => {
@@ -35,7 +41,10 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
     doc.rect(cardX, 80, cardWidth, 320).stroke();
     doc.fontSize(10).fillColor("#18181b").text("EGUARDIAN™", cardX + 20, 100);
     doc.fontSize(11).fillColor("#18181b").text("Welcome,", cardX + 20, 130);
-    doc.fontSize(16).fillColor("#18181b").text(`${data.firstName} ${data.surname}`, cardX + 20, 148);
+    doc
+      .fontSize(16)
+      .fillColor("#18181b")
+      .text(`${capitalizeFirst(data.firstName)} ${capitalizeFirst(data.surname)}`, cardX + 20, 148);
     doc.fontSize(10).fillColor("#18181b").text(data.mobileNumber || "—", cardX + 20, 172);
     doc.fontSize(10).fillColor("#18181b").text(data.email, cardX + 20, 186);
 
