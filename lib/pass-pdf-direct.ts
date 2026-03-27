@@ -39,10 +39,10 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   const widthPt = PASS_WIDTH_MM * PT_PER_MM;
   const heightPt = PASS_HEIGHT_MM * PT_PER_MM;
   const FONT_FIRST = 19; // row 1 (bigger first name)
-  const FONT_LAST = 15; // row 2
+  const FONT_LAST = 19; // row 2 (same as first name)
   const FONT_COMPANY = 13; // row 3
   const LINE_GAP = 4;
-  const LINE_GAP_23_EXTRA = 1; // extra spacing between last name and company
+  const LINE_GAP_23_EXTRA = 2; // extra spacing between last name and company
 
   const doc = await PDFDocument.create();
   const page = doc.addPage([widthPt, heightPt]);

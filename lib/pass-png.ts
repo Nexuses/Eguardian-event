@@ -50,7 +50,7 @@ const PADDING = 25 * SCALE;       // ~8px
 const COL_GAP = 25 * SCALE;       // 8px between left col and QR
 const LOGO_HEIGHT = 98 * SCALE;   // 32px
 const FONT_FIRST = 54 * SCALE; // ~18px
-const FONT_LAST = 44 * SCALE; // ~14.7px
+const FONT_LAST = 54 * SCALE; // same as first name
 const FONT_COMPANY = 38 * SCALE; // ~12.7px
 const FONT_CODE = 24 * SCALE;     // 8px
 const LINE_GAP = 12 * SCALE;      // 4px (mt-1) between logo/name/designation
@@ -81,7 +81,7 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
   const yLogoBottom = PADDING + LOGO_HEIGHT;
   const yFirstName = yLogoBottom + LINE_GAP + FONT_FIRST;
   const yLastName = yFirstName + LINE_GAP + FONT_LAST;
-  const LINE_GAP_23_EXTRA = 2 * SCALE; // extra space below last name
+  const LINE_GAP_23_EXTRA = 3 * SCALE; // extra space below last name
   const yCompany = yLastName + (LINE_GAP + LINE_GAP_23_EXTRA) + FONT_COMPANY;
 
   // Vertically center the barcode (QR box + code) on the card
