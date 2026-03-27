@@ -132,7 +132,7 @@ export default async function PassPage({
             <p className="print:!text-[25px] print:!font-bold print:!text-black">
               {firstName}
             </p>
-            <p className="print:!mt-1 print:!text-[25px] print:!font-bold print:!text-black">
+            <p className="print:!mt-0.5 print:!text-[25px] print:!font-bold print:!text-black">
               {surname}
             </p>
             <p className="print:!mt-2 print:!text-[18px] print:!font-normal print:!text-black">

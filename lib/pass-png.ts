@@ -53,7 +53,7 @@ const FONT_FIRST = 54 * SCALE; // ~18px
 const FONT_LAST = 54 * SCALE; // same as first name
 const FONT_COMPANY = 38 * SCALE; // ~12.7px
 const FONT_CODE = 24 * SCALE;     // 8px
-const LINE_GAP = 12 * SCALE;      // 4px (mt-1) between logo/name/designation
+const LINE_GAP = 9 * SCALE;       // tighter gap between first and last name
 
 const QR_SIZE = 245 * SCALE;      // ~80px in print
 const QR_BORDER = 2 * SCALE;
