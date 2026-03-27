@@ -94,7 +94,7 @@ export async function generatePassPng(data: PassData): Promise<Buffer> {
   const fontMono = "Liberation Mono, DejaVu Sans Mono, Courier New, Courier, monospace";
   const firstNameText = escapeXml(safePassText(capitalizeFirst(data.firstName)));
   const lastNameText = escapeXml(safePassText(capitalizeFirst(data.surname)));
-  const companyText = escapeXml(safePassText(data.designation || "-"));
+  const companyText = escapeXml(safePassText(data.designation || "-").toUpperCase());
   const codeText = escapeXml(safePassText(data.uniqueCode));
 
   const svg = `<?xml version="1.0" encoding="UTF-8"?>

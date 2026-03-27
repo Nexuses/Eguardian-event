@@ -57,7 +57,7 @@ export async function generatePassPdf(data: PassData): Promise<Buffer> {
   // Row 3: Company ONLY
   const firstStr = safeText(capitalizeFirst(data.firstName));
   const lastStr = safeText(capitalizeFirst(data.surname));
-  const companyStr = safeText(data.organization || "-");
+  const companyStr = safeText(data.organization || "-").toUpperCase();
 
   const row1Width = helveticaBold.widthOfTextAtSize(firstStr, FONT_FIRST);
   const row2Width = helveticaBold.widthOfTextAtSize(lastStr, FONT_LAST);

@@ -136,7 +136,7 @@ export default async function PassPage({
               {surname}
             </p>
             <p className="print:!mt-2 print:!text-[18px] print:!font-normal print:!text-black">
-              {reg.organization || "—"}
+              {(reg.organization || "—").toUpperCase()}
             </p>
           </div>
         </div>
