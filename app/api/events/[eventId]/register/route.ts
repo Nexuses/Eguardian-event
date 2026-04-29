@@ -67,7 +67,11 @@ export async function POST(
     if (event.collectPassportNic && event.requirePassportNic && !String(passportNic ?? "").trim()) {
       return NextResponse.json({ error: "Passport or NIC is required" }, { status: 400 });
     }
-    if (event.collectTransport && event.requireTransport && !transportNeeded) {
+    if (
+      event.collectTransport &&
+      event.requireTransport &&
+      typeof transportNeeded !== "boolean"
+    ) {
       return NextResponse.json({ error: "Transport is required" }, { status: 400 });
     }
 
