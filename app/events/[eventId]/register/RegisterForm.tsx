@@ -106,10 +106,6 @@ export function RegisterForm({
         setError("Please select an option for Transport.");
         return;
       }
-      if (transportChoice !== "yes") {
-        setError("Transport is required.");
-        return;
-      }
     }
     if (
       event.collectTransport &&
