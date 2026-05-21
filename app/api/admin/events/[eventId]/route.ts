@@ -52,6 +52,7 @@ export async function PUT(
     const { eventId } = await params;
     const contentType = request.headers.get("content-type") || "";
     let eventName: string | undefined;
+    let description: string | undefined;
     let eventBanner: string | undefined;
     let eventStartDate: string | undefined;
     let eventEndDate: string | undefined;
@@ -77,6 +78,7 @@ export async function PUT(
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
       eventName = formData.get("eventName") as string | null ?? undefined;
+      description = formData.get("description") as string | null ?? undefined;
       eventBanner = formData.get("eventBanner") as string | null ?? undefined;
       eventStartDate = formData.get("eventStartDate") as string | null ?? undefined;
       eventEndDate = formData.get("eventEndDate") as string | null ?? undefined;
@@ -115,6 +117,7 @@ export async function PUT(
     } else {
       const body = await request.json();
       eventName = body.eventName;
+      description = body.description;
       eventBanner = body.eventBanner;
       eventStartDate = body.eventStartDate;
       eventEndDate = body.eventEndDate;
@@ -158,6 +161,7 @@ export async function PUT(
 
     const updated = await updateEvent(eventId, {
       ...(eventName !== undefined && { eventName }),
+      ...(description !== undefined && { description }),
       ...(eventBanner !== undefined && { eventBanner }),
       ...(eventStartDate !== undefined && { eventStartDate: parseEventDateTime(eventStartDate) }),
       ...(eventEndDate !== undefined && { eventEndDate: parseEventDateTime(eventEndDate) }),

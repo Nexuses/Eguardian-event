@@ -11,6 +11,8 @@ export interface EventDoc {
   _id?: ObjectId;
   eventId: string;
   eventName: string;
+  /** Optional long-form text shown on the public event page */
+  description?: string;
   eventBanner: string; // URL or path like /events/xxx.jpg
   eventStartDate: Date;
   eventEndDate: Date;
@@ -57,29 +59,10 @@ export function getEventBannerUrl(doc: { eventBanner?: string | null }): string 
   return url || DEFAULT_EVENT_BANNER_URL;
 }
 
-function asValidDate(value?: Date | string | null): Date | null {
-  if (!value) return null;
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
+/** Uses the admin-set registrationStatus only (not registration start/end dates). */
 export function getEffectiveRegistrationStatus(
-  event: Pick<EventDoc, "registrationStatus" | "registrationStartDate" | "registrationEndDate">,
-  now: Date = new Date()
+  event: Pick<EventDoc, "registrationStatus">
 ): RegistrationStatus {
-  const start = asValidDate(event.registrationStartDate);
-  const end = asValidDate(event.registrationEndDate);
-
-  if (start && end) {
-    return now >= start && now <= end ? "open" : "closed";
-  }
-  if (start) {
-    return now >= start ? "open" : "closed";
-  }
-  if (end) {
-    return now <= end ? "open" : "closed";
-  }
-
   return event.registrationStatus === "closed" ? "closed" : "open";
 }
 
@@ -94,6 +77,7 @@ export async function createEvent(data: Omit<EventDoc, "_id" | "eventId" | "crea
   const doc: EventDoc = {
     eventId,
     eventName: data.eventName.trim(),
+    description: data.description?.trim() || undefined,
     eventBanner: data.eventBanner.trim() || "",
     eventStartDate: new Date(data.eventStartDate),
     eventEndDate: new Date(data.eventEndDate),
@@ -161,6 +145,10 @@ export async function updateEvent(
   if (!ObjectId.isValid(id)) return null;
   const update: Record<string, unknown> = {};
   if (data.eventName !== undefined) update.eventName = data.eventName.trim();
+  if (data.description !== undefined) {
+    const trimmed = data.description.trim();
+    update.description = trimmed || undefined;
+  }
   if (data.eventBanner !== undefined) update.eventBanner = data.eventBanner.trim();
   if (data.eventStartDate !== undefined) update.eventStartDate = new Date(data.eventStartDate);
   if (data.eventEndDate !== undefined) update.eventEndDate = new Date(data.eventEndDate);

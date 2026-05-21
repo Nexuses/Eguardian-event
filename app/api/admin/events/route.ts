@@ -41,6 +41,7 @@ export async function POST(request: Request) {
   try {
     const contentType = request.headers.get("content-type") || "";
     let eventName: string;
+    let description: string;
     let eventBanner: string;
     let eventStartDate: string;
     let eventEndDate: string;
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
       eventName = (formData.get("eventName") as string) || "";
+      description = (formData.get("description") as string) || "";
       eventBanner = (formData.get("eventBanner") as string) || "";
       eventStartDate = (formData.get("eventStartDate") as string) || "";
       eventEndDate = (formData.get("eventEndDate") as string) || "";
@@ -97,6 +99,7 @@ export async function POST(request: Request) {
     } else {
       const body = await request.json();
       eventName = body.eventName ?? "";
+      description = body.description ?? "";
       eventBanner = body.eventBanner ?? "";
       eventStartDate = body.eventStartDate ?? "";
       eventEndDate = body.eventEndDate ?? "";
@@ -146,6 +149,7 @@ export async function POST(request: Request) {
 
     const event = await createEvent({
       eventName,
+      description: description.trim() || undefined,
       eventBanner,
       eventStartDate: parseEventDateTime(eventStartDate),
       eventEndDate: parseEventDateTime(eventEndDate),

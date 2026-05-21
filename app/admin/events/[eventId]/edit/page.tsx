@@ -8,6 +8,7 @@ type EventItem = {
   _id: string;
   eventId: string;
   eventName: string;
+  description?: string;
   eventBanner: string;
   eventStartDate: string;
   eventEndDate: string;
@@ -33,12 +34,14 @@ type EventItem = {
 
 import { toDatetimeLocal } from "@/lib/date-utils";
 import { normalizeTransportLocationStrings } from "@/lib/admin-transport-locations";
+import { RichDescriptionEditor } from "@/app/admin/components/RichDescriptionEditor";
 
 export default function EditEventPage() {
   const params = useParams();
   const eventId = params.eventId as string;
   const [event, setEvent] = useState<EventItem | null>(null);
   const [eventName, setEventName] = useState("");
+  const [description, setDescription] = useState("");
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
   const [registrationStartDate, setRegistrationStartDate] = useState("");
@@ -77,6 +80,7 @@ export default function EditEventPage() {
         const data = await res.json();
         setEvent(data);
         setEventName(data.eventName ?? "");
+        setDescription(data.description ?? "");
         setEventStartDate(toDatetimeLocal(data.eventStartDate));
         setEventEndDate(toDatetimeLocal(data.eventEndDate));
         setRegistrationStartDate(toDatetimeLocal(data.registrationStartDate));
@@ -130,6 +134,7 @@ export default function EditEventPage() {
       if (bannerFile) {
         const formData = new FormData();
         formData.set("eventName", eventName);
+        formData.set("description", description);
         formData.set("eventStartDate", eventStartDate);
         formData.set("eventEndDate", eventEndDate);
         formData.set("registrationStartDate", registrationStartDate);
@@ -160,6 +165,7 @@ export default function EditEventPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             eventName,
+            description,
             eventStartDate,
             eventEndDate,
             registrationStartDate,
@@ -191,6 +197,7 @@ export default function EditEventPage() {
       }
       setSuccess("Event updated.");
       setEvent(data);
+      setDescription(data.description ?? "");
       setTransportLocations(
         data.transportLocations && data.transportLocations.length > 0
           ? [...data.transportLocations]
@@ -271,6 +278,17 @@ export default function EditEventPage() {
               placeholder="e.g. Convention Hall A" />
           </div>
 
+          <div className="sm:col-span-2">
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Description
+            </label>
+            <RichDescriptionEditor
+              value={description}
+              onChange={setDescription}
+              placeholder="Describe the event for attendees (shown on the public event page)"
+            />
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start date</label>
             <input type="datetime-local" value={eventStartDate} onChange={(e) => setEventStartDate(e.target.value)}
@@ -314,12 +332,17 @@ export default function EditEventPage() {
 
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration Status</label>
-            <input
-              type="text"
-              value="Automatic (based on Start/End Registration Date)"
-              readOnly
-              className="w-full rounded-md border border-zinc-300 bg-zinc-100 px-3 py-2 text-zinc-700 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-            />
+            <select
+              value={registrationStatus}
+              onChange={(e) => setRegistrationStatus(e.target.value as "open" | "closed")}
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            >
+              <option value="open">Open</option>
+              <option value="closed">Closed</option>
+            </select>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Controlled here only — not from registration start/end dates.
+            </p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Who can register</label>
