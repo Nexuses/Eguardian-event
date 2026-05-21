@@ -158,10 +158,10 @@ export function RegisterForm({
   }
 
   const inputClass =
-    "w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100";
+    "w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500";
 
   const selectChevron = (
-    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-500 dark:text-zinc-400">
+    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-500">
       <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path
           fillRule="evenodd"
@@ -177,18 +177,18 @@ export function RegisterForm({
       {/* Full-screen loading overlay */}
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-2xl dark:bg-zinc-900">
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-2xl">
             {/* Spinner */}
             <div className="relative h-16 w-16">
-              <div className="absolute inset-0 rounded-full border-4 border-zinc-200 dark:border-zinc-700"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-zinc-200"></div>
               <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-orange-500"></div>
             </div>
             {/* Message */}
             <div className="text-center">
-              <p className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
+              <p className="text-lg font-semibold text-zinc-800">
                 Generating Your Pass
               </p>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-sm text-zinc-500">
                 Please wait while we process your registration...
               </p>
             </div>
@@ -196,16 +196,16 @@ export function RegisterForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
       {error && (
-        <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             First Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -218,7 +218,7 @@ export function RegisterForm({
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             Surname <span className="text-red-500">*</span>
           </label>
           <input
@@ -233,7 +233,7 @@ export function RegisterForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
           Email <span className="text-red-500">*</span>
         </label>
         <input
@@ -247,7 +247,7 @@ export function RegisterForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
           Organization <span className="text-red-500">*</span>
         </label>
         <input
@@ -261,7 +261,7 @@ export function RegisterForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
           Designation <span className="text-red-500">*</span>
         </label>
         <input
@@ -275,7 +275,7 @@ export function RegisterForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
           Mobile Number <span className="text-red-500">*</span>
         </label>
         <input
@@ -297,7 +297,7 @@ export function RegisterForm({
               if (next) setWhatsappNumber(mobileNumber);
           }}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
-              addToWhatsapp ? "bg-orange-500" : "bg-zinc-200 dark:bg-zinc-700"
+              addToWhatsapp ? "bg-orange-500" : "bg-zinc-200"
             }`}
           >
             <span
@@ -306,13 +306,13 @@ export function RegisterForm({
               }`}
             />
           </button>
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">Add to WhatsApp</span>
+          <span className="text-sm text-zinc-600">Add to WhatsApp</span>
         </div>
       </div>
 
         {(addToWhatsapp || whatsappRequired) && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             WhatsApp Number {event.requireWhatsAppNumber ? <span className="text-red-500">*</span> : null}
           </label>
           <div className="flex items-start gap-2">
@@ -334,14 +334,14 @@ export function RegisterForm({
       {event.collectApparelSize && (
         <div>
           <div className="mb-1 flex items-center gap-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="block text-sm font-medium text-zinc-700">
               Apparel - sizes{" "}
               {event.requireApparelSize ? <span className="text-red-500">*</span> : null}
             </label>
             <button
               type="button"
               onClick={() => setSizeChartOpen(true)}
-              className="text-xs font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline"
+              className="text-xs font-medium text-orange-600 hover:text-orange-700 underline"
             >
               Size chart
             </button>
@@ -374,7 +374,7 @@ export function RegisterForm({
                 <button
                   type="button"
                   onClick={() => setSizeChartOpen(false)}
-                  className="absolute -top-10 right-0 rounded bg-white/90 px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                  className="absolute -top-10 right-0 rounded bg-white/90 px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-white"
                 >
                   Close
                 </button>
@@ -382,7 +382,7 @@ export function RegisterForm({
                 <img
                   src="https://nexuseslink2024.s3.us-east-2.amazonaws.com/Screenshot_2026-03-09_at_2.49.27_PM.png"
                   alt="Size chart"
-                  className="max-h-[85vh] w-auto rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-700"
+                  className="max-h-[85vh] w-auto rounded-lg border border-zinc-200 bg-white shadow-xl"
                 />
               </div>
             </div>
@@ -392,7 +392,7 @@ export function RegisterForm({
 
       {event.collectOvernightStay && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             Overnight Stay{" "}
             {event.requireOvernightStay ? (
               <span className="text-red-500">*</span>
@@ -419,7 +419,7 @@ export function RegisterForm({
 
       {event.collectPassportNic && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             Passport/NIC{" "}
             {event.requirePassportNic ? (
               <span className="text-red-500">*</span>
@@ -438,7 +438,7 @@ export function RegisterForm({
 
       {event.collectTransport && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
             Transport{" "}
             {event.requireTransport ? (
               <span className="text-red-500">*</span>
@@ -469,7 +469,7 @@ export function RegisterForm({
 
           {transportNeeded && (
             <div className="mt-3">
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Location{" "}
                 {transportNeeded ? (
                   <span className="text-red-500">*</span>
@@ -501,7 +501,7 @@ export function RegisterForm({
           onChange={(e) => setAgreedToPrivacy(e.target.checked)}
           className="mt-1 h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
         />
-        <label htmlFor="privacy" className="text-sm text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="privacy" className="text-sm text-zinc-700">
           I agree to the{" "}
           <a
             href="https://www.eguardian.com/about-us#policies"

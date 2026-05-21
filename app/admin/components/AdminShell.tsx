@@ -35,17 +35,17 @@ export function AdminShell({
         />
       )}
       <div className="flex min-w-0 flex-1 flex-col overflow-auto">
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-zinc-200 bg-white px-3 dark:border-zinc-800 dark:bg-zinc-900 sm:h-20 sm:justify-end sm:px-4">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-zinc-200 bg-white px-3 sm:h-20 sm:justify-end sm:px-4">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 md:hidden"
             aria-label="Open menu"
           >
             <MenuIcon className="h-6 w-6" />
           </button>
           <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
-            <span className="truncate text-sm text-zinc-600 dark:text-zinc-400" title={email}>
+            <span className="truncate text-sm text-zinc-600" title={email}>
               {email}
             </span>
             <LogoutButton />

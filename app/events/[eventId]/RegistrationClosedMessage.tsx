@@ -9,19 +9,19 @@ export function RegistrationClosedCard({ onOpenModal }: { onOpenModal?: () => vo
 
   return (
     <>
-      <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-6 text-center dark:border-zinc-700 dark:bg-zinc-800/50">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-          <svg className="h-6 w-6 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-6 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200">
+          <svg className="h-6 w-6 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="mt-4 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <p className="mt-4 text-sm font-medium text-zinc-700">
           Registration for this event is closed.
         </p>
         <button
           type="button"
           onClick={onOpenModal ?? open}
-          className="mt-4 rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+          className="mt-4 rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-300"
         >
           View details
         </button>
@@ -39,23 +39,23 @@ export function RegistrationClosedCard({ onOpenModal }: { onOpenModal?: () => vo
             onClick={close}
             aria-hidden
           />
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
             <div className="p-8 text-center sm:p-10">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                <svg className="h-8 w-8 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+                <svg className="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h2 id="registration-closed-title" className="mt-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+              <h2 id="registration-closed-title" className="mt-6 text-xl font-semibold text-zinc-900 sm:text-2xl">
                 Registration is closed
               </h2>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-3 text-sm text-zinc-600">
                 Registrations for this event are no longer accepted. Please check back for future events or contact the organizer if you have questions.
               </p>
               <button
                 type="button"
                 onClick={close}
-                className="mt-8 w-full rounded-xl bg-orange-500 px-4 py-3 font-medium text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                className="mt-8 w-full rounded-xl bg-orange-500 px-4 py-3 font-medium text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
                 Okay
               </button>
@@ -85,23 +85,23 @@ export function RegistrationClosedPage() {
             onClick={() => setModalOpen(false)}
             aria-hidden
           />
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
             <div className="p-8 text-center sm:p-10">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                <svg className="h-8 w-8 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+                <svg className="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h2 id="registration-closed-title-page" className="mt-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+              <h2 id="registration-closed-title-page" className="mt-6 text-xl font-semibold text-zinc-900 sm:text-2xl">
                 Registration is closed
               </h2>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-3 text-sm text-zinc-600">
                 Registrations for this event are no longer accepted. Please check back for future events or contact the organizer if you have questions.
               </p>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="mt-8 w-full rounded-xl bg-orange-500 px-4 py-3 font-medium text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                className="mt-8 w-full rounded-xl bg-orange-500 px-4 py-3 font-medium text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
                 Okay
               </button>

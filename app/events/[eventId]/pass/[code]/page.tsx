@@ -38,22 +38,22 @@ export default async function PassPage({
   ].join("");
 
   return (
-    <div className="min-h-screen bg-zinc-100 py-6 dark:bg-zinc-900 sm:py-12">
+    <div className="min-h-full bg-white py-6 sm:py-12">
       <div className="mx-auto max-w-2xl px-4">
         <Link
           href="/"
-          className="no-print mb-4 inline-block text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 sm:mb-6"
+          className="no-print mb-4 inline-block text-sm font-medium text-zinc-600 hover:text-zinc-900 sm:mb-6"
         >
           ← Back to events
         </Link>
 
-        <p className="no-print mb-3 text-sm text-zinc-600 dark:text-zinc-400 sm:mb-4">
+        <p className="no-print mb-3 text-sm text-zinc-600 sm:mb-4">
           Your pass has been sent to your email.
         </p>
 
         {/* DISPLAY CARD (screen only - hidden when printing) */}
         <div
-          className="no-print overflow-hidden border border-black bg-white p-3 dark:bg-zinc-800 sm:p-4"
+          className="no-print overflow-hidden border border-black bg-white p-3 sm:p-4"
         >
           <div className="w-full">
             {/* Top row: Logo left, QR + code right */}
@@ -65,14 +65,14 @@ export default async function PassPage({
                   alt="Eguardian"
                   className="h-11 w-auto max-w-full object-contain sm:h-[52px]"
                 />
-                <p className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                <p className="mt-3 text-lg font-bold text-zinc-900">
                   Welcome,
                 </p>
-                <h1 className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+                <h1 className="mt-1 text-2xl font-bold text-zinc-900">
                   {firstName} {surname}
                 </h1>
-                <p className="mt-2 text-base text-zinc-900 dark:text-zinc-100">{reg.mobileNumber}</p>
-                <p className="mt-0.5 text-base text-zinc-900 dark:text-zinc-100">{reg.email}</p>
+                <p className="mt-2 text-base text-zinc-900">{reg.mobileNumber}</p>
+                <p className="mt-0.5 text-base text-zinc-900">{reg.email}</p>
               </div>
               <div className="flex shrink-0 flex-col items-center self-center sm:self-auto">
                 <div className="rounded border-2 border-orange-500 p-1">
@@ -85,7 +85,7 @@ export default async function PassPage({
                     className="block h-28 w-28 sm:h-[140px] sm:w-[140px]"
                   />
                 </div>
-                <p className="mt-2 font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                <p className="mt-2 font-mono text-sm font-bold text-zinc-900">
                   {reg.uniqueCode}
                 </p>
               </div>
@@ -93,10 +93,10 @@ export default async function PassPage({
 
             {/* Event details */}
             <div className="mt-5">
-              <h2 className="max-w-[calc(100%-30px)] text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-100">
+              <h2 className="max-w-[calc(100%-30px)] text-lg font-bold leading-tight text-zinc-900">
                 {reg.eventName}
               </h2>
-              <dl className="mt-3 space-y-2 text-base text-zinc-900 dark:text-zinc-100">
+              <dl className="mt-3 space-y-2 text-base text-zinc-900">
                 <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-6">
                   <dt className="min-w-0 shrink-0 font-medium">Start Date</dt>
                   <dd className="sm:flex-1 sm:text-center">{formatEventDateTime(reg.eventStartDate)}</dd>
@@ -113,7 +113,7 @@ export default async function PassPage({
             </div>
 
             {/* Registered date */}
-            <p className="mt-6 text-sm text-zinc-900 dark:text-zinc-100">
+            <p className="mt-6 text-sm text-zinc-900">
               Registered Date – {formatRegisteredDate(reg.createdAt)}
             </p>
           </div>

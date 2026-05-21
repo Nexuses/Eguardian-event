@@ -221,10 +221,10 @@ export default function EditEventPage() {
   if (!event) {
     return (
       <div>
-        <p className="text-red-600 dark:text-red-400">{error || "Event not found"}</p>
+        <p className="text-red-600">{error || "Event not found"}</p>
         <Link
           href="/admin/events"
-          className="mt-4 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline"
         >
           ← Back to All Events
         </Link>
@@ -237,49 +237,49 @@ export default function EditEventPage() {
       <div className="mb-6 flex items-center gap-4">
         <Link
           href="/admin/events"
-          className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
         >
           ← Back to All Events
         </Link>
       </div>
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+      <h1 className="text-2xl font-bold text-zinc-900">
         Edit Event
       </h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-1 text-sm text-zinc-600">
         Event ID: <span className="font-mono">{event.eventId}</span>
       </p>
 
       <form
         onSubmit={handleSubmit}
-        className="mt-6 w-full rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+        className="mt-6 w-full rounded-lg border border-zinc-200 bg-white p-6"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {error ? (
-            <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300 sm:col-span-2">
+            <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 sm:col-span-2">
               {error}
             </p>
           ) : null}
           {success ? (
-            <p className="rounded-md bg-green-100 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300 sm:col-span-2">
+            <p className="rounded-md bg-green-100 px-3 py-2 text-sm text-green-700 sm:col-span-2">
               {success}
             </p>
           ) : null}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Event Name <span className="text-red-500">*</span></label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Event Name <span className="text-red-500">*</span></label>
             <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} required
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Annual Tech Summit" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Venue</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Venue</label>
             <input type="text" value={venue} onChange={(e) => setVenue(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Convention Hall A" />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Description
             </label>
             <RichDescriptionEditor
@@ -290,81 +290,81 @@ export default function EditEventPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start date</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Start date</label>
             <input type="datetime-local" value={eventStartDate} onChange={(e) => setEventStartDate(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">End date</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">End date</label>
             <input type="datetime-local" value={eventEndDate} onChange={(e) => setEventEndDate(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Start Registration Date</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Start Registration Date</label>
             <input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">End Registration Date</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">End Registration Date</label>
             <input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" />
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Banner upload</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Banner upload</label>
             <input type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800 dark:file:bg-zinc-700 dark:file:text-zinc-200" />
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
+              className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800" />
+            <p className="mt-1 text-xs text-zinc-500">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Speaker</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Speaker</label>
             <input type="text" value={speaker} onChange={(e) => setSpeaker(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Speaker name" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Phone</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Phone</label>
             <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Contact number" />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration Status</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Registration Status</label>
             <select
               value={registrationStatus}
               onChange={(e) => setRegistrationStatus(e.target.value as "open" | "closed")}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="open">Open</option>
               <option value="closed">Closed</option>
             </select>
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-xs text-zinc-500">
               Controlled here only — not from registration start/end dates.
             </p>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Who can register</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Who can register</label>
             <select value={registrationType} onChange={(e) => setRegistrationType(e.target.value as "open_for_all" | "invitees_only")}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
               <option value="open_for_all">Open for all</option>
               <option value="invitees_only">Only for invitees</option>
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Publish status</label>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">Publish status</label>
             <select
               value={published ? "published" : "unpublished"}
               onChange={(e) => setPublished(e.target.value === "published")}
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="published">Publish</option>
               <option value="unpublished">Unpublish</option>
             </select>
           </div>
           <div className="sm:col-span-2 space-y-3">
-            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Registration form fields (toggle to show in registration)</p>
+            <p className="text-sm font-medium text-zinc-700">Registration form fields (toggle to show in registration)</p>
             <div className="space-y-4">
               <div className="flex flex-wrap gap-6">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -378,7 +378,7 @@ export default function EditEventPage() {
                     }}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Apparel - sizes</span>
+                  <span className="text-sm text-zinc-900">Apparel - sizes</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -391,7 +391,7 @@ export default function EditEventPage() {
                     }}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Overnight Stay</span>
+                  <span className="text-sm text-zinc-900">Overnight Stay</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -404,7 +404,7 @@ export default function EditEventPage() {
                     }}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport/NIC</span>
+                  <span className="text-sm text-zinc-900">Passport/NIC</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -417,7 +417,7 @@ export default function EditEventPage() {
                     }}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport</span>
+                  <span className="text-sm text-zinc-900">Transport</span>
                 </label>
               </div>
 
@@ -430,7 +430,7 @@ export default function EditEventPage() {
                     onChange={(e) => setRequireApparelSize(e.target.checked)}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Size required</span>
+                  <span className="text-sm text-zinc-900">Size required</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -440,7 +440,7 @@ export default function EditEventPage() {
                     onChange={(e) => setRequireOvernightStay(e.target.checked)}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Stay required</span>
+                  <span className="text-sm text-zinc-900">Stay required</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -450,7 +450,7 @@ export default function EditEventPage() {
                     onChange={(e) => setRequirePassportNic(e.target.checked)}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Passport required</span>
+                  <span className="text-sm text-zinc-900">Passport required</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -460,7 +460,7 @@ export default function EditEventPage() {
                     onChange={(e) => setRequireTransport(e.target.checked)}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">Transport required</span>
+                  <span className="text-sm text-zinc-900">Transport required</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -469,23 +469,23 @@ export default function EditEventPage() {
                     onChange={(e) => setRequireWhatsAppNumber(e.target.checked)}
                     className="h-4 w-4 rounded border-zinc-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm text-zinc-900 dark:text-zinc-100">WhatsApp number required</span>
+                  <span className="text-sm text-zinc-900">WhatsApp number required</span>
                 </label>
               </div>
             </div>
 
             {collectTransport && (
               <div className="space-y-3">
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="text-sm font-medium text-zinc-700">
                   Transport locations
                 </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs text-zinc-500">
                   Add one or more pickup points. Remove rows you do not need.
                 </p>
                 {transportLocations.map((value, index) => (
                   <div key={index} className="flex flex-col gap-2 sm:flex-row sm:items-end">
                     <div className="min-w-0 flex-1">
-                      <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <label className="mb-1 block text-sm font-medium text-zinc-700">
                         Location {index + 1}
                       </label>
                       <input
@@ -497,7 +497,7 @@ export default function EditEventPage() {
                             rows.map((row, i) => (i === index ? v : row))
                           );
                         }}
-                        className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                        className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         placeholder="e.g. Central station pickup"
                       />
                     </div>
@@ -509,7 +509,7 @@ export default function EditEventPage() {
                             rows.length <= 1 ? rows : rows.filter((_, i) => i !== index)
                           )
                         }
-                        className="shrink-0 rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        className="shrink-0 rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
                       >
                         Remove
                       </button>
@@ -519,7 +519,7 @@ export default function EditEventPage() {
                 <button
                   type="button"
                   onClick={() => setTransportLocations((rows) => [...rows, ""])}
-                  className="rounded-md border border-dashed border-zinc-400 px-3 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-500 hover:bg-zinc-50 dark:border-zinc-500 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="rounded-md border border-dashed border-zinc-400 px-3 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-500 hover:bg-zinc-50"
                 >
                   + Add location
                 </button>
@@ -528,11 +528,11 @@ export default function EditEventPage() {
           </div>
           <div className="flex items-end gap-3">
             <button type="submit" disabled={loading}
-              className="rounded-md bg-zinc-900 px-6 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+              className="rounded-md bg-zinc-900 px-6 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50">
               {loading ? "Saving…" : "Save changes"}
             </button>
             <Link href="/admin/create-event"
-              className="rounded-md border border-zinc-300 px-6 py-2.5 font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
+              className="rounded-md border border-zinc-300 px-6 py-2.5 font-medium text-zinc-700 hover:bg-zinc-50">
               Cancel
             </Link>
           </div>

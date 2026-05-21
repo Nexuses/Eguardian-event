@@ -210,13 +210,13 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
   return (
     <div className="mt-6 space-y-6">
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-2 block text-sm font-medium text-zinc-700">
           Select event
         </label>
         <select
           value={selectedEventId}
           onChange={(e) => setSelectedEventId(e.target.value)}
-          className="w-full max-w-md rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full max-w-md rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
         >
           <option value="">Choose an event</option>
           {events.map((ev) => (
@@ -230,14 +230,14 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
       {selectedEventId && (
         <div>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-lg font-semibold text-zinc-900">
               Registered clients ({registrations.length})
             </h2>
             {registrations.length > 0 && (
               <button
                 type="button"
                 onClick={handleExportCsv}
-                className="inline-flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                className="inline-flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -251,15 +251,15 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
           ) : registrations.length === 0 ? (
             <p className="mt-2 text-sm text-zinc-500">No registrations for this event yet.</p>
           ) : (
-            <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800 -mx-2 sm:mx-0">
+            <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 -mx-2 sm:mx-0">
               <table className="w-full min-w-[600px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-800/50">
+                  <tr className="border-b border-zinc-200 bg-zinc-50">
                     <th className="w-8 px-2 py-3" aria-label="Expand" />
-                    <th className="px-3 py-3 font-medium text-zinc-700 dark:text-zinc-300 sm:px-4">Name</th>
-                    <th className="px-3 py-3 font-medium text-zinc-700 dark:text-zinc-300 sm:px-4">Email</th>
-                    <th className="px-3 py-3 font-medium text-zinc-700 dark:text-zinc-300 sm:px-4">Status</th>
-                    <th className="px-3 py-3 font-medium text-zinc-700 dark:text-zinc-300 sm:px-4">Code</th>
+                    <th className="px-3 py-3 font-medium text-zinc-700 sm:px-4">Name</th>
+                    <th className="px-3 py-3 font-medium text-zinc-700 sm:px-4">Email</th>
+                    <th className="px-3 py-3 font-medium text-zinc-700 sm:px-4">Status</th>
+                    <th className="px-3 py-3 font-medium text-zinc-700 sm:px-4">Code</th>
                     <th className="w-10 px-2 py-3" aria-label="Delete" />
                   </tr>
                 </thead>
@@ -268,15 +268,15 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                     <React.Fragment key={r._id || r.uniqueCode}>
                       <tr
                         onClick={() => setExpandedId((prev) => (prev === r._id ? null : r._id))}
-                        className="cursor-pointer border-b border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50"
+                        className="cursor-pointer border-b border-zinc-100 transition-colors hover:bg-zinc-50"
                       >
                         <td className="px-2 py-3">
                           <ChevronDown className="h-5 w-5 text-zinc-500" open={expandedId === r._id} />
                         </td>
-                        <td className="px-3 py-3 font-medium text-zinc-900 dark:text-zinc-100 sm:px-4">
+                        <td className="px-3 py-3 font-medium text-zinc-900 sm:px-4">
                           {r.firstName} {r.surname}
                         </td>
-                        <td className="px-3 py-3 text-zinc-700 dark:text-zinc-300 sm:px-4">{r.email}</td>
+                        <td className="px-3 py-3 text-zinc-700 sm:px-4">{r.email}</td>
                         <td className="px-3 py-3 sm:px-4" onClick={(e) => e.stopPropagation()}>
                           <select
                             value={r.participationStatus || "registered"}
@@ -284,19 +284,19 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => e.stopPropagation()}
                             disabled={updatingId === r._id}
-                            className="rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 disabled:opacity-50"
+                            className="rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-900 disabled:opacity-50"
                           >
                             <option value="registered">Registered</option>
                             <option value="attended">Attended</option>
                           </select>
                         </td>
-                        <td className="px-3 py-3 font-mono text-zinc-700 dark:text-zinc-300 sm:px-4">{r.uniqueCode}</td>
+                        <td className="px-3 py-3 font-mono text-zinc-700 sm:px-4">{r.uniqueCode}</td>
                         <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
                             onClick={(e) => handleDelete(r._id, e)}
                             disabled={deletingId === r._id}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                            className="rounded p-1.5 text-red-600 hover:bg-red-50 disabled:opacity-50"
                             title="Delete registration"
                             aria-label="Delete registration"
                           >
@@ -305,60 +305,60 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                         </td>
                       </tr>
                       {expandedId === r._id && (
-                        <tr key={`${r._id}-details`} className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <tr key={`${r._id}-details`} className="bg-zinc-50">
                           <td colSpan={6} className="px-4 py-4">
-                            <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-                              <h3 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+                              <h3 className="mb-3 text-sm font-semibold text-zinc-700">
                                 Full details
                               </h3>
                               <dl className="grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-2">
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Organization</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">{r.organization || "—"}</dd>
+                                  <dt className="text-zinc-500">Organization</dt>
+                                  <dd className="text-zinc-900">{r.organization || "—"}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Designation</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">{r.designation || "—"}</dd>
+                                  <dt className="text-zinc-500">Designation</dt>
+                                  <dd className="text-zinc-900">{r.designation || "—"}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Mobile</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">{r.mobileNumber || "—"}</dd>
+                                  <dt className="text-zinc-500">Mobile</dt>
+                                  <dd className="text-zinc-900">{r.mobileNumber || "—"}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">WhatsApp</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">
+                                  <dt className="text-zinc-500">WhatsApp</dt>
+                                  <dd className="text-zinc-900">
                                     {r.addToWhatsapp ? (r.whatsappNumber || "—") : "—"}
                                   </dd>
                                 </div>
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Identity / Passport</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">{r.identityCardOrPassport || "—"}</dd>
+                                  <dt className="text-zinc-500">Identity / Passport</dt>
+                                  <dd className="text-zinc-900">{r.identityCardOrPassport || "—"}</dd>
                                 </div>
                                 {(r.apparelSize != null && r.apparelSize !== "") ? (
                                   <div>
-                                    <dt className="text-zinc-500 dark:text-zinc-400">Apparel size</dt>
-                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.apparelSize}</dd>
+                                    <dt className="text-zinc-500">Apparel size</dt>
+                                    <dd className="text-zinc-900">{r.apparelSize}</dd>
                                   </div>
                                 ) : null}
                                 {r.overnightStay != null ? (
                                   <div>
-                                    <dt className="text-zinc-500 dark:text-zinc-400">Overnight Stay</dt>
-                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.overnightStay ? "Yes" : "No"}</dd>
+                                    <dt className="text-zinc-500">Overnight Stay</dt>
+                                    <dd className="text-zinc-900">{r.overnightStay ? "Yes" : "No"}</dd>
                                   </div>
                                 ) : null}
                                 {(r.passportNic != null && r.passportNic !== "") ? (
                                   <div>
-                                    <dt className="text-zinc-500 dark:text-zinc-400">Passport/NIC</dt>
-                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.passportNic}</dd>
+                                    <dt className="text-zinc-500">Passport/NIC</dt>
+                                    <dd className="text-zinc-900">{r.passportNic}</dd>
                                   </div>
                                 ) : null}
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Registered</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">{formatDate(r.createdAt)}</dd>
+                                  <dt className="text-zinc-500">Registered</dt>
+                                  <dd className="text-zinc-900">{formatDate(r.createdAt)}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-zinc-500 dark:text-zinc-400">Participation time</dt>
-                                  <dd className="text-zinc-900 dark:text-zinc-100">
+                                  <dt className="text-zinc-500">Participation time</dt>
+                                  <dd className="text-zinc-900">
                                     {r.participationTimestamp
                                       ? formatDate(r.participationTimestamp)
                                       : "—"}
@@ -366,8 +366,8 @@ export function RegisteredClientSection({ events }: { events: EventItem[] }) {
                                 </div>
                                 {r.specialComment ? (
                                   <div className="sm:col-span-2">
-                                    <dt className="text-zinc-500 dark:text-zinc-400">Special comment</dt>
-                                    <dd className="text-zinc-900 dark:text-zinc-100">{r.specialComment}</dd>
+                                    <dt className="text-zinc-500">Special comment</dt>
+                                    <dd className="text-zinc-900">{r.specialComment}</dd>
                                   </div>
                                 ) : null}
                               </dl>

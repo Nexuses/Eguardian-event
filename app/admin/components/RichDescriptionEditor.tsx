@@ -42,18 +42,18 @@ export function RichDescriptionEditor({
   }
 
   const inputClass =
-    "w-full rounded-b-md border border-t-0 border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100";
+    "w-full rounded-b-md border border-t-0 border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
   return (
-    <div className="rounded-md border border-zinc-300 dark:border-zinc-600">
-      <div className="flex items-center gap-1 rounded-t-md border-b border-zinc-200 bg-zinc-50 px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800/80">
+    <div className="rounded-md border border-zinc-300">
+      <div className="flex items-center gap-1 rounded-t-md border-b border-zinc-200 bg-zinc-50 px-2 py-1.5">
         <button
           type="button"
           onMouseDown={(e) => {
             e.preventDefault();
             applyBold();
           }}
-          className="rounded px-2.5 py-1 text-sm font-bold text-zinc-800 hover:bg-zinc-200 dark:text-zinc-100 dark:hover:bg-zinc-700"
+          className="rounded px-2.5 py-1 text-sm font-bold text-zinc-800 hover:bg-zinc-200"
           title="Bold"
           aria-label="Bold"
         >
@@ -70,7 +70,7 @@ export function RichDescriptionEditor({
         onInput={syncFromEditor}
         onBlur={syncFromEditor}
         data-placeholder={placeholder}
-        className={`${inputClass} ${minHeightClass} rounded-t-none empty:before:pointer-events-none empty:before:text-zinc-500 empty:before:content-[attr(data-placeholder)] dark:empty:before:text-zinc-400 [&_b]:font-bold [&_strong]:font-bold`}
+        className={`${inputClass} ${minHeightClass} rounded-t-none empty:before:pointer-events-none empty:before:text-zinc-500 empty:before:content-[attr(data-placeholder)] [&_b]:font-bold [&_strong]:font-bold`}
       />
     </div>
   );

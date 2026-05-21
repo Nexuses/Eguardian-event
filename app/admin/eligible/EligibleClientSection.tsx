@@ -180,7 +180,7 @@ export function EligibleClientSection() {
   return (
     <div className="mt-6 space-y-6">
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
           Select event
         </label>
         {eventsLoading ? (
@@ -189,7 +189,7 @@ export function EligibleClientSection() {
           <select
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="w-full max-w-md rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="w-full max-w-md rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             <option value="">Choose an event</option>
             {events.map((ev) => (
@@ -205,7 +205,7 @@ export function EligibleClientSection() {
         <>
           <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-2">
             <div className="min-w-[200px] flex-1">
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Add eligible email
               </label>
               <input
@@ -213,7 +213,7 @@ export function EligibleClientSection() {
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
             <button
@@ -226,10 +226,10 @@ export function EligibleClientSection() {
           </form>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-2 block text-sm font-medium text-zinc-700">
               Upload CSV or Excel
             </label>
-            <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mb-2 text-xs text-zinc-500">
               File must have a column header named <strong>email</strong> or <strong>Email</strong>. Duplicates (within file or already in the list) are skipped.
             </p>
             <input
@@ -237,26 +237,26 @@ export function EligibleClientSection() {
               type="file"
               accept=".csv,.xlsx,.xls"
               onChange={handleFileChange}
-              className="block w-full max-w-md text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:text-orange-800 dark:file:bg-orange-900/30 dark:file:text-orange-200"
+              className="block w-full max-w-md text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:text-orange-800"
             />
             {uploadError && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{uploadError}</p>
+              <p className="mt-2 text-sm text-red-600">{uploadError}</p>
             )}
           </div>
 
           {modal !== null && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true">
-              <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-900">
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+              <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
+                <h3 className="text-lg font-semibold text-zinc-900">
                   Upload summary
                 </h3>
                 <div className="mt-4 space-y-2 text-sm">
                   <p>
-                    <span className="font-medium text-green-600 dark:text-green-400">Unique (to add):</span>{" "}
+                    <span className="font-medium text-green-600">Unique (to add):</span>{" "}
                     {modal.unique}
                   </p>
                   <p>
-                    <span className="font-medium text-amber-600 dark:text-amber-400">Duplicates (skipped):</span>{" "}
+                    <span className="font-medium text-amber-600">Duplicates (skipped):</span>{" "}
                     {modal.duplicate}
                   </p>
                 </div>
@@ -272,7 +272,7 @@ export function EligibleClientSection() {
                   <button
                     type="button"
                     onClick={() => setModal(null)}
-                    className="rounded-md border border-zinc-300 px-4 py-2 font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="rounded-md border border-zinc-300 px-4 py-2 font-medium text-zinc-700 hover:bg-zinc-50"
                   >
                     Cancel
                   </button>
@@ -282,7 +282,7 @@ export function EligibleClientSection() {
           )}
 
           <div>
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-lg font-semibold text-zinc-900">
               Eligible emails for {selectedEvent?.eventName ?? selectedEventId}
             </h2>
             {listLoading ? (
@@ -290,17 +290,17 @@ export function EligibleClientSection() {
             ) : emails.length === 0 ? (
               <p className="mt-2 text-sm text-zinc-500">No eligible emails for this event yet. Add one above or upload a file.</p>
             ) : (
-              <ul className="mt-2 space-y-1 rounded-lg border border-zinc-200 dark:border-zinc-800">
+              <ul className="mt-2 space-y-1 rounded-lg border border-zinc-200">
                 {emails.map((item) => (
                   <li
                     key={item._id || item.email}
-                    className="flex items-center justify-between rounded-md bg-white px-3 py-2 dark:bg-zinc-900"
+                    className="flex items-center justify-between rounded-md bg-white px-3 py-2"
                   >
-                    <span className="text-zinc-900 dark:text-zinc-100">{item.email}</span>
+                    <span className="text-zinc-900">{item.email}</span>
                     <button
                       type="button"
                       onClick={() => handleRemove(item.email)}
-                      className="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400"
+                      className="text-sm font-medium text-red-600 hover:text-red-700"
                     >
                       Remove
                     </button>

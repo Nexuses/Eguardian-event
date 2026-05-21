@@ -46,12 +46,12 @@ export function CheckEligibleForm({ eventId }: { eventId: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       {error && (
-        <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
       {message && (
-        <p className="rounded-md bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-300">
+        <p className="rounded-md bg-green-100 px-3 py-2 text-sm text-green-800">
           {message}
         </p>
       )}
@@ -65,12 +65,12 @@ export function CheckEligibleForm({ eventId }: { eventId: string }) {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email address"
         required
-        className="w-full rounded-md border border-zinc-300 px-3 py-2.5 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+        className="w-full rounded-md border border-zinc-300 px-3 py-2.5 text-zinc-900 placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
       />
       <button
         type="submit"
         disabled={loading}
-        className="check-btn-hover w-full rounded-md bg-orange-500 px-4 py-2.5 font-medium text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 disabled:opacity-50"
+        className="check-btn-hover w-full rounded-md bg-orange-500 px-4 py-2.5 font-medium text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
       >
         <span>{loading ? "Checking…" : "Check"}</span>
       </button>

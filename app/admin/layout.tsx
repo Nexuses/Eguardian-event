@@ -9,7 +9,13 @@ export default async function AdminLayout({
   const admin = await getAdminFromCookie();
 
   return (
-    <div className={admin ? "h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950" : "min-h-screen bg-zinc-50 dark:bg-zinc-950"}>
+    <div
+      className={
+        admin
+          ? "admin-light h-screen overflow-hidden bg-zinc-50"
+          : "admin-light min-h-screen bg-zinc-50"
+      }
+    >
       {admin ? (
         <AdminShell email={admin.email}>{children}</AdminShell>
       ) : null}

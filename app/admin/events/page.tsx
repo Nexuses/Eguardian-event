@@ -72,9 +72,9 @@ export default function AllEventsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">All Events</h1>
+      <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl">All Events</h1>
       {error ? (
-        <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="mt-3 text-sm text-red-600">{error}</p>
       ) : null}
 
       {listLoading ? (
@@ -89,9 +89,9 @@ export default function AllEventsPage() {
             return (
               <article
                 key={ev._id}
-                className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+                className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                <div className="aspect-[3/2] w-full shrink-0 overflow-hidden bg-zinc-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={ev.eventBanner?.trim() || DEFAULT_EVENT_BANNER_URL}
@@ -101,15 +101,15 @@ export default function AllEventsPage() {
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
+                    <h3 className="font-semibold text-zinc-900 line-clamp-2">
                       {ev.eventName}
                     </h3>
                     <div className="flex items-center gap-2">
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
                           status === "open"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                            : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-zinc-100 text-zinc-600"
                         }`}
                       >
                         {status === "open" ? "Open" : "Closed"}
@@ -117,46 +117,46 @@ export default function AllEventsPage() {
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
                           isPublished
-                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200"
-                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-red-100 text-red-800"
                         }`}
                       >
                         {isPublished ? "Published" : "Unpublished"}
                       </span>
                     </div>
                   </div>
-                  <p className="mb-1 text-xs font-mono text-zinc-500 dark:text-zinc-400">{ev.eventId}</p>
+                  <p className="mb-1 text-xs font-mono text-zinc-500">{ev.eventId}</p>
                   <dl className="mt-2 space-y-1.5 text-sm">
                     <div>
                       <dt className="sr-only">Start</dt>
-                      <dd className="text-zinc-600 dark:text-zinc-400">{formatEventDateTime(ev.eventStartDate)}</dd>
+                      <dd className="text-zinc-600">{formatEventDateTime(ev.eventStartDate)}</dd>
                     </div>
                     <div>
                       <dt className="sr-only">End</dt>
-                      <dd className="text-zinc-600 dark:text-zinc-400">{formatEventDateTime(ev.eventEndDate)}</dd>
+                      <dd className="text-zinc-600">{formatEventDateTime(ev.eventEndDate)}</dd>
                     </div>
                     {ev.venue ? (
                       <div>
                         <dt className="sr-only">Venue</dt>
-                        <dd className="text-zinc-600 dark:text-zinc-400">{ev.venue}</dd>
+                        <dd className="text-zinc-600">{ev.venue}</dd>
                       </div>
                     ) : null}
                     {ev.speaker ? (
                       <div>
                         <dt className="sr-only">Speaker</dt>
-                        <dd className="text-zinc-600 dark:text-zinc-400">{ev.speaker}</dd>
+                        <dd className="text-zinc-600">{ev.speaker}</dd>
                       </div>
                     ) : null}
                     {ev.phone ? (
                       <div>
                         <dt className="sr-only">Phone</dt>
-                        <dd className="text-zinc-600 dark:text-zinc-400">{ev.phone}</dd>
+                        <dd className="text-zinc-600">{ev.phone}</dd>
                       </div>
                     ) : null}
                   </dl>
                   <Link
                     href={`/admin/events/${ev._id}/edit`}
-                    className="mt-4 inline-flex w-full justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                    className="mt-4 inline-flex w-full justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
                   >
                     Edit
                   </Link>

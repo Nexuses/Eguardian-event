@@ -34,17 +34,17 @@ export default function AdminLoginPage() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-6">
-      <h1 className="mb-6 text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+      <h1 className="mb-6 text-xl font-bold text-zinc-900 sm:text-2xl">
         Admin Login
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error ? (
-          <p className="rounded-md bg-red-100 dark:bg-red-900/30 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+          <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-700">
             {error}
           </p>
         ) : null}
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700">
             Email
           </label>
           <input
@@ -53,12 +53,12 @@ export default function AdminLoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="admin@example.com"
           />
         </div>
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700">
             Password
           </label>
           <input
@@ -67,21 +67,21 @@ export default function AdminLoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="••••••••"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 w-full rounded-md bg-zinc-900 dark:bg-zinc-100 py-2.5 font-medium text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50"
+          className="mt-2 w-full rounded-md bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
         >
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-4 text-center text-sm text-zinc-600">
         Don&apos;t have an account?{" "}
-        <Link href="/admin/signup" className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+        <Link href="/admin/signup" className="font-medium text-blue-600 hover:underline">
           Sign up
         </Link>
       </p>

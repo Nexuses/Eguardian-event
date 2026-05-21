@@ -32,12 +32,12 @@ export function AdminSidebar({
   return (
     <>
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex h-full w-64 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 transition-transform duration-200 ease-out md:relative md:translate-x-0 md:shrink-0 ${
+        className={`admin-sidebar-light fixed inset-y-0 left-0 z-30 flex h-full w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-200 ease-out md:relative md:translate-x-0 md:shrink-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-hidden={!open}
       >
-        <div className="flex h-16 shrink-0 items-center justify-center border-b border-zinc-200 px-4 dark:border-zinc-800 sm:h-20">
+        <div className="flex h-16 shrink-0 items-center justify-center border-b border-zinc-200 px-4 sm:h-20">
           <Link
             href="/admin"
             onClick={onClose}
@@ -63,8 +63,8 @@ export function AdminSidebar({
               aria-current={active ? "page" : undefined}
               className={`group flex items-center rounded-xl border border-transparent px-3 py-2.5 text-[15px] font-semibold transition-colors ${
                 active
-                  ? "bg-zinc-100 text-zinc-900 shadow-sm ring-1 ring-zinc-900/40 border-zinc-900/80 dark:bg-zinc-800/70 dark:text-zinc-50 dark:ring-1 dark:ring-zinc-200/50 dark:border-zinc-200/60"
-                  : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  ? "border-zinc-900/80 bg-zinc-100 text-zinc-900 shadow-sm ring-1 ring-zinc-900/40"
+                  : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
               }`}
             >
               <span>{item.label}</span>

@@ -8,10 +8,10 @@ export default async function QRScanPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+      <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl">
         QR Scanning
       </h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-1 text-sm text-zinc-600">
         Scan a pass QR code at the event to mark that client as attended.
       </p>
       <ScanSection />

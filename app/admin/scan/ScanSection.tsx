@@ -155,11 +155,11 @@ export function ScanSection() {
   return (
     <div className="mt-6 space-y-8">
       {/* Manual code entry */}
-      <section className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <section className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-zinc-900">
           Enter pass code
         </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-600">
           Type the code shown on the attendee&apos;s pass (or below the QR) and mark as attended.
         </p>
         <form onSubmit={onManualSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
@@ -170,7 +170,7 @@ export function ScanSection() {
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value.toUpperCase())}
               placeholder="e.g. F4VJEUHOA707"
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400"
+              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500"
               maxLength={20}
               autoComplete="off"
             />
@@ -186,15 +186,15 @@ export function ScanSection() {
       </section>
 
       {/* Camera scan */}
-      <section className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <section className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-zinc-900">
           Scan QR code
         </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-600">
           Use your device camera to scan the pass QR. The attendee will be marked as attended automatically.
         </p>
         {!barcodeSupported && (
-          <p className="mt-3 text-sm text-amber-600 dark:text-amber-400">
+          <p className="mt-3 text-sm text-amber-600">
             QR scanning is not supported in this browser. Use Chrome or Edge, or enter the code above.
           </p>
         )}
@@ -210,7 +210,7 @@ export function ScanSection() {
               <button
                 type="button"
                 onClick={startCamera}
-                className="mt-2 rounded-md bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+                className="mt-2 rounded-md bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
               >
                 Start camera
               </button>
@@ -234,10 +234,10 @@ export function ScanSection() {
         <div
           className={`rounded-lg border p-4 ${
             status === "success"
-              ? "border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
+              ? "border-green-200 bg-green-50 text-green-800"
               : status === "error"
-                ? "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
-                : "border-zinc-200 bg-zinc-50 text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+                ? "border-red-200 bg-red-50 text-red-800"
+                : "border-zinc-200 bg-zinc-50 text-zinc-800"
           }`}
         >
           <p className="font-medium">{message}</p>
@@ -250,7 +250,7 @@ export function ScanSection() {
                 href={`/events/${lastAttendee.eventId}/pass/${lastAttendee.uniqueCode}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                className="inline-flex shrink-0 items-center rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-800"
               >
                 Print Pass
               </a>

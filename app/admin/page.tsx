@@ -53,10 +53,10 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+        <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl">
           Dashboard
         </h1>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 sm:text-base">
+        <p className="mt-2 text-sm text-zinc-600 sm:text-base">
           Welcome back, {admin?.email ?? "Admin"}. Here is how your events are performing.
         </p>
       </div>
@@ -104,73 +104,73 @@ export default async function AdminDashboardPage() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 sm:text-base">
+          <h2 className="text-sm font-semibold text-zinc-900 sm:text-base">
             Quick links
           </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
+          <p className="text-xs text-zinc-500 sm:text-sm">
             Jump straight to common admin tasks.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Link
             href="/admin/create-event"
-            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md"
           >
             <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Create event</p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm font-semibold text-zinc-900">Create event</p>
+              <p className="mt-1 text-xs text-zinc-500">
                 Set up a new event, time, and venue.
               </p>
             </div>
-            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline dark:text-orange-400">
+            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline">
               Go to create event →
             </span>
           </Link>
           <Link
             href="/admin/registrations"
-            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md"
           >
             <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+              <p className="text-sm font-semibold text-zinc-900">
                 Registered clients
               </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-zinc-500">
                 View, export, or update registrations.
               </p>
             </div>
-            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline dark:text-orange-400">
+            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline">
               Open registrations →
             </span>
           </Link>
           <Link
             href="/admin/eligible"
-            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md"
           >
             <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+              <p className="text-sm font-semibold text-zinc-900">
                 Eligible client list
               </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-zinc-500">
                 Manage and bulk upload eligible emails.
               </p>
             </div>
-            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline dark:text-orange-400">
+            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline">
               Manage eligible clients →
             </span>
           </Link>
           <Link
             href="/admin/scan"
-            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+            className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-md"
           >
             <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+              <p className="text-sm font-semibold text-zinc-900">
                 QR scanning & check-in
               </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-zinc-500">
                 Scan passes and mark attendance live.
               </p>
             </div>
-            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline dark:text-orange-400">
+            <span className="mt-3 text-xs font-medium text-orange-600 group-hover:underline">
               Open scanner →
             </span>
           </Link>
