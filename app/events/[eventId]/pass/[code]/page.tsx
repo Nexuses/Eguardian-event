@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getRegistrationByCode } from "@/lib/models/Registration";
-import { formatEventDateTime } from "@/lib/date-utils";
+import { buildGoogleCalendarUrl, formatEventDateTime } from "@/lib/date-utils";
 import { PassActions } from "./PassActions";
 
 function formatRegisteredDate(d: Date | string) {
@@ -28,14 +28,13 @@ export default async function PassPage({
   const firstName = capitalizeFirst(reg.firstName);
   const surname = capitalizeFirst(reg.surname);
 
-  const calendarUrl = [
-    "https://calendar.google.com/calendar/render",
-    "?action=TEMPLATE",
-    "&text=" + encodeURIComponent(reg.eventName),
-    "&dates=" + new Date(reg.eventStartDate).toISOString().replace(/[-:]/g, "").slice(0, 15) + "/" + new Date(reg.eventEndDate).toISOString().replace(/[-:]/g, "").slice(0, 15),
-    "&details=" + encodeURIComponent(`Venue: ${reg.venue}`),
-    "&location=" + encodeURIComponent(reg.venue),
-  ].join("");
+  const calendarUrl = buildGoogleCalendarUrl({
+    title: reg.eventName,
+    start: reg.eventStartDate,
+    end: reg.eventEndDate,
+    details: `Venue: ${reg.venue}`,
+    location: reg.venue,
+  });
 
   return (
     <div className="min-h-full bg-white py-6 sm:py-12">
