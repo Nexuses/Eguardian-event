@@ -289,6 +289,7 @@ export default function EditEventPage() {
               Description
             </label>
             <RichDescriptionEditor
+              key={event._id}
               value={description}
               onChange={setDescription}
               placeholder="Describe the event for attendees (shown on the public event page)"
