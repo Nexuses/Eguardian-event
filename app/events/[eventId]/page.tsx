@@ -153,13 +153,13 @@ export default async function EventPage({
               )}
             </div>
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6">
-              <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
-                <h2 className="text-lg font-semibold text-zinc-900">
+            <div className="rounded-xl border border-zinc-200 bg-white p-5 sm:p-7">
+              <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
+                <h2 className="text-xl font-semibold text-zinc-900">
                   Event Details
                 </h2>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`rounded-full px-3 py-1 text-xs font-medium sm:text-sm ${
                     registrationStatus === "open"
                       ? "bg-green-100 text-green-800"
                       : "bg-zinc-100 text-zinc-600"
@@ -168,27 +168,27 @@ export default async function EventPage({
                   {registrationStatus === "open" ? "Registration Open" : "Registration Closed"}
                 </span>
               </div>
-              <dl className="space-y-4 text-sm">
+              <dl className="space-y-5 text-base">
                 <div>
-                  <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500">Start date</dt>
+                  <dt className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 sm:text-sm">Start date</dt>
                   <dd className="text-zinc-900">{formatEventDateTime(event.eventStartDate)}</dd>
                 </div>
                 <div>
-                  <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500">End date</dt>
+                  <dt className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 sm:text-sm">End date</dt>
                   <dd className="text-zinc-900">{formatEventDateTime(event.eventEndDate)}</dd>
                 </div>
                 {event.venue ? (
                   <div>
-                    <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500">Venue</dt>
+                    <dt className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 sm:text-sm">Venue</dt>
                     <dd className="text-zinc-900">{event.venue}</dd>
                   </div>
                 ) : null}
                 <div>
-                  <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500">Speakers</dt>
+                  <dt className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 sm:text-sm">Speakers</dt>
                   <dd className="text-zinc-900">{event.speaker || "—"}</dd>
                 </div>
                 <div>
-                  <dt className="mb-0.5 font-medium uppercase tracking-wider text-zinc-500">Phone</dt>
+                  <dt className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 sm:text-sm">Phone</dt>
                   <dd className="text-zinc-900">{event.phone || "—"}</dd>
                 </div>
               </dl>
