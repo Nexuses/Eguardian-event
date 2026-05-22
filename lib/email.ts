@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { formatEventDateTime } from "@/lib/date-utils";
 
 const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
@@ -25,19 +26,6 @@ function getTransporter() {
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] || c);
-}
-
-function formatDateTime(d: string | Date): string {
-  if (!d) return "—";
-  const date = new Date(d);
-  return date.toLocaleString("en-US", {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function formatRegisteredDate(d: string | Date): string {
@@ -72,8 +60,8 @@ function getEmailHtml(data: PassEmailData): string {
   const safeMobile = escapeHtml(data.mobileNumber || "—");
   const safeEmail = escapeHtml(data.email);
   const safeVenue = escapeHtml(data.venue || "—");
-  const startDate = formatDateTime(data.eventStartDate);
-  const endDate = formatDateTime(data.eventEndDate);
+  const startDate = formatEventDateTime(data.eventStartDate);
+  const endDate = formatEventDateTime(data.eventEndDate);
   const registeredDate = formatRegisteredDate(data.createdAt);
 
   return `
@@ -154,8 +142,8 @@ function getEmailHtml(data: PassEmailData): string {
 }
 
 function getEmailText(data: PassEmailData): string {
-  const startDate = formatDateTime(data.eventStartDate);
-  const endDate = formatDateTime(data.eventEndDate);
+  const startDate = formatEventDateTime(data.eventStartDate);
+  const endDate = formatEventDateTime(data.eventEndDate);
   const registeredDate = formatRegisteredDate(data.createdAt);
 
   return `EGUARDIAN
