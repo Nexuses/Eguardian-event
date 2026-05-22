@@ -27,6 +27,7 @@ export default function CreateEventPage() {
   const [requirePassportNic, setRequirePassportNic] = useState(false);
   const [requireTransport, setRequireTransport] = useState(false);
   const [transportLocations, setTransportLocations] = useState<string[]>([""]);
+  const [eventBannerUrl, setEventBannerUrl] = useState("");
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,10 +49,12 @@ export default function CreateEventPage() {
       const trimmedTransport = collectTransport
         ? normalizeTransportLocationStrings(transportLocations)
         : [];
+      const bannerUrl = eventBannerUrl.trim();
       let res: Response;
       if (bannerFile) {
         const formData = new FormData();
         formData.set("eventName", eventName);
+        formData.set("eventBanner", bannerUrl);
         formData.set("description", description);
         formData.set("eventStartDate", eventStartDate);
         formData.set("eventEndDate", eventEndDate);
@@ -84,6 +87,7 @@ export default function CreateEventPage() {
           body: JSON.stringify({
             eventName,
             description,
+            eventBanner: bannerUrl,
             eventStartDate,
             eventEndDate,
             registrationStartDate,
@@ -136,6 +140,7 @@ export default function CreateEventPage() {
       setRequirePassportNic(false);
       setRequireTransport(false);
       setTransportLocations([""]);
+      setEventBannerUrl("");
       setBannerFile(null);
     } catch {
       setError("Something went wrong");
@@ -214,11 +219,30 @@ export default function CreateEventPage() {
               className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700">Banner upload</label>
-            <input type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800" />
-            <p className="mt-1 text-xs text-zinc-500">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
+          <div className="sm:col-span-2 space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Banner URL</label>
+              <input
+                type="url"
+                value={eventBannerUrl}
+                onChange={(e) => setEventBannerUrl(e.target.value)}
+                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder:text-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="https://example.com/banner.jpg"
+              />
+              <p className="mt-1 text-xs text-zinc-500">
+                Paste an image URL, or upload a file below. Upload replaces the URL when both are provided.
+              </p>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-zinc-700">Banner upload</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setBannerFile(e.target.files?.[0] ?? null)}
+                className="block w-full text-sm text-zinc-600 file:mr-2 file:rounded-md file:border-0 file:bg-zinc-200 file:px-3 file:py-1.5 file:text-zinc-800"
+              />
+              <p className="mt-1 text-xs text-zinc-500">Recommended size: 1200 x 800 px (3:2), max 5MB.</p>
+            </div>
           </div>
 
           <div>
